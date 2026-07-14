@@ -40,6 +40,7 @@ Documentos principais:
 - [Inventário e plano de migração do frontend](docs/MIGRACAO_FRONTEND.md)
 - [Auditoria do frontend](docs/AUDITORIA_FRONTEND.md)
 - [Relatório técnico de progresso](docs/RELATORIO_PROGRESSO.md)
+- [Checklist de prontidão do backend](docs/PRE_BACKEND_CHECKLIST.md)
 
 ## Estrutura atual
 
@@ -49,6 +50,7 @@ Documentos principais:
 ├── docs/
 │   ├── AUDITORIA_FRONTEND.md
 │   ├── MIGRACAO_FRONTEND.md
+│   ├── PRE_BACKEND_CHECKLIST.md
 │   └── RELATORIO_PROGRESSO.md
 ├── backend/                   # backend planejado
 └── frontend/
