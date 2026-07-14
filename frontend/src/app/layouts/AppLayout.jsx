@@ -3,6 +3,7 @@ import { useAppContext } from '../providers/app-context'
 
 const links = [
   { to: '/app', label: 'Visão geral', end: true },
+  { to: '/app/ritual', label: 'Ritual do dia' },
   { to: '/app/programas', label: 'Programas' },
   { to: '/app/minha-evolucao', label: 'Minha evolução' },
   { to: '/app/perfil', label: 'Perfil' },

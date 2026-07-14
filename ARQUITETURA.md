@@ -483,6 +483,7 @@ frontend/src/
 │   └── router/
 ├── modules/
 │   ├── auth/
+│   ├── daily-ritual/
 │   ├── dashboard/
 │   ├── profile/
 │   ├── programs/
@@ -497,7 +498,7 @@ frontend/src/
 └── main.jsx
 ```
 
-Rotas iniciais: `/login`, `/app`, `/app/programas`, `/app/programas/projeto66`, `/app/minha-evolucao` e `/app/perfil`.
+Rotas atuais da plataforma: `/login`, `/app`, `/app/ritual`, `/app/programas`, `/app/programas/projeto66`, `/app/minha-evolucao` e `/app/perfil`.
 
 O Projeto 66 possui módulo próprio. O frontend poderá usar repositórios simulados ou `localStorage` durante a fundação, desde que componentes não dependam diretamente do mecanismo de persistência.
 
@@ -609,6 +610,7 @@ Implementação do monolito NestJS, schema Prisma, autenticação, tenants, conv
 | 14/07/2026 | README raiz criado e fluxo de versionamento definido: documentação, validações, revisão de diff, commit descritivo e push de mudanças aprovadas. |
 | 14/07/2026 | F6 concluída: tracker comportamental com central de justificativas, rankings, dias perfeitos, backup validado e teste Playwright mobile-first. |
 | 14/07/2026 | Auditoria completa do frontend aprovada em 12 rotas e quatro viewports (320, 375, 768 e 1440 px), com correções de overflow e alvos de toque; evidências registradas em `docs/AUDITORIA_FRONTEND.md`. |
+| 14/07/2026 | F7 concluída: ritual diário separado em módulo próprio, com fatos por data, quatro etapas, timer 30/30 persistente e conclusão idempotente preparada para gamificação futura. |
 
 ## 21. Versionamento e documentação
 

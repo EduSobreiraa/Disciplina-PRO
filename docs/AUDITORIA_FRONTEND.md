@@ -46,3 +46,7 @@ O registro objetivo do Projeto 66 e o conteúdo íntimo continuam em repositorie
 ## Critério para as próximas entregas
 
 Manter a matriz de quatro larguras, ausência de overflow, alvos de toque adequados, console sem erros, separação de dados privados e aprovação de `npm run lint`, `npm test` e `npm run build`.
+
+## Extensão F7 — Ritual diário
+
+Em 14/07/2026, a rota `/app/ritual` foi adicionada e aprovada nas quatro larguras da matriz. Foram confirmados persistência do checklist, início, pausa e retomada do timer após reload, ausência de overflow, alvos mínimos de 44 px e console sem erros.

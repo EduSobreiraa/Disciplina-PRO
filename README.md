@@ -13,6 +13,7 @@ Já estão disponíveis:
 - shell mobile-first do Disciplina PRO;
 - catálogo de programas;
 - tracker mensal de comportamentos em “Minha evolução”;
+- ritual diário com abertura, execução, fechamento, revisão semanal e timer 30/30;
 - grade verde/vermelha e justificativas;
 - Projeto 66 com ciclo, registro diário, checklist e tracker;
 - meditação, respiração, Novo Eu, modo crise e dia difícil;
@@ -103,6 +104,7 @@ Plataforma:
 /login
 /app
 /app/programas
+/app/ritual
 /app/minha-evolucao
 /app/perfil
 ```
@@ -141,10 +143,9 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. migrar rituais e timer 30/30 do Disciplina PRO;
-2. integrar gamificação no frontend;
-3. iniciar o backend modular NestJS;
-4. substituir repositories locais pela API real.
+1. integrar gamificação e eventos idempotentes no frontend;
+2. iniciar o backend modular NestJS;
+3. substituir repositories locais pela API real.
 
 ## Responsável
 

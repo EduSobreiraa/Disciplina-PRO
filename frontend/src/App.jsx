@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from './app/layouts/AppLayout'
 import { DashboardPage } from './modules/dashboard/DashboardPage'
 import { DisciplineTrackerPage } from './modules/discipline-tracker/pages/DisciplineTrackerPage'
+import { DailyRitualPage } from './modules/daily-ritual/pages/DailyRitualPage'
 import { LoginPage } from './modules/auth/LoginPage'
 import { ProfilePage } from './modules/profile/ProfilePage'
 import { ProgramsPage } from './modules/programs/ProgramsPage'
@@ -32,6 +33,7 @@ function App() {
           <Route path="progresso" element={<Projeto66ProgressPage />} />
         </Route>
         <Route path="minha-evolucao" element={<DisciplineTrackerPage />} />
+        <Route path="ritual" element={<DailyRitualPage />} />
         <Route path="perfil" element={<ProfilePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/app" replace />} />

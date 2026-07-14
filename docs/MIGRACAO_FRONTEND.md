@@ -387,17 +387,29 @@ Auditoria transversal concluída em 14/07/2026:
 - console sem erros, lint, testes e build aprovados;
 - relatório completo em `docs/AUDITORIA_FRONTEND.md`.
 
+### F7 — Rituais do Disciplina PRO (concluída)
+
+Implementado em 14/07/2026:
+
+- módulo `daily-ritual` isolado do tracker e do Projeto 66;
+- abertura, execução, fechamento e Sala de Guerra semanal;
+- checks persistidos por data e etapa;
+- progresso de seção e progresso total derivados dos fatos;
+- timer 30/30 com oito ciclos, pausa, retomada e reset confirmado;
+- retomada correta do cronômetro após recarregar a página;
+- regra de conclusão idempotente, sem duplicação do legado ao remarcar etapas;
+- regras puras cobertas por testes;
+- validação Playwright em 320, 375, 768 e 1440 px, sem overflow ou alvos menores que 44 px.
+
 ## 8. Próximo incremento de implementação
 
-O próximo incremento de código será a F7 — rituais do Disciplina PRO:
+O próximo incremento será a integração inicial de gamificação:
 
-1. migrar abertura, execução, fechamento e ritual semanal;
-2. modelar checks por data e etapa;
-3. migrar o timer 30/30 com oito ciclos;
-4. separar temporizador, regras e persistência da interface;
-5. adaptar todos os controles para toque e retomada de sessão;
-6. preparar eventos idempotentes para futura gamificação;
-7. validar lint, testes, build e Playwright mobile-first.
+1. criar ledger local de transações de XP, sem armazenar somente saldo;
+2. emitir eventos idempotentes a partir do tracker e do ritual;
+3. refletir nível e XP reais no shell;
+4. implementar conquistas iniciais sem acoplá-las aos componentes;
+5. preparar os contratos para substituição pelos módulos de gamificação e eventos internos do backend.
 
 ## 9. Matriz de validação
 
