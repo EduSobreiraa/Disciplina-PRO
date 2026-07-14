@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 14/07/2026 · Estado: frontend individual F0–F9 concluído
+> Atualizado em 14/07/2026 · Estado: frontend individual F0–F9 concluído; backend B0 iniciado
 
 ## 1. Visão geral do produto
 
@@ -30,8 +30,8 @@ O frontend individual foi migrado dos protótipos HTML para React. A fundação 
 | Qualidade | ESLint 10, `node:test`, Playwright |
 | Estilos | CSS por módulo, tokens e media queries mobile-first |
 | Persistência atual | repositories sobre `localStorage`, temporários |
-| Backend planejado | NestJS + TypeScript |
-| ORM/banco | Prisma + PostgreSQL |
+| Backend | NestJS 11 + TypeScript 5.9, em fundação B0 |
+| ORM/banco | Prisma 7 + adapter `pg` + PostgreSQL 18 |
 | Arquitetura backend | monolito modular em camadas |
 | Multi-tenancy | banco compartilhado com isolamento obrigatório por `tenantId` |
 | Comunicação futura | API REST e eventos internos do monolito |
@@ -266,6 +266,15 @@ Matriz responsiva adotada:
 | tablet | 768×1024 |
 | desktop | 1440×900 |
 
+### Testes iniciais do backend
+
+A fundação NestJS possui teste unitário do serviço de saúde e teste HTTP E2E de `GET /api/health`, executados com Jest e Supertest. Na raiz do workspace:
+
+```bash
+npm test
+npm run test:e2e --workspace backend
+```
+
 ### Critério de aceite
 
 Uma feature visual é encerrada somente após fluxo funcional, persistência, responsividade, console, lint, testes e build serem aprovados. A documentação é atualizada no mesmo commit.
@@ -292,7 +301,8 @@ Ainda não concluído:
 
 - autenticação e autorização reais;
 - tenants, memberships, times e convites;
-- API, Prisma e PostgreSQL;
+- módulos de negócio e schema Prisma;
+- integração persistente entre API e PostgreSQL;
 - gestão empresarial e Super Admin;
 - relatórios por time/tenant e auditoria real;
 - sincronização entre dispositivos;
@@ -306,8 +316,8 @@ Os dados e recompensas atuais são locais e simulam contratos futuros. Não deve
 
 A recomendação é iniciar o backend antes das telas administrativas. Ordem proposta:
 
-1. workspace NestJS, configuração, validação e tratamento de erros;
-2. Prisma e PostgreSQL;
+1. concluir configuração tipada, tratamento de erros e limites HTTP da B0;
+2. criar schema inicial, `PrismaModule` e integração com PostgreSQL;
 3. `identity-access` e sessão;
 4. `organizations` e isolamento multi-tenant;
 5. `invitations`;
@@ -319,6 +329,42 @@ A recomendação é iniciar o backend antes das telas administrativas. Ordem pro
 
 Antes do schema definitivo, ainda devem ser fechados `ProgramVersion`, `EnrollmentPause`, estados de membership e representação de `SUPER_ADMIN`.
 
-## 12. Conclusão
+## 12. Prontidão e pré-requisitos do backend
+
+### Aprovados
+
+| Pré-requisito | Estado verificado |
+|---|---|
+| Runtime | Node.js 24.18.0 LTS e npm 11.16.0 |
+| Containers | Docker 29.6.0 e Docker Compose 5.3 |
+| Banco local | PostgreSQL 18.4 em container saudável |
+| Cliente SQL | `psql` 18.3; conexão autenticada e consulta SQL aprovadas |
+| Versionamento | Git 2.55.0; leitura pelo GitHub MCP; commit e push operacionais |
+| Workspace | npm workspaces para `frontend` e `backend`, com lockfile único |
+| Backend | NestJS, TypeScript, Prisma CLI/client, adapter `pg` e Supertest instalados |
+| Segurança básica | Helmet, CORS, throttling, validação global e redação de headers sensíveis |
+| Observabilidade inicial | logging estruturado, health check e Swagger |
+| Qualidade | lint, typecheck, builds e 7 testes aprovados |
+| Dependências | `npm audit --workspaces`: zero vulnerabilidades na última verificação |
+
+### Não bloqueadores no fluxo atual
+
+- Dependabot e CodeQL foram retirados por limitações do plano/repositório privado; a compensação atual é `npm audit` local, devendo ser incorporado ao CI.
+- O GitHub CLI ainda precisa de nova autenticação, mas Git e GitHub MCP já permitem o trabalho necessário.
+- MCP de PostgreSQL, Sentry, provedor de e-mail e hospedagem não são necessários para concluir a B0.
+
+### Pendências prioritárias
+
+1. versionar o PostgreSQL local em `compose.yaml` sem credenciais reais;
+2. validar variáveis de ambiente com configuração tipada;
+3. criar o schema Prisma inicial e o `PrismaModule` com adapter `pg`;
+4. adicionar teste de integração contra PostgreSQL real;
+5. padronizar exceções, request ID e limite de payload;
+6. criar CI com lint, typecheck, testes, build e `npm audit`;
+7. fechar as decisões de domínio listadas antes das migrations definitivas.
+
+Conclusão de prontidão: **não falta instalação essencial para continuar o backend**. As pendências atuais são de implementação, automação e decisões arquiteturais, não de ambiente local.
+
+## 13. Conclusão
 
 O frontend individual deixou de ser um conjunto de protótipos HTML e passou a ser uma aplicação React modular, testável, responsiva e preparada para integração. A F9 encerra a migração funcional planejada dos protótipos. O próximo ganho estrutural vem do backend multi-tenant, que substituirá simulações locais e permitirá iniciar as áreas B2B de gestão, relatórios e auditoria.

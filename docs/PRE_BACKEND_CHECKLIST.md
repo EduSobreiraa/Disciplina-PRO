@@ -1,7 +1,7 @@
 # Checklist de prontidão para o backend
 
 > Disciplina PRO · Atualizado em 14/07/2026
-> Objetivo: preparar ambiente, segurança e decisões antes da B0.
+> Objetivo: acompanhar a prontidão do ambiente e as pendências da fundação B0.
 
 ## 1. Ambiente local
 
@@ -38,7 +38,7 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [ ] Reavaliar Dependabot quando o plano/repositório oferecer o fluxo desejado; por enquanto usar `npm audit` local e no CI.
 - [ ] Reavaliar CodeQL quando disponível no plano atual.
 - [ ] Ativar secret scanning e push protection, conforme disponibilidade.
-- [ ] Criar `.github/workflows/ci.yml` durante B0.
+- [ ] Criar `.github/workflows/ci.yml` antes de adotar checks obrigatórios.
 - [ ] Configurar checks obrigatórios antes de proteger `main`.
 - [ ] Impedir force push em `main`.
 - [ ] Adotar feature branches e pull requests durante o backend.
@@ -76,7 +76,7 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [x] Instalar dependências e gerar lockfile único na raiz.
 - [ ] Criar configuração tipada por ambiente.
 - [ ] Criar `compose.yaml` com PostgreSQL e health check.
-- [ ] Adicionar Prisma, `@prisma/adapter-pg` e `pg`.
+- [x] Adicionar Prisma CLI, `@prisma/client`, `@prisma/adapter-pg` e `pg`.
 - [ ] Criar `PrismaModule`/adapter sem expor Prisma aos controllers.
 - [x] Configurar `ValidationPipe` global.
 - [ ] Configurar filtro padronizado de exceções.
@@ -84,7 +84,8 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [x] Configurar logging estruturado e redação de headers sensíveis; request ID explícito permanece pendente.
 - [x] Criar endpoint de health check inicial da API.
 - [x] Gerar OpenAPI com Swagger.
-- [ ] Configurar testes unitários e integração com PostgreSQL real.
+- [x] Configurar Jest, teste unitário e teste HTTP E2E do health check.
+- [ ] Configurar testes de integração com PostgreSQL real.
 - [x] Criar comandos de lint, typecheck, test e build; migration check depende do Prisma schema.
 
 ## 7. Dependências previstas
@@ -108,14 +109,24 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 
 Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microserviços, billing ou IA.
 
-## 9. Critério para iniciar B0
+## 9. Situação de prontidão
 
-O desenvolvimento pode começar quando os seguintes itens estiverem concluídos:
+**Resultado:** ambiente aprovado e B0 iniciada. Node, npm, Docker, Compose, PostgreSQL, Git, lockfile único e acesso ao repositório estão operacionais. O `gh` CLI sem autenticação válida não bloqueia o desenvolvimento porque Git e GitHub MCP já atendem ao fluxo atual.
 
-- Node 24 LTS padronizado;
-- Docker Compose e PostgreSQL local validados;
-- `psql` conectado ao container;
-- GitHub CLI autenticado;
-- GitHub MCP com leitura confirmada do repositório;
-- segredos protegidos e `.env.example` planejado;
-- quatro decisões pendentes do schema encaminhadas ou explicitamente adiadas com justificativa.
+Pendências que bloqueiam o **schema de domínio definitivo**, mas não a continuação da B0:
+
+- `ProgramVersion` e política de publicação;
+- pausas de enrollment e cálculo dos dias;
+- estados/transições de membership;
+- representação de `SUPER_ADMIN`;
+- convenções de IDs, timestamps, retenção e exclusão.
+
+Pendências técnicas imediatas da B0:
+
+- configuração tipada e validada de ambiente;
+- `compose.yaml` versionado;
+- schema Prisma inicial e `PrismaModule`;
+- filtro padronizado de exceções;
+- limite explícito de payload e request ID;
+- integração automatizada com PostgreSQL;
+- workflow de CI compatível com o plano atual.
