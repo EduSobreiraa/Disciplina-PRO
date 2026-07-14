@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build and test outputs
+dist/
+coverage/
+test-results/
+playwright-report/
+.playwright-mcp/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+*.swp

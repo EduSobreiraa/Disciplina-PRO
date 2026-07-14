@@ -606,6 +606,23 @@ Implementação do monolito NestJS, schema Prisma, autenticação, tenants, conv
 | 12/07/2026 | F5 do Projeto 66 concluída: meditação, respiração, Novo Eu, crise e dia difícil isolados no domínio privado e desenhados mobile-first. |
 | 12/07/2026 | Tracker comportamental definido como capacidade transversal do Disciplina PRO em “Minha evolução”, separado do catálogo de programas. |
 | 12/07/2026 | Primeira fatia do tracker migrada: grade mensal, ciclo de marcas, justificativas, comportamentos e métricas com repository local. |
+| 14/07/2026 | README raiz criado e fluxo de versionamento definido: documentação, validações, revisão de diff, commit descritivo e push de mudanças aprovadas. |
+
+## 21. Versionamento e documentação
+
+O repositório remoto oficial é `EduSobreiraa/Disciplina-PRO`, com desenvolvimento principal na branch `main` enquanto o projeto estiver em fase inicial individual.
+
+Cada conjunto coerente de mudanças deve:
+
+1. atualizar `ARQUITETURA.md` quando afetar módulos, entidades, ownership, segurança, privacidade, contratos ou decisões estruturais;
+2. atualizar `docs/MIGRACAO_FRONTEND.md` quando alterar o progresso ou a estratégia da migração;
+3. manter o `README.md` alinhado aos comandos, estrutura e estado público do projeto;
+4. executar lint, testes e build proporcionais à mudança;
+5. realizar validação mobile-first no navegador para mudanças visuais, quando o ambiente permitir;
+6. revisar o diff e excluir credenciais, configurações locais e artefatos gerados;
+7. criar commit descritivo e enviar ao remoto somente após as validações.
+
+Commits devem representar unidades compreensíveis de trabalho. Não incluir `.env`, relatórios de teste, builds, caches, perfis de navegador ou outros dados locais.
 
 ---
 
