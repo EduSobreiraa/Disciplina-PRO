@@ -5,6 +5,14 @@ export const gamificationRules = {
   FOCUS_CYCLE: { xp: 25, label: 'Ciclo 30/30 concluído' },
   PROJECT_ACTIVITY: { xp: 10, label: 'Atividade do Projeto 66 concluída' },
   PROJECT_DAY: { xp: 50, label: 'Dia do Projeto 66 registrado' },
+  MISSION_WEEK_ELITE: { xp: 200, label: 'Missão concluída: Semana de Elite' },
+  MISSION_LIVING_FLAME: { xp: 150, label: 'Missão concluída: Chama Viva' },
+  MISSION_ELITE_ZONE: { xp: 250, label: 'Missão concluída: Zona Elite' },
+  MISSION_NO_WEAKNESS: { xp: 180, label: 'Missão concluída: Nenhuma Fraqueza' },
+  MISSION_XP_HUNTER: { xp: 100, label: 'Missão concluída: Caçador de XP' },
+  MISSION_CONSTANT_PRESENCE: { xp: 120, label: 'Missão concluída: Presença Constante' },
+  MISSION_GREEN_HUNDRED: { xp: 300, label: 'Missão concluída: Centena Verde' },
+  MISSION_RITUAL_MACHINE: { xp: 100, label: 'Missão concluída: Máquina de Rituais' },
 }
 
 export const levels = [

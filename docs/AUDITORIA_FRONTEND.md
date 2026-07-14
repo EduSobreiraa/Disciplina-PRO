@@ -54,3 +54,7 @@ Em 14/07/2026, a rota `/app/ritual` foi adicionada e aprovada nas quatro largura
 ## Extensão F8 — Gamificação
 
 Em 14/07/2026, a rota `/app/conquistas` foi aprovada nas quatro larguras. Foram validados concessão idempotente, compensação ao desfazer, nova concessão ao refazer, persistência após reload, integração com tracker e Projeto 66, desbloqueio de conquistas e atualização do saldo. Não houve overflow, alvo interativo menor que 44 px ou erro de console.
+
+## Extensão F9 — Missões e protocolo
+
+Em 14/07/2026, `/app/missoes` e `/app/protocolo` foram verificadas em 320, 375, 768 e 1440 px. Uma missão foi concluída a partir de fatos reais do tracker, apresentou progresso 7/7, concedeu 200 XP uma única vez e apareceu no ledger. A expansão da navegação revelou e corrigiu um overflow do indicador de ambiente em tablet.

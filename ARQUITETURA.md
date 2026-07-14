@@ -486,7 +486,9 @@ frontend/src/
 ├── modules/
 │   ├── auth/
 │   ├── daily-ritual/
+│   ├── discipline-content/
 │   ├── dashboard/
+│   ├── gamification/
 │   ├── profile/
 │   ├── programs/
 │   └── projeto66/
@@ -500,7 +502,7 @@ frontend/src/
 └── main.jsx
 ```
 
-Rotas atuais da plataforma: `/login`, `/app`, `/app/ritual`, `/app/conquistas`, `/app/programas`, `/app/programas/projeto66`, `/app/minha-evolucao` e `/app/perfil`.
+Rotas atuais da plataforma: `/login`, `/app`, `/app/ritual`, `/app/missoes`, `/app/conquistas`, `/app/protocolo`, `/app/programas`, `/app/programas/projeto66`, `/app/minha-evolucao` e `/app/perfil`.
 
 O Projeto 66 possui módulo próprio. O frontend poderá usar repositórios simulados ou `localStorage` durante a fundação, desde que componentes não dependam diretamente do mecanismo de persistência.
 
@@ -614,6 +616,8 @@ Implementação do monolito NestJS, schema Prisma, autenticação, tenants, conv
 | 14/07/2026 | Auditoria completa do frontend aprovada em 12 rotas e quatro viewports (320, 375, 768 e 1440 px), com correções de overflow e alvos de toque; evidências registradas em `docs/AUDITORIA_FRONTEND.md`. |
 | 14/07/2026 | F7 concluída: ritual diário separado em módulo próprio, com fatos por data, quatro etapas, timer 30/30 persistente e conclusão idempotente preparada para gamificação futura. |
 | 14/07/2026 | F8 concluída: gamificação frontend centralizada em ledger append-only; saldo, nível e progresso são derivados, ações desfeitas geram compensações e conquistas são fatos persistidos. |
+| 14/07/2026 | F9 concluída: missões derivadas de tracker, ritual e ledger, recompensas idempotentes e protocolo informativo migrado; migração funcional dos protótipos encerrada. |
+| 14/07/2026 | Relatório consolidado de progresso, práticas, testes, tecnologias e preparação do backend registrado em `docs/RELATORIO_PROGRESSO.md`. |
 
 ## 21. Versionamento e documentação
 

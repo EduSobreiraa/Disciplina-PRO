@@ -1,7 +1,7 @@
 # Inventário e Plano de Migração dos Protótipos
 
 > Disciplina PRO · Documento operacional  
-> Criado em: 12/07/2026 · Estado: inventário inicial concluído
+> Criado em: 12/07/2026 · Estado: migração funcional F0–F9 concluída em 14/07/2026
 
 ## 1. Objetivo
 
@@ -416,15 +416,22 @@ Implementado em 14/07/2026:
 - quatro testes de domínio aprovados, incluindo ledger e níveis;
 - validação Playwright em 320, 375, 768 e 1440 px.
 
+### F9 — Missões e Protocolo do Disciplina PRO (concluída)
+
+Implementado em 14/07/2026:
+
+- oito missões com métricas mensais, semanais e vitalícias;
+- progresso derivado do tracker, dos rituais e do ledger de XP;
+- recompensa resgatável uma única vez por período;
+- critérios de pontuação e seis leis do painel;
+- rotas `/app/missoes` e `/app/protocolo`;
+- correção do shell para navegação crescente em tablet;
+- testes das chaves de período e sequência perfeita;
+- validação Playwright nas quatro larguras.
+
 ## 8. Próximo incremento de implementação
 
-O próximo incremento será a F9 — Missões e Protocolo do Disciplina PRO:
-
-1. migrar o catálogo de missões ativas;
-2. derivar o progresso das missões a partir dos fatos existentes;
-3. migrar o conteúdo informativo do protocolo;
-4. evitar uma segunda fonte de verdade para XP ou conquistas;
-5. concluir a migração funcional do protótipo Disciplina PRO antes do backend.
+A migração funcional planejada dos protótipos está concluída. O próximo incremento será a fundação do backend modular NestJS e o início da substituição gradual dos repositories locais por contratos HTTP reais. O panorama de transição está consolidado em `docs/RELATORIO_PROGRESSO.md`.
 
 ## 9. Matriz de validação
 

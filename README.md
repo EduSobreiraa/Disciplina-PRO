@@ -39,6 +39,7 @@ Documentos principais:
 - [Arquitetura do produto](ARQUITETURA.md)
 - [Inventário e plano de migração do frontend](docs/MIGRACAO_FRONTEND.md)
 - [Auditoria do frontend](docs/AUDITORIA_FRONTEND.md)
+- [Relatório técnico de progresso](docs/RELATORIO_PROGRESSO.md)
 
 ## Estrutura atual
 
@@ -47,7 +48,8 @@ Documentos principais:
 ├── ARQUITETURA.md
 ├── docs/
 │   ├── AUDITORIA_FRONTEND.md
-│   └── MIGRACAO_FRONTEND.md
+│   ├── MIGRACAO_FRONTEND.md
+│   └── RELATORIO_PROGRESSO.md
 ├── backend/                   # backend planejado
 └── frontend/
     ├── disciplina-pro.html    # protótipo de referência
@@ -106,7 +108,9 @@ Plataforma:
 /app
 /app/programas
 /app/ritual
+/app/missoes
 /app/conquistas
+/app/protocolo
 /app/minha-evolucao
 /app/perfil
 ```
@@ -145,9 +149,9 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. migrar missões e conteúdo do protocolo do Disciplina PRO;
-2. iniciar o backend modular NestJS;
-3. substituir repositories locais pela API real.
+1. iniciar o backend modular NestJS;
+2. implementar autenticação e fundação multi-tenant;
+3. substituir repositories locais pela API real por domínio.
 
 ## Responsável
 

@@ -5,9 +5,11 @@ import { useGamification } from '../../modules/gamification/gamification-context
 const links = [
   { to: '/app', label: 'Visão geral', end: true },
   { to: '/app/ritual', label: 'Ritual do dia' },
+  { to: '/app/missoes', label: 'Missões' },
   { to: '/app/programas', label: 'Programas' },
   { to: '/app/minha-evolucao', label: 'Minha evolução' },
   { to: '/app/conquistas', label: 'Conquistas' },
+  { to: '/app/protocolo', label: 'Protocolo' },
   { to: '/app/perfil', label: 'Perfil' },
 ]
 
