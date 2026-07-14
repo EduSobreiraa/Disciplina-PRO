@@ -21,7 +21,7 @@ Já estão disponíveis:
 - separação local entre dados objetivos e conteúdo privado;
 - repositories locais preparados para futura substituição pela API.
 
-O backend NestJS ainda não foi iniciado.
+O backend NestJS está na B0, com workspace, health check, validação, segurança HTTP, logging, Swagger e testes iniciais. O schema Prisma e os módulos de negócio ainda não foram iniciados.
 
 ## Arquitetura planejada
 
@@ -52,7 +52,7 @@ Documentos principais:
 │   ├── MIGRACAO_FRONTEND.md
 │   ├── PRE_BACKEND_CHECKLIST.md
 │   └── RELATORIO_PROGRESSO.md
-├── backend/                   # backend planejado
+├── backend/                   # fundação NestJS em implementação
 └── frontend/
     ├── disciplina-pro.html    # protótipo de referência
     ├── protocolo_66_ios (1).html
@@ -89,14 +89,26 @@ http://localhost:5173/app
 
 Não abra `frontend/index.html` diretamente ou por Live Server. O frontend utiliza módulos processados pelo Vite.
 
+Na raiz do workspace, também é possível executar:
+
+```bash
+npm install
+npm run dev:frontend
+npm run dev:backend
+```
+
+O backend inicial expõe `GET /api/health` e a documentação OpenAPI em `/docs`.
+
 ## Comandos de qualidade
 
-Dentro de `frontend/`:
+Na raiz do repositório:
 
 ```bash
 npm run lint
+npm run typecheck
 npm test
 npm run build
+npm run audit:dependencies
 ```
 
 Antes de um commit funcional, os três comandos devem ser aprovados. Mudanças de interface também devem ser verificadas em viewport móvel com Playwright quando o ambiente estiver disponível.

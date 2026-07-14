@@ -619,6 +619,7 @@ Implementação do monolito NestJS, schema Prisma, autenticação, tenants, conv
 | 14/07/2026 | F9 concluída: missões derivadas de tracker, ritual e ledger, recompensas idempotentes e protocolo informativo migrado; migração funcional dos protótipos encerrada. |
 | 14/07/2026 | Relatório consolidado de progresso, práticas, testes, tecnologias e preparação do backend registrado em `docs/RELATORIO_PROGRESSO.md`. |
 | 14/07/2026 | Checklist operacional pré-backend criado em `docs/PRE_BACKEND_CHECKLIST.md`, incluindo runtime, PostgreSQL, GitHub, MCPs, segurança e decisões pendentes. |
+| 14/07/2026 | B0 iniciada com workspace npm, scaffold NestJS/TypeScript, health check, validação global, Swagger, Helmet, throttling, logging estruturado e lockfile único; scaffold Express acidental removido. |
 
 ## 21. Versionamento e documentação
 

@@ -19,7 +19,7 @@ Disciplina PRO
     └── Projeto 66 (primeiro programa)
 ```
 
-O frontend individual foi migrado dos protótipos HTML para React. O backend e as áreas administrativas B2B ainda serão implementados.
+O frontend individual foi migrado dos protótipos HTML para React. A fundação B0 do backend NestJS foi iniciada; schema Prisma, módulos de negócio e áreas administrativas B2B ainda serão implementados.
 
 ## 2. Tecnologias e decisões
 

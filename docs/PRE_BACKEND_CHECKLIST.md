@@ -10,18 +10,18 @@
 - [x] GitHub CLI instalado (`2.94.0`).
 - [x] Cliente PostgreSQL instalado (`psql 18.3`).
 - [x] OpenSSL 3 disponível.
-- [ ] Trocar Node.js 26 Current por Node.js 24 LTS.
-- [ ] Criar `.nvmrc` ou `.node-version` com a versão adotada.
-- [ ] Declarar `engines.node` nos packages.
-- [ ] Confirmar `docker compose version` e execução de um container PostgreSQL com health check.
-- [ ] Confirmar conexão do `psql` ao PostgreSQL do Docker.
+- [x] Trocar Node.js 26 Current por Node.js 24 LTS (`24.18.0`).
+- [x] Criar `.nvmrc` e `.node-version` com a versão adotada.
+- [x] Declarar `engines.node` nos packages.
+- [x] Confirmar `docker compose version` e execução de um container PostgreSQL com health check.
+- [x] Confirmar conexão autenticada do PostgreSQL e consulta SQL pelo container.
 
 ## 2. GitHub CLI e MCP
 
 - [ ] Refazer autenticação local: `gh auth login -h github.com`.
 - [ ] Confirmar `gh auth status` sem token inválido.
-- [ ] Garantir acesso do GitHub MCP ao repositório `EduSobreiraa/Disciplina-PRO`.
-- [ ] Repetir leitura de commits pelo MCP após ajustar o acesso.
+- [x] Garantir acesso do GitHub MCP ao repositório `EduSobreiraa/Disciplina-PRO`.
+- [x] Repetir leitura de commits pelo MCP após ajustar o acesso.
 - [ ] Restringir o token do MCP somente ao repositório do projeto.
 - [ ] Conceder `Metadata: read`.
 - [ ] Conceder `Contents: read/write` para branches e arquivos.
@@ -31,19 +31,19 @@
 - [ ] Manter `Administration`, exclusão de repositório e gestão de secrets sem escrita automática.
 - [ ] Avaliar um GitHub MCP complementar para Actions, branch protection e security alerts.
 
-Estado verificado: o MCP atual expõe leitura/escrita de arquivos, branches, issues, PRs, reviews e merge, mas retornou `Not Found` ao consultar o repositório. Não há ferramentas expostas para listar execuções do Actions, configurar branch protection ou consultar Dependabot/CodeQL/secret scanning.
+Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, branches, issues, PRs, reviews e merge. Não há ferramentas expostas para listar execuções do Actions, configurar branch protection ou consultar Dependabot/CodeQL/secret scanning. O `gh` local ainda requer nova autenticação.
 
 ## 3. Segurança do repositório
 
-- [ ] Ativar Dependabot para npm, GitHub Actions e Docker.
-- [ ] Ativar CodeQL para JavaScript/TypeScript.
+- [ ] Reavaliar Dependabot quando o plano/repositório oferecer o fluxo desejado; por enquanto usar `npm audit` local e no CI.
+- [ ] Reavaliar CodeQL quando disponível no plano atual.
 - [ ] Ativar secret scanning e push protection, conforme disponibilidade.
 - [ ] Criar `.github/workflows/ci.yml` durante B0.
 - [ ] Configurar checks obrigatórios antes de proteger `main`.
 - [ ] Impedir force push em `main`.
 - [ ] Adotar feature branches e pull requests durante o backend.
-- [ ] Criar `.env.example` sem valores secretos.
-- [ ] Confirmar que `.env`, dumps, certificados e tokens estão no `.gitignore`.
+- [x] Criar `.env.example` sem valores secretos.
+- [x] Confirmar que `.env`, dumps, certificados e tokens estão no `.gitignore`.
 
 ## 4. MCPs recomendados
 
@@ -71,32 +71,32 @@ Estado verificado: o MCP atual expõe leitura/escrita de arquivos, branches, iss
 
 ## 6. Fundação técnica planejada — B0
 
-- [ ] Criar `backend/` com NestJS + TypeScript.
-- [ ] Criar package raiz com workspaces para `frontend` e `backend`.
-- [ ] Instalar e fixar versões das dependências.
+- [x] Criar `backend/` com NestJS + TypeScript.
+- [x] Criar package raiz com workspaces para `frontend` e `backend`.
+- [x] Instalar dependências e gerar lockfile único na raiz.
 - [ ] Criar configuração tipada por ambiente.
 - [ ] Criar `compose.yaml` com PostgreSQL e health check.
 - [ ] Adicionar Prisma, `@prisma/adapter-pg` e `pg`.
 - [ ] Criar `PrismaModule`/adapter sem expor Prisma aos controllers.
-- [ ] Configurar `ValidationPipe` global.
+- [x] Configurar `ValidationPipe` global.
 - [ ] Configurar filtro padronizado de exceções.
-- [ ] Configurar Helmet, CORS, limites de payload e throttling inicial.
-- [ ] Configurar logging estruturado e request ID.
-- [ ] Criar endpoint de health check.
-- [ ] Gerar OpenAPI com Swagger.
+- [x] Configurar Helmet, CORS e throttling inicial; limite explícito de payload permanece pendente.
+- [x] Configurar logging estruturado e redação de headers sensíveis; request ID explícito permanece pendente.
+- [x] Criar endpoint de health check inicial da API.
+- [x] Gerar OpenAPI com Swagger.
 - [ ] Configurar testes unitários e integração com PostgreSQL real.
-- [ ] Criar comandos de lint, typecheck, test, build e migration check.
+- [x] Criar comandos de lint, typecheck, test e build; migration check depende do Prisma schema.
 
 ## 7. Dependências previstas
 
-- [ ] NestJS: `@nestjs/common`, `@nestjs/core`, `@nestjs/platform-express`, `@nestjs/config`.
-- [ ] DTOs: `class-validator`, `class-transformer`.
-- [ ] Banco: `prisma`, `@prisma/client`, `@prisma/adapter-pg`, `pg`.
-- [ ] Segurança: `helmet`, `@nestjs/throttler`.
+- [x] NestJS: `@nestjs/common`, `@nestjs/core`, `@nestjs/platform-express`, `@nestjs/config`.
+- [x] DTOs: `class-validator`, `class-transformer`.
+- [x] Banco: `prisma`, `@prisma/client`, `@prisma/adapter-pg`, `pg`.
+- [x] Segurança: `helmet`, `@nestjs/throttler`.
 - [ ] Autenticação futura: `@nestjs/passport`, `passport`, `passport-jwt`, `@nestjs/jwt`, `argon2`.
-- [ ] Logging: `nestjs-pino`, `pino`, `pino-pretty` apenas no desenvolvimento.
-- [ ] Contratos: `@nestjs/swagger`.
-- [ ] Testes: Jest, Supertest e Testcontainers ou estratégia equivalente com PostgreSQL real.
+- [x] Logging: `nestjs-pino`, `pino`, `pino-pretty` apenas no desenvolvimento.
+- [x] Contratos: `@nestjs/swagger`.
+- [ ] Testes: Jest e Supertest instalados; Testcontainers ou estratégia equivalente com PostgreSQL real permanece pendente.
 
 ## 8. Serviços externos — não bloquear B0
 
