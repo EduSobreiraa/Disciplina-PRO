@@ -14,6 +14,7 @@ Já estão disponíveis:
 - catálogo de programas;
 - tracker mensal de comportamentos em “Minha evolução”;
 - ritual diário com abertura, execução, fechamento, revisão semanal e timer 30/30;
+- gamificação com ledger de XP, níveis, conquistas e histórico de transações;
 - grade verde/vermelha e justificativas;
 - Projeto 66 com ciclo, registro diário, checklist e tracker;
 - meditação, respiração, Novo Eu, modo crise e dia difícil;
@@ -105,6 +106,7 @@ Plataforma:
 /app
 /app/programas
 /app/ritual
+/app/conquistas
 /app/minha-evolucao
 /app/perfil
 ```
@@ -143,7 +145,7 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. integrar gamificação e eventos idempotentes no frontend;
+1. migrar missões e conteúdo do protocolo do Disciplina PRO;
 2. iniciar o backend modular NestJS;
 3. substituir repositories locais pela API real.
 

@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { AppProvider } from './app/providers/AppProvider'
+import { GamificationProvider } from './modules/gamification/GamificationProvider'
 import App from './App.jsx'
 import './index.css'
 
@@ -9,7 +10,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <AppProvider>
-        <App />
+        <GamificationProvider><App /></GamificationProvider>
       </AppProvider>
     </BrowserRouter>
   </StrictMode>,

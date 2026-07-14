@@ -50,3 +50,7 @@ Manter a matriz de quatro larguras, ausência de overflow, alvos de toque adequa
 ## Extensão F7 — Ritual diário
 
 Em 14/07/2026, a rota `/app/ritual` foi adicionada e aprovada nas quatro larguras da matriz. Foram confirmados persistência do checklist, início, pausa e retomada do timer após reload, ausência de overflow, alvos mínimos de 44 px e console sem erros.
+
+## Extensão F8 — Gamificação
+
+Em 14/07/2026, a rota `/app/conquistas` foi aprovada nas quatro larguras. Foram validados concessão idempotente, compensação ao desfazer, nova concessão ao refazer, persistência após reload, integração com tracker e Projeto 66, desbloqueio de conquistas e atualização do saldo. Não houve overflow, alvo interativo menor que 44 px ou erro de console.

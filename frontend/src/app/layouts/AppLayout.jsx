@@ -1,16 +1,19 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAppContext } from '../providers/app-context'
+import { useGamification } from '../../modules/gamification/gamification-context'
 
 const links = [
   { to: '/app', label: 'Visão geral', end: true },
   { to: '/app/ritual', label: 'Ritual do dia' },
   { to: '/app/programas', label: 'Programas' },
   { to: '/app/minha-evolucao', label: 'Minha evolução' },
+  { to: '/app/conquistas', label: 'Conquistas' },
   { to: '/app/perfil', label: 'Perfil' },
 ]
 
 export function AppLayout() {
   const { user, tenant, membership } = useAppContext()
+  const gamification = useGamification()
 
   return (
     <div className="app-shell">
@@ -23,8 +26,8 @@ export function AppLayout() {
         </div>
         <div className="war-user">
           <div className="xp-panel">
-            <span className="xp-medal">🥉</span>
-            <div><small>Nível 1</small><strong>RECRUTA · <em>0 XP</em></strong><span className="xp-track"><i /></span></div>
+            <span className="xp-medal">{gamification.level.medal}</span>
+            <div><small>Nível {gamification.level.level}</small><strong>{gamification.level.name} · <em>{gamification.xp} XP</em></strong><span className="xp-track"><i style={{ width: `${gamification.progress}%` }} /></span></div>
           </div>
           <div className="war-identity"><div><strong>{user.name}</strong><small>{membership.role} · {tenant.name}</small></div><span className="war-avatar">EP</span></div>
         </div>

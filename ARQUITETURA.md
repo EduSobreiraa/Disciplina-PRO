@@ -366,6 +366,8 @@ Conquistas iniciais: primeira atividade, primeiro dia completo, sequências de 7
 
 As regras ficam em código no MVP. Streak é derivado de `DailyRecord` e poderá futuramente ser mantido como projeção.
 
+Na fundação frontend, `gamification` implementa o mesmo princípio por meio de um ledger local temporário: componentes publicam uma ação com chave de origem, o domínio registra a concessão uma única vez e ações desfeitas geram transações compensatórias. Saldo, nível e progresso nunca são persistidos como fonte primária. O adapter local será substituído pela API sem mover regras para os componentes.
+
 ## 13. Eventos internos
 
 A operação principal é separada de suas consequências:
@@ -498,7 +500,7 @@ frontend/src/
 └── main.jsx
 ```
 
-Rotas atuais da plataforma: `/login`, `/app`, `/app/ritual`, `/app/programas`, `/app/programas/projeto66`, `/app/minha-evolucao` e `/app/perfil`.
+Rotas atuais da plataforma: `/login`, `/app`, `/app/ritual`, `/app/conquistas`, `/app/programas`, `/app/programas/projeto66`, `/app/minha-evolucao` e `/app/perfil`.
 
 O Projeto 66 possui módulo próprio. O frontend poderá usar repositórios simulados ou `localStorage` durante a fundação, desde que componentes não dependam diretamente do mecanismo de persistência.
 
@@ -611,6 +613,7 @@ Implementação do monolito NestJS, schema Prisma, autenticação, tenants, conv
 | 14/07/2026 | F6 concluída: tracker comportamental com central de justificativas, rankings, dias perfeitos, backup validado e teste Playwright mobile-first. |
 | 14/07/2026 | Auditoria completa do frontend aprovada em 12 rotas e quatro viewports (320, 375, 768 e 1440 px), com correções de overflow e alvos de toque; evidências registradas em `docs/AUDITORIA_FRONTEND.md`. |
 | 14/07/2026 | F7 concluída: ritual diário separado em módulo próprio, com fatos por data, quatro etapas, timer 30/30 persistente e conclusão idempotente preparada para gamificação futura. |
+| 14/07/2026 | F8 concluída: gamificação frontend centralizada em ledger append-only; saldo, nível e progresso são derivados, ações desfeitas geram compensações e conquistas são fatos persistidos. |
 
 ## 21. Versionamento e documentação
 

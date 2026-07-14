@@ -401,15 +401,30 @@ Implementado em 14/07/2026:
 - regras puras cobertas por testes;
 - validação Playwright em 320, 375, 768 e 1440 px, sem overflow ou alvos menores que 44 px.
 
+### F8 — Gamificação (concluída)
+
+Implementado em 14/07/2026:
+
+- ledger local append-only de transações de XP;
+- saldo, contagens, nível e progresso derivados das transações;
+- compensações negativas ao desfazer ações, preservando o histórico;
+- chaves de origem para impedir concessão duplicada;
+- tracker, ritual e Projeto 66 integrados ao domínio de gamificação;
+- níveis e XP reais no header da plataforma;
+- tela `/app/conquistas` com badges e histórico de transações;
+- conquistas persistidas como fatos após o primeiro desbloqueio;
+- quatro testes de domínio aprovados, incluindo ledger e níveis;
+- validação Playwright em 320, 375, 768 e 1440 px.
+
 ## 8. Próximo incremento de implementação
 
-O próximo incremento será a integração inicial de gamificação:
+O próximo incremento será a F9 — Missões e Protocolo do Disciplina PRO:
 
-1. criar ledger local de transações de XP, sem armazenar somente saldo;
-2. emitir eventos idempotentes a partir do tracker e do ritual;
-3. refletir nível e XP reais no shell;
-4. implementar conquistas iniciais sem acoplá-las aos componentes;
-5. preparar os contratos para substituição pelos módulos de gamificação e eventos internos do backend.
+1. migrar o catálogo de missões ativas;
+2. derivar o progresso das missões a partir dos fatos existentes;
+3. migrar o conteúdo informativo do protocolo;
+4. evitar uma segunda fonte de verdade para XP ou conquistas;
+5. concluir a migração funcional do protótipo Disciplina PRO antes do backend.
 
 ## 9. Matriz de validação
 
