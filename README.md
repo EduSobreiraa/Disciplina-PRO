@@ -36,6 +36,7 @@ Documentos principais:
 
 - [Arquitetura do produto](ARQUITETURA.md)
 - [Inventário e plano de migração do frontend](docs/MIGRACAO_FRONTEND.md)
+- [Auditoria do frontend](docs/AUDITORIA_FRONTEND.md)
 
 ## Estrutura atual
 
@@ -43,6 +44,7 @@ Documentos principais:
 .
 ├── ARQUITETURA.md
 ├── docs/
+│   ├── AUDITORIA_FRONTEND.md
 │   └── MIGRACAO_FRONTEND.md
 ├── backend/                   # backend planejado
 └── frontend/

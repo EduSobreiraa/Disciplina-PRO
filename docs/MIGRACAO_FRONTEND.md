@@ -378,6 +378,15 @@ Conclusão em 14/07/2026:
 
 Integrações com gamificação e API permanecem nas fases próprias e não bloqueiam a conclusão visual/funcional da migração local.
 
+Auditoria transversal concluída em 14/07/2026:
+
+- todas as 12 rotas verificadas em 320, 375, 768 e 1440 px;
+- fluxos locais de ciclo, checklist, registro, meditação e Novo Eu exercitados;
+- persistência objetiva e privada confirmada após recarregamento;
+- overflow do catálogo em 320 px e alvos de toque corrigidos;
+- console sem erros, lint, testes e build aprovados;
+- relatório completo em `docs/AUDITORIA_FRONTEND.md`.
+
 ## 8. Próximo incremento de implementação
 
 O próximo incremento de código será a F7 — rituais do Disciplina PRO:
@@ -405,3 +414,5 @@ Para cada fatia:
 - [ ] lint aprovado;
 - [ ] build aprovado;
 - [ ] arquitetura e este inventário atualizados.
+
+A checklist acima é aplicada a cada nova fatia. O estado transversal verificado em 14/07/2026 está documentado em `AUDITORIA_FRONTEND.md`; itens dependentes de backend, dispositivos físicos ou tecnologia assistiva permanecem pendentes até suas fases próprias.
