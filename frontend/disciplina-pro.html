@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disciplina PRO — Sala de Guerra | Spark Inteligência Corporativa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="toast-container" id="toasts"></div>
+<!-- ===== HEADER ===== -->
+<header class="tarja">
+  <div class="tarja-inner">
+    <div class="tarja-esq">
+      <div class="rotulo">⚡ Modo Operação — Vendedor Tarja Preta®</div>
+      <h1>Disciplina <span>PRO</span></h1>
+    </div>
+    <div class="tarja-dir">
+      <div class="xp-badge">
+        <div class="xp-icon" id="nivelEmoji">🥉</div>
+        <div class="xp-info">
+          <div class="xp-nome">Vendedor: <input class="nome-input" id="nomeResp" value="GUERREIRO" aria-label="Nome"></div>
+          <div class="xp-nivel">Nível <span id="nivelLabel">1 — Recruta</span></div>
+        </div>
+        <div>
+          <div class="xp-barra-wrap">
+            <div class="xp-label"><span>XP: <span id="xpAtual">0</span></span><span>→ <span id="xpProximo">500</span></span></div>
+            <div class="xp-barra"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="data-hoje" id="dataHoje"></div>
+    </div>
+  </div>
+</header>
+
+<!-- STREAK -->
+<div class="streak-banner streak-hidden" id="streakBanner">
+  <span class="streak-fire">🔥</span>
+  <span class="streak-num" id="streakNum">0</span>
+  <div class="streak-txt"><b>dias perfeitos consecutivos</b><br>Sequência ativa — não quebre agora!</div>
+</div>
+
+<div class="wrap">
+
+  <!-- NAVEGAÇÃO -->
+  <nav class="nav-tabs" role="tablist">
+    <button class="tab-btn ativa" data-tab="dashboard" onclick="trocarTab('dashboard')">▣ Dashboard</button>
+    <button class="tab-btn" data-tab="ritual" onclick="trocarTab('ritual')">⚡ Ritual do Dia</button>
+    <button class="tab-btn" data-tab="missoes" onclick="trocarTab('missoes')">🎯 Missões</button>
+    <button class="tab-btn" data-tab="badges" onclick="trocarTab('badges')">🏅 Conquistas</button>
+    <button class="tab-btn" data-tab="protocolo" onclick="trocarTab('protocolo')">⚔ Protocolo</button>
+  </nav>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section id="tab-dashboard">
+    <div class="kpis" id="kpis"></div>
+    <div class="meses" id="meses" role="tablist"></div>
+    <div class="painel-box">
+      <div class="painel-scroll">
+        <table class="painel" id="tabela"></table>
+      </div>
+      <div class="barra-acoes">
+        <button class="btn primario" onclick="adicionarComportamento()">+ Comportamento</button>
+        <button class="btn" onclick="exportarDados()">⤓ Backup</button>
+        <button class="btn" onclick="document.getElementById('importFile').click()">⤒ Importar</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarDados(event)">
+        <button class="btn" onclick="limparMes()">Limpar mês</button>
+        <div class="legenda">
+          <span><i class="quad v"></i> Cumprido</span>
+          <span><i class="quad r"></i> Não cumprido</span>
+          <span><i class="quad n"></i> Clique para marcar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="cartao"><h3>Pontos <span>fortes</span></h3><div id="rankTop"></div></div>
+      <div class="cartao"><h3>Frentes de <span>batalha</span></h3><div id="rankBottom"></div></div>
+    </div>
+
+    <div class="cartao" style="margin-top:12px">
+      <h3>Justificativas — <span id="justMesNome"></span></h3>
+      <div id="listaJust"></div>
+    </div>
+
+    <p class="aviso">▸ Clique: vazio → verde → vermelho → vazio. Vermelho sem justificativa é proibido (Lei nº 6). +10 XP por comportamento verde · +50 XP por dia perfeito.</p>
+  </section>
+
+  <!-- ============ RITUAL DO DIA ============ -->
+  <section id="tab-ritual" style="display:none">
+    <h2 class="secao-titulo">Ritual do <span>Dia</span></h2>
+    <p class="secao-lema">Disciplina não se cobra no fim do mês. Se conquista célula por célula.</p>
+
+    <!-- Timer 30/30 -->
+    <div class="timer-3030">
+      <div class="t-num" id="timer3030Display">30:00</div>
+      <div class="t-info">
+        <div class="t-titulo">⚡ Protocolo WhatsApp 30/30</div>
+        <div class="t-desc">A cada 30 minutos: verifique mensagens, responda pendências, marque o ciclo. Três ciclos perdidos = comportamento vermelho automático.</div>
+        <div class="timer-3030-btns">
+          <button class="btn primario" id="btnTimer" onclick="toggleTimer()">▶ Iniciar ciclo</button>
+          <button class="btn" onclick="resetTimer()">↺ Resetar</button>
+        </div>
+        <div class="ciclos-wrap" id="ciclosDots"></div>
+      </div>
+    </div>
+
+    <!-- Ritual Abertura -->
+    <div class="rituais-wrap">
+      <div class="ritual-card">
+        <div class="ritual-hora">07:50 — 08:05 · Abertura (15 min)</div>
+        <div class="ritual-titulo">🌅 Abertura do Dia de Guerra</div>
+        <div id="progresso-abertura" class="ritual-hoje-progress" style="width:0%"></div>
+        <div class="ritual-hoje-pct" id="pct-abertura">0% concluído</div>
+        <div class="ritual-checklist" id="check-abertura">
+          <label class="check-item" onclick="marcarCheck(this,'abertura')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Leitura do painel de ontem:</b> abra o dashboard, marque toda célula vazia. Vazio é mentira por omissão.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'abertura')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Declaração dos comportamentos:</b> leia em voz alta cada comportamento do dia. O cérebro executa o que a boca declara.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'abertura')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Comportamento crítico:</b> eleja 1 comportamento que esteve vermelho ontem e declare-o prioridade inegociável hoje.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'abertura')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Check de agenda:</b> comportamentos com horário fixo já têm alarme programado no celular?</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Execução -->
+      <div class="ritual-card verde">
+        <div class="ritual-hora">Durante o expediente · Execução em tempo real</div>
+        <div class="ritual-titulo">⚙ Regra de Ouro: marcou na hora, venceu o dia</div>
+        <div id="progresso-execucao" class="ritual-hoje-progress" style="width:0%"></div>
+        <div class="ritual-hoje-pct" id="pct-execucao">0% concluído</div>
+        <div class="ritual-checklist" id="check-execucao">
+          <label class="check-item" onclick="marcarCheck(this,'execucao')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Marcação imediata:</b> cumpriu o comportamento → marca verde na hora. Não confie na memória das 18h.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'execucao')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>WhatsApp 30/30:</b> use o timer acima. Três ciclos perdidos = vermelho sem negociação.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'execucao')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Elogiar 3 pessoas (regra 1-1-1):</b> um pela manhã, um pós-almoço, um antes das 17h. Elogio acumulado soa falso.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'execucao')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Feedback diário:</b> mínimo 1 conversa estruturada (fato + impacto + próximo passo) com um colaborador.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'execucao')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Meta batida:</b> acompanhe o número em tempo real. Venda perdida registrada na hora, não na memória.</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Fechamento -->
+      <div class="ritual-card ouro">
+        <div class="ritual-hora">17:30 — 17:50 · Fechamento (20 min)</div>
+        <div class="ritual-titulo">📋 Fechamento e Prestação de Contas</div>
+        <div id="progresso-fechamento" class="ritual-hoje-progress" style="width:0%"></div>
+        <div class="ritual-hoje-pct" id="pct-fechamento">0% concluído</div>
+        <div class="ritual-checklist" id="check-fechamento">
+          <label class="check-item" onclick="marcarCheck(this,'fechamento')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Auditoria da coluna do dia:</b> percorra todos os comportamentos. Verde ou vermelho — sem branco.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'fechamento')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Justificativa de cada vermelho:</b> escreva a causa real em uma frase. Vermelho sem causa não fecha o dia.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'fechamento')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Pendências:</b> liste o que ficou pendente e o dono de cada uma para amanhã.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'fechamento')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Vendas perdidas:</b> registre com motivo real (preço, estoque, atendimento, follow-up).</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'fechamento')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Leitura do placar:</b> % de disciplina subiu, manteve ou caiu? Um número, uma consequência, uma decisão.</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Semanal -->
+      <div class="ritual-card roxa">
+        <div class="ritual-hora">Sexta-feira · 16:00 — 16:45 · Ritual Semanal</div>
+        <div class="ritual-titulo">⚔ Sala de Guerra Semanal</div>
+        <div id="progresso-semanal" class="ritual-hoje-progress" style="width:0%"></div>
+        <div class="ritual-hoje-pct" id="pct-semanal">0% concluído</div>
+        <div class="ritual-checklist" id="check-semanal">
+          <label class="check-item" onclick="marcarCheck(this,'semanal')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Leitura horizontal:</b> 3 vermelhos no mesmo comportamento = padrão, não acidente. Exige plano de correção.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'semanal')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Agrupamento de justificativas:</b> por tipo (processo, pessoa, sistema, demanda). Causa mais recorrente = alvo nº 1.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'semanal')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Celebração pública:</b> comportamento 100% verde da semana anunciado para a equipe. O que é celebrado, se repete.</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'semanal')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Compromisso da próxima semana:</b> declare por escrito a meta de % (sempre igual ou maior).</span>
+          </label>
+          <label class="check-item" onclick="marcarCheck(this,'semanal')">
+            <div class="check-box">✓</div>
+            <span class="check-txt"><b>Backup semanal:</b> exportar dados e arquivar na pasta do mês.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISSÕES ============ -->
+  <section id="tab-missoes" style="display:none">
+    <h2 class="secao-titulo">Missões <span>Ativas</span></h2>
+    <p class="secao-lema">Complete missões para ganhar XP e desbloquear conquistas.</p>
+    <div class="missoes-grid" id="missoes-grid"></div>
+  </section>
+
+  <!-- ============ CONQUISTAS ============ -->
+  <section id="tab-badges" style="display:none">
+    <h2 class="secao-titulo">Sala de <span>Conquistas</span></h2>
+    <p class="secao-lema">Badges desbloqueados são evidência pública de disciplina real.</p>
+
+    <div class="grid-3" style="margin-bottom:18px">
+      <div class="cartao" style="text-align:center">
+        <div style="font-family:'Anton',sans-serif;font-size:38px;color:var(--ouro)" id="xpTotal">0</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--cinza)">XP Total</div>
+      </div>
+      <div class="cartao" style="text-align:center">
+        <div style="font-family:'Anton',sans-serif;font-size:38px;color:var(--verde)" id="badgesTotal">0</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--cinza)">Conquistas</div>
+      </div>
+      <div class="cartao" style="text-align:center">
+        <div style="font-family:'Anton',sans-serif;font-size:38px;color:var(--roxo)" id="nivelAtualDisplay">1</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--cinza)">Nível</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cinza);margin-bottom:10px">Escala de Níveis</h3>
+    <div class="nivel-wrap" id="nivelWrap"></div>
+
+    <h3 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cinza);margin:20px 0 0">Todas as Conquistas</h3>
+    <div class="badges-grid" id="badges-grid"></div>
+  </section>
+
+  <!-- ============ PROTOCOLO ============ -->
+  <section id="tab-protocolo" style="display:none">
+    <h2 class="secao-titulo">Critérios de <span>Pontuação</span></h2>
+    <p class="secao-lema">O painel não mede intenção. Mede comportamento entregue.</p>
+    <table class="tabela-criterio">
+      <thead><tr><th>Faixa</th><th>Status</th><th>Consequência</th></tr></thead>
+      <tbody>
+        <tr><td class="faixa f-verde">90–100%</td><td>Tarja Preta — elite</td><td>Reconhecimento público + registro histórico de performance.</td></tr>
+        <tr><td class="faixa f-ouro">75–89%</td><td>Em evolução</td><td>Eleger 1 comportamento crítico por semana para subir de faixa.</td></tr>
+        <tr><td class="faixa f-vermelho">< 75%</td><td>Zona de risco</td><td>Reunião individual com liderança + plano de correção de 7 dias por escrito.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="secao-titulo">As 6 Leis do <span>Painel</span></h2>
+    <div class="regra"><div class="regra-num">1</div><div><b>Célula vazia não existe.</b><p>Todo dia útil termina com todas as células marcadas. Em branco é covardia estatística.</p></div></div>
+    <div class="regra"><div class="regra-num">2</div><div><b>Vermelho não é vergonha. Vermelho escondido é.</b><p>Quem pinta vermelho com coragem hoje, pinta verde com consistência amanhã.</p></div></div>
+    <div class="regra"><div class="regra-num">3</div><div><b>O dono do painel é quem executa.</b><p>Marcação feita pelo próprio responsável. Liderança audita; não preenche. Autorresponsabilidade é o primeiro comportamento invisível.</p></div></div>
+    <div class="regra"><div class="regra-num">4</div><div><b>Sequência vale mais que pico.</b><p>Um dia 100% verde isolado vale menos que dez dias a 90%. Sequência é o termômetro real.</p></div></div>
+    <div class="regra"><div class="regra-num">5</div><div><b>O painel sobe para a Sala de Guerra.</b><p>Toda sexta o % do mês é levado à reunião semanal. O que não é medido não é gerenciado.</p></div></div>
+    <div class="regra"><div class="regra-num">6</div><div><b>Vermelho sem justificativa não existe.</b><p>Toda célula vermelha exige a causa real. Na Sala de Guerra, causas repetidas viram plano de correção — não viram desculpa.</p></div></div>
+
+    <p class="aviso">▸ Protocolo Sala de Guerra — Spark Inteligência Corporativa · O Incendiário. Adapte horários ao turno mantendo: abertura → execução → fechamento.</p>
+  </section>
+
+</div><!-- fim wrap -->
+
+<!-- MODAL JUSTIFICATIVA -->
+<div class="modal-fundo" id="modalJust" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-rotulo">⚠ Comportamento não cumprido</div>
+    <h4>Justificar o vermelho</h4>
+    <div class="modal-ctx" id="modalCtx"></div>
+    <textarea id="modalTexto" placeholder="Qual foi a causa real? (ex.: pico de atendimento, sistema fora do ar, ausência de colaborador...)"></textarea>
+    <div class="modal-dica">Justifique com fato, não com desculpa. Causa registrada vira plano de correção na Sala de Guerra.</div>
+    <div class="modal-acoes">
+      <button class="btn" onclick="fecharModal(false)">Depois</button>
+      <button class="btn primario" onclick="fecharModal(true)">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="rodape">
+  <span>Disciplina PRO · <b>O Incendiário</b> · Spark Inteligência Corporativa</span>
+  <span>Sala de Guerra · 2026</span>
+</footer>
+
+<script>
+"use strict";
+
+/* ========== CONSTANTES ========== */
+const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const ANO = 2026;
+
+const COMPORTAMENTOS_PADRAO = [
+  "Meta batida",
+  "Conferir relatório de estoque",
+  "Organização e estética da empresa",
+  "Acompanhamento de presença",
+  "Comunicação assertiva",
+  "Feedback diário (equipe/colaborador)",
+  "Elogiar 3 pessoas",
+  "Acompanhamento WhatsApp 30/30",
+  "Acompanhamento de pendências",
+  "Relatório de vendas perdidas"
+];
+
+const NIVEIS = [
+  {nivel:1, nome:"Recruta",     emoji:"🥉", xpMin:0,    xpMax:499},
+  {nivel:2, nome:"Prospector",  emoji:"🎯", xpMin:500,  xpMax:999},
+  {nivel:3, nome:"Fechador",    emoji:"🔥", xpMin:1000, xpMax:1999},
+  {nivel:4, nome:"Caçador",     emoji:"⚡", xpMin:2000, xpMax:3499},
+  {nivel:5, nome:"Elite",       emoji:"💎", xpMin:3500, xpMax:5999},
+  {nivel:6, nome:"Tarja Preta", emoji:"🏆", xpMin:6000, xpMax:Infinity},
+];
+
+const BADGES_DEF = [
+  {id:"primeiro_verde",  icon:"🌱", nome:"Primeira Vitória",  desc:"Marque seu 1º comportamento verde",        check:s=>s.totalVerdes>=1},
+  {id:"dia_perfeito_1",  icon:"⭐", nome:"Dia Perfeito",      desc:"Complete 1 dia 100% verde",                check:s=>s.diasPerfeitos>=1},
+  {id:"sequencia_3",     icon:"🔥", nome:"Em Chamas",         desc:"3 dias perfeitos seguidos",                check:s=>s.melhorSequencia>=3},
+  {id:"sequencia_7",     icon:"💥", nome:"Semana de Fogo",    desc:"7 dias perfeitos seguidos",                check:s=>s.melhorSequencia>=7},
+  {id:"sequencia_30",    icon:"🌋", nome:"Mês Invicto",       desc:"30 dias perfeitos seguidos",               check:s=>s.melhorSequencia>=30},
+  {id:"disciplina_90",   icon:"👑", nome:"Tarja Preta",       desc:"Atingir 90%+ de disciplina em 1 mês",     check:s=>s.melhorMes>=90},
+  {id:"disciplina_100",  icon:"💯", nome:"Perfeição",         desc:"100% de disciplina em qualquer mês",      check:s=>s.melhorMes>=100},
+  {id:"xp_1000",         icon:"💰", nome:"Acumulador",        desc:"Acumule 1.000 XP",                        check:s=>s.xp>=1000},
+  {id:"xp_5000",         icon:"🤑", nome:"Rico em Disciplina",desc:"Acumule 5.000 XP",                        check:s=>s.xp>=5000},
+  {id:"sem_vermelho_7",  icon:"🛡️", nome:"Escudo Verde",      desc:"7 dias sem nenhum vermelho",              check:s=>s.sequenciaAtual>=7},
+  {id:"comp_100",        icon:"🎖️", nome:"Mestre do Hábito",  desc:"1 comportamento com 100% no mês",         check:s=>s.temComp100},
+  {id:"60_dias",         icon:"🗓️", nome:"Dois Meses",        desc:"60+ dias marcados",                       check:s=>s.diasMarcados>=60},
+  {id:"ritual_completo", icon:"🧠", nome:"Ritualizado",       desc:"Complete um ritual de dia inteiro",       check:s=>s.rituaisCompletos>=1},
+  {id:"nivel_3",         icon:"🚀", nome:"Fechador",          desc:"Atingir nível 3",                         check:s=>s.nivel>=3},
+  {id:"nivel_6",         icon:"🏆", nome:"Lenda",             desc:"Atingir nível Tarja Preta",               check:s=>s.nivel>=6},
+  {id:"100_verdes",      icon:"💚", nome:"Centena Verde",     desc:"Acumule 100 comportamentos verdes",       check:s=>s.totalVerdes>=100},
+  {id:"500_verdes",      icon:"🟢", nome:"Exército Verde",    desc:"Acumule 500 comportamentos verdes",       check:s=>s.totalVerdes>=500},
+  {id:"justif_all",      icon:"📋", nome:"Causas Claras",     desc:"Justifique 10+ vermelhos com causa real", check:s=>s.justificativasDadas>=10},
+];
+
+const MISSOES_DEF = [
+  {id:"m_7dias",    nome:"Semana de Elite",      desc:"Faça 7 dias perfeitos este mês",         emoji:"🎯", cor:"var(--verde)",  xp:200, check:(s,ms)=>ms.diasPerfeitos,    meta:7},
+  {id:"m_seq5",     nome:"Chama Viva",           desc:"Mantenha 5 dias perfeitos seguidos",     emoji:"🔥", cor:"var(--brasa)",  xp:150, check:(s,ms)=>s.sequenciaAtual,    meta:5},
+  {id:"m_90pct",    nome:"Zona Elite",           desc:"Atingir 90% de disciplina este mês",     emoji:"👑", cor:"var(--ouro)",   xp:250, check:(s,ms)=>ms.pct||0,           meta:90},
+  {id:"m_comp_all", nome:"Nenhuma Fraqueza",     desc:"Todo comportamento ≥ 80% este mês",      emoji:"💪", cor:"var(--azul)",   xp:180, check:(s,ms)=>ms.minComp||0,       meta:80},
+  {id:"m_xp500",    nome:"Caçador de XP",        desc:"Acumule 500 XP esta semana",             emoji:"⚡", cor:"var(--roxo)",   xp:100, check:(s,ms)=>s.xpSemana||0,       meta:500},
+  {id:"m_20dias",   nome:"Presença Constante",   desc:"Marque 20+ dias este mês",               emoji:"📅", cor:"var(--verde)",  xp:120, check:(s,ms)=>ms.diasMarcados||0,  meta:20},
+  {id:"m_100v",     nome:"Centena Verde",        desc:"Acumule 100 verdes neste ano",            emoji:"💚", cor:"var(--verde)",  xp:300, check:(s,ms)=>s.totalVerdes,       meta:100},
+  {id:"m_ritual",   nome:"Máquina de Rituais",   desc:"Complete 5 checklists de ritual",        emoji:"🧠", cor:"var(--brasa)",  xp:100, check:(s,ms)=>s.rituaisCompletos,  meta:5},
+];
+
+/* ========== ARMAZENAMENTO ========== */
+const armazem = (() => {
+  let memoria = {};
+  try {
+    const t = "__t__"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
+    return { get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v) };
+  } catch(e) {
+    return { get:k=>memoria[k]??null, set:(k,v)=>{memoria[k]=v} };
+  }
+})();
+
+const CHAVE = "disciplinaPRO2026";
+
+function estadoNovo(){
+  return {
+    nome: "GUERREIRO",
+    comportamentos: [...COMPORTAMENTOS_PADRAO],
+    marcas: Array.from({length:12},()=>({})),
+    justificativas: Array.from({length:12},()=>({})),
+    xp: 0,
+    xpSemana: 0,
+    badges: [],
+    rituaisCompletos: 0,
+    badgeDatas: {},
+    checks: { abertura:{}, execucao:{}, fechamento:{}, semanal:{} }
+  };
+}
+
+function migrar(d){
+  if(!Array.isArray(d.justificativas)||d.justificativas.length!==12) d.justificativas=Array.from({length:12},()=>({}));
+  if(typeof d.xp!=='number') d.xp=0;
+  if(!Array.isArray(d.badges)) d.badges=[];
+  if(!d.badgeDatas) d.badgeDatas={};
+  if(!d.checks) d.checks={abertura:{},execucao:{},fechamento:{},semanal:{}};
+  if(typeof d.rituaisCompletos!=='number') d.rituaisCompletos=0;
+  if(typeof d.xpSemana!=='number') d.xpSemana=0;
+  return d;
+}
+
+function carregar(){
+  try {
+    const bruto = armazem.get(CHAVE);
+    if(bruto){ const d=JSON.parse(bruto); if(d&&Array.isArray(d.comportamentos)&&Array.isArray(d.marcas)&&d.marcas.length===12) return migrar(d); }
+  } catch(e){}
+  return estadoNovo();
+}
+function salvar(){ try{ armazem.set(CHAVE,JSON.stringify(estado)); }catch(e){} }
+
+/* ========== ESTADO ========== */
+let estado = carregar();
+let mesAtivo = new Date().getMonth();
+const hoje = new Date();
+
+/* ========== UTILS ========== */
+const diasNoMes = m => new Date(ANO,m+1,0).getDate();
+const ehHoje = (m,d) => hoje.getFullYear()===ANO&&hoje.getMonth()===m&&hoje.getDate()===d;
+
+function statsMes(m){
+  const marcas=estado.marcas[m];
+  let verdes=0,vermelhos=0,diasMarcados=0;
+  const porComp=estado.comportamentos.map(()=>({v:0,r:0}));
+  const porDia=Array.from({length:diasNoMes(m)+1},()=>({v:0,r:0}));
+  for(const k in marcas){
+    const[ci,d]=k.split("-").map(Number);
+    if(ci>=estado.comportamentos.length||d>diasNoMes(m)) continue;
+    if(marcas[k]===1){verdes++;porComp[ci].v++;porDia[d].v++;}
+    else if(marcas[k]===2){vermelhos++;porComp[ci].r++;porDia[d].r++;}
+  }
+  const diasSet=new Set();
+  for(const k in marcas){ const[,d]=k.split("-").map(Number); diasSet.add(d); }
+  diasMarcados=diasSet.size;
+  const total=verdes+vermelhos;
+  const pct=total?Math.round(verdes/total*100):null;
+  let diasPerfeitos=0;
+  for(let d=1;d<=diasNoMes(m);d++){ const s=porDia[d]; if(s&&s.v>0&&s.r===0) diasPerfeitos++; }
+  let minComp=100;
+  porComp.forEach(c=>{ const t=c.v+c.r; if(t){ const p=Math.round(c.v/t*100); if(p<minComp) minComp=p; }});
+  return{verdes,vermelhos,total,pct,porComp,porDia,diasPerfeitos,diasMarcados,minComp};
+}
+
+function statsGlobais(){
+  let totalVerdes=0;
+  for(let m=0;m<12;m++) totalVerdes+=statsMes(m).verdes;
+  return{totalVerdes};
+}
+
+function sequenciaAtual(){
+  let seq=0;
+  let cursor=new Date(hoje);
+  const sHoje=(hoje.getFullYear()===ANO)?statsMes(hoje.getMonth()).porDia[hoje.getDate()]:null;
+  if(!sHoje||(sHoje.v===0&&sHoje.r===0)) cursor.setDate(cursor.getDate()-1);
+  while(cursor.getFullYear()===ANO){
+    const m=cursor.getMonth(),d=cursor.getDate();
+    const s=statsMes(m).porDia[d];
+    if(s&&s.v>0&&s.r===0){seq++;cursor.setDate(cursor.getDate()-1);}
+    else break;
+  }
+  return seq;
+}
+
+function melhorSequencia(){
+  let melhor=0,atual=0;
+  for(let m=0;m<12;m++){
+    const nd=diasNoMes(m);
+    for(let d=1;d<=nd;d++){
+      const s=statsMes(m).porDia[d];
+      if(s&&s.v>0&&s.r===0){atual++;if(atual>melhor)melhor=atual;}
+      else if(s&&(s.v>0||s.r>0)) atual=0;
+    }
+  }
+  return melhor;
+}
+
+function pctAno(){
+  let v=0,t=0;
+  for(let m=0;m<12;m++){const s=statsMes(m);v+=s.verdes;t+=s.total;}
+  return t?Math.round(v/t*100):null;
+}
+
+function melhorMes(){
+  let melhor=0;
+  for(let m=0;m<12;m++){const s=statsMes(m);if(s.pct!==null&&s.pct>melhor)melhor=s.pct;}
+  return melhor;
+}
+
+function temComp100(){
+  for(let m=0;m<12;m++){
+    const s=statsMes(m);
+    for(const c of s.porComp){ if((c.v+c.r)>0&&c.r===0) return true; }
+  }
+  return false;
+}
+
+function justificativasDadas(){
+  let cnt=0;
+  for(let m=0;m<12;m++) cnt+=Object.keys(estado.justificativas[m]).filter(k=>estado.justificativas[m][k]).length;
+  return cnt;
+}
+
+function nivelAtual(){
+  for(let i=NIVEIS.length-1;i>=0;i--){ if(estado.xp>=NIVEIS[i].xpMin) return NIVEIS[i]; }
+  return NIVEIS[0];
+}
+
+function classePct(p){ return p>=90?"score-verde":(p>=75?"score-amarelo":"score-vermelho"); }
+
+/* ========== XP ========== */
+function ganharXP(qtd,motivo){
+  estado.xp+=qtd;
+  estado.xpSemana=(estado.xpSemana||0)+qtd;
+  salvar();
+  toast(`+${qtd} XP — ${motivo}`,'xp');
+  renderXP();
+  verificarBadges();
+}
+
+/* ========== TOAST ========== */
+function toast(msg,tipo=''){
+  const el=document.createElement('div');
+  el.className=`toast ${tipo}`;
+  el.textContent=msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+
+/* ========== BADGES ========== */
+function verificarBadges(){
+  const seqA=sequenciaAtual();
+  const ms=statsMes(mesAtivo);
+  const glob=statsGlobais();
+  const nivel=nivelAtual();
+  const statsCheck={
+    xp:estado.xp, nivel:nivel.nivel,
+    totalVerdes:glob.totalVerdes,
+    diasPerfeitos:ms.diasPerfeitos,
+    sequenciaAtual:seqA,
+    melhorSequencia:melhorSequencia(),
+    melhorMes:melhorMes(),
+    temComp100:temComp100(),
+    diasMarcados:ms.diasMarcados,
+    rituaisCompletos:estado.rituaisCompletos||0,
+    justificativasDadas:justificativasDadas(),
+    xpSemana:estado.xpSemana||0
+  };
+  BADGES_DEF.forEach(b=>{
+    if(estado.badges.includes(b.id)) return;
+    if(b.check(statsCheck,ms)){
+      estado.badges.push(b.id);
+      estado.badgeDatas=estado.badgeDatas||{};
+      estado.badgeDatas[b.id]=new Date().toLocaleDateString('pt-BR');
+      salvar();
+      toast(`🏅 Conquista desbloqueada: ${b.nome}`,'badge');
+    }
+  });
+  renderBadges();
+  renderNivel();
+}
+
+/* ========== RENDER XP / NÍVEL ========== */
+function renderXP(){
+  const n=nivelAtual();
+  const xpProxNivel=n.xpMax===Infinity?estado.xp:n.xpMax;
+  const pct=n.xpMax===Infinity?100:Math.round(((estado.xp-n.xpMin)/(n.xpMax-n.xpMin))*100);
+  document.getElementById('xpAtual').textContent=estado.xp;
+  document.getElementById('xpProximo').textContent=n.xpMax===Infinity?'MAX':xpProxNivel;
+  document.getElementById('xpFill').style.width=pct+'%';
+  document.getElementById('nivelLabel').textContent=`${n.nivel} — ${n.nome}`;
+  document.getElementById('nivelEmoji').textContent=n.emoji;
+  const xpTotal=document.getElementById('xpTotal');
+  if(xpTotal) xpTotal.textContent=estado.xp;
+  const nivelAtualDisplay=document.getElementById('nivelAtualDisplay');
+  if(nivelAtualDisplay) nivelAtualDisplay.textContent=n.nivel;
+}
+
+function renderNivel(){
+  const n=nivelAtual();
+  const el=document.getElementById('nivelWrap');
+  if(!el) return;
+  el.innerHTML=NIVEIS.map(nv=>`
+    <div class="nivel-linha">
+      <div class="nivel-emoji">${nv.emoji}</div>
+      <div class="nivel-info">
+        <div class="nivel-nome">Nível ${nv.nivel} — ${nv.nome}</div>
+        <div class="nivel-req">${nv.xpMin} XP${nv.xpMax===Infinity?'+':' — '+nv.xpMax+' XP'}</div>
+      </div>
+      ${n.nivel===nv.nivel?'<span class="nivel-atual-badge">✓ Você está aqui</span>':''}
+    </div>`).join('');
+}
+
+function renderBadges(){
+  const el=document.getElementById('badges-grid');
+  if(!el) return;
+  el.innerHTML=BADGES_DEF.map(b=>{
+    const earned=estado.badges.includes(b.id);
+    const data=earned&&estado.badgeDatas&&estado.badgeDatas[b.id]?estado.badgeDatas[b.id]:'';
+    return`<div class="badge-card ${earned?'earned':''}">
+      <span class="badge-icon">${b.icon}</span>
+      <div class="badge-name">${b.nome}</div>
+      <div class="badge-desc">${b.desc}</div>
+      ${data?`<div class="badge-data">${data}</div>`:''}
+    </div>`;
+  }).join('');
+  const total=document.getElementById('badgesTotal');
+  if(total) total.textContent=estado.badges.length;
+}
+
+/* ========== MISSÕES ========== */
+function renderMissoes(){
+  const el=document.getElementById('missoes-grid');
+  if(!el) return;
+  const ms=statsMes(mesAtivo);
+  const glob=statsGlobais();
+  const seqA=sequenciaAtual();
+  const statsCheck={sequenciaAtual:seqA,totalVerdes:glob.totalVerdes,rituaisCompletos:estado.rituaisCompletos||0,xpSemana:estado.xpSemana||0,xp:estado.xp};
+  el.innerHTML=MISSOES_DEF.map(m=>{
+    const progresso=m.check(statsCheck,ms);
+    const pct=Math.min(100,Math.round((progresso/m.meta)*100));
+    const completa=pct>=100;
+    return`<div class="missao-card ${completa?'completa':''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <div class="missao-titulo">Missão ${completa?'✓':''}</div>
+          <div class="missao-nome">${m.nome}</div>
+        </div>
+        <span class="missao-emoji">${m.emoji}</span>
+      </div>
+      <div class="missao-desc">${m.desc}</div>
+      <div class="missao-progresso">
+        <div class="missao-barra-wrap"><div class="missao-barra" style="width:${pct}%;background:${m.cor}"></div></div>
+        <div class="missao-pct" style="color:${m.cor}">${progresso}/${m.meta}</div>
+      </div>
+      <div class="missao-xp">+${m.xp} XP ao completar</div>
+    </div>`;
+  }).join('');
+}
+
+/* ========== RITUAIS / CHECKLISTS ========== */
+function marcarCheck(el,tipo){
+  const box=el.querySelector('.check-box');
+  const checks=document.querySelectorAll(`#check-${tipo} .check-item`);
+  const jaMarcado=el.classList.contains('marcado');
+  if(jaMarcado){
+    el.classList.remove('marcado');
+    box.classList.remove('marcado');
+  } else {
+    el.classList.add('marcado');
+    box.classList.add('marcado');
+    ganharXP(15,'Etapa de ritual concluída');
+  }
+  // calcular progresso
+  const total=checks.length;
+  const feitos=[...checks].filter(c=>c.classList.contains('marcado')).length;
+  const pct=Math.round(feitos/total*100);
+  const barEl=document.getElementById(`progresso-${tipo}`);
+  const pctEl=document.getElementById(`pct-${tipo}`);
+  if(barEl) barEl.style.width=pct+'%';
+  if(pctEl) pctEl.textContent=`${pct}% concluído`;
+  if(feitos===total){
+    estado.rituaisCompletos=(estado.rituaisCompletos||0)+1;
+    salvar();
+    ganharXP(50,'Ritual completo!');
+    toast('🧠 Ritual completo! +50 XP bonus','badge');
+    verificarBadges();
+  }
+}
+
+/* ========== TIMER 30/30 ========== */
+let timerInterval=null;
+let timerSecs=30*60;
+let cicloAtual=0;
+const TOTAL_CICLOS=8;
+
+function renderCiclos(){
+  const el=document.getElementById('ciclosDots');
+  if(!el) return;
+  el.innerHTML=Array.from({length:TOTAL_CICLOS},(_,i)=>
+    `<div class="ciclo-dot ${i<cicloAtual?'feito':(i===cicloAtual?'atual':'')}">${i<cicloAtual?'✓':i+1}</div>`
+  ).join('');
+}
+
+function toggleTimer(){
+  if(timerInterval){
+    clearInterval(timerInterval);
+    timerInterval=null;
+    document.getElementById('btnTimer').textContent='▶ Retomar';
+    document.getElementById('btnTimer').classList.remove('ativo');
+  } else {
+    document.getElementById('btnTimer').textContent='⏸ Pausar';
+    document.getElementById('btnTimer').classList.add('ativo');
+    timerInterval=setInterval(()=>{
+      timerSecs--;
+      if(timerSecs<=0){
+        clearInterval(timerInterval);
+        timerInterval=null;
+        cicloAtual++;
+        renderCiclos();
+        ganharXP(25,'Ciclo 30/30 completo!');
+        toast(`🎯 Ciclo ${cicloAtual} concluído! +25 XP`,'streak');
+        if(cicloAtual<TOTAL_CICLOS){
+          timerSecs=30*60;
+          document.getElementById('btnTimer').textContent='▶ Próximo ciclo';
+          document.getElementById('btnTimer').classList.remove('ativo');
+        } else {
+          toast('🏆 Todos os ciclos do dia completos! Guerreiro!','badge');
+          document.getElementById('btnTimer').textContent='✓ Dia completo';
+          document.getElementById('btnTimer').disabled=true;
+        }
+      }
+      updateTimerDisplay();
+    },1000);
+  }
+}
+
+function resetTimer(){ clearInterval(timerInterval);timerInterval=null;timerSecs=30*60;cicloAtual=0;renderCiclos();updateTimerDisplay();document.getElementById('btnTimer').textContent='▶ Iniciar ciclo';document.getElementById('btnTimer').classList.remove('ativo'); }
+function updateTimerDisplay(){ const m=Math.floor(timerSecs/60);const s=timerSecs%60;document.getElementById('timer3030Display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+
+/* ========== DASHBOARD KPIs ========== */
+function renderKpis(){
+  const s=statsMes(mesAtivo);
+  const seq=sequenciaAtual();
+  const ano=pctAno();
+  let melhor='—',pior='—';
+  if(s.total>0){
+    let mi=-1,ma=-1,mMin=101,mMax=-1;
+    s.porComp.forEach((c,i)=>{const t=c.v+c.r;if(!t)return;const p=c.v/t*100;if(p>mMax){mMax=p;ma=i}if(p<mMin){mMin=p;mi=i}});
+    if(ma>=0)melhor=estado.comportamentos[ma];
+    if(mi>=0)pior=estado.comportamentos[mi];
+  }
+  const n=nivelAtual();
+  const kpis=[
+    {cls:s.pct===null?'k-vermelho':(s.pct>=90?'k-verde':(s.pct>=75?'k-ouro':'k-vermelho')),num:s.pct===null?'—':s.pct+'<small>%</small>',rot:`Disciplina · ${MESES[mesAtivo]}`,extra:`<b>${s.verdes}</b> verdes · <b>${s.vermelhos}</b> vermelhos`},
+    {cls:'k-brasa',num:seq,rot:'Sequência de dias perfeitos',extra:seq>=5?'<b>Em chamas 🔥</b>':'Dia perfeito = tudo verde'},
+    {cls:'k-verde',num:ano===null?'—':ano+'<small>%</small>',rot:'Disciplina acumulada 2026',extra:'Meta: <b>≥ 90%</b>'},
+    {cls:'k-ouro',num:estado.xp,rot:'XP Total',extra:`Nível ${n.nivel} — <b>${n.nome}</b>`},
+    {cls:'k-verde',num:estado.badges.length,rot:'Conquistas',extra:`${BADGES_DEF.length - estado.badges.length} restantes`},
+  ];
+  document.getElementById('kpis').innerHTML=kpis.map(k=>`<div class="kpi ${k.cls}"><div class="kpi-num">${k.num}</div><div class="kpi-rotulo">${k.rot}</div><div class="kpi-extra">${k.extra}</div></div>`).join('');
+  // streak banner
+  if(seq>=3){
+    document.getElementById('streakBanner').classList.remove('streak-hidden');
+    document.getElementById('streakNum').textContent=seq;
+  } else {
+    document.getElementById('streakBanner').classList.add('streak-hidden');
+  }
+}
+
+function renderMeses(){
+  document.getElementById('meses').innerHTML=MESES.map((nome,i)=>{
+    const s=statsMes(i);
+    const pct=s.pct===null?'':` <span class="pct ${classePct(s.pct)}">${s.pct}%</span>`;
+    return`<button class="mes-btn ${i===mesAtivo?'ativo':''}" role="tab" aria-selected="${i===mesAtivo}" onclick="trocarMes(${i})">${nome.slice(0,3)}${pct}</button>`;
+  }).join('');
+}
+
+function renderTabela(){
+  const nd=diasNoMes(mesAtivo);
+  const s=statsMes(mesAtivo);
+  let html=`<thead><tr><th style="width:30px">N.</th><th class="col-comp">Comportamento</th>`;
+  for(let d=1;d<=nd;d++) html+=`<th class="${ehHoje(mesAtivo,d)?'hoje':''}">${d}</th>`;
+  html+=`<th style="min-width:58px">Score</th><th style="width:30px"></th></tr></thead><tbody>`;
+  estado.comportamentos.forEach((nome,ci)=>{
+    html+=`<tr><td class="num">${ci+1}</td><td class="comp"><input value="${nome.replace(/"/g,'&quot;')}" onchange="renomear(${ci},this.value)"></td>`;
+    for(let d=1;d<=nd;d++){
+      const k=ci+"-"+d;
+      const v=estado.marcas[mesAtivo][k];
+      const just=estado.justificativas[mesAtivo][k];
+      const cls=v===1?"ok":(v===2?("falha"+(just?" just":"")):"");
+      const titulo=(v===2&&just)?` title="${just.replace(/"/g,'&quot;')}"` : "";
+      html+=`<td class="dia ${ehHoje(mesAtivo,d)?'col-hoje':''}"><button class="celula ${cls}"${titulo} onclick="alternar(${ci},${d})"></button></td>`;
+    }
+    const c=s.porComp[ci],t=c.v+c.r;
+    const pct=t?Math.round(c.v/t*100):null;
+    html+=`<td class="score ${pct===null?'':classePct(pct)}">${pct===null?'—':pct+'%'}</td><td class="num"><button class="celula" style="height:28px" onclick="removerComportamento(${ci})">✕</button></td></tr>`;
+  });
+  html+=`</tbody><tfoot><tr><td></td><td class="rotulo">Dia perfeito</td>`;
+  for(let d=1;d<=nd;d++){
+    const sd=s.porDia[d];
+    if(!sd||(sd.v===0&&sd.r===0)) html+="<td>·</td>";
+    else if(sd.r===0) html+="<td class='dia-ok'>✔</td>";
+    else html+="<td class='dia-falha'>✘</td>";
+  }
+  html+=`<td></td><td></td></tr></tfoot>`;
+  document.getElementById('tabela').innerHTML=html;
+}
+
+function renderRankings(){
+  const s=statsMes(mesAtivo);
+  const linhas=estado.comportamentos.map((nome,i)=>{
+    const c=s.porComp[i],t=c.v+c.r;
+    return{nome,pct:t?Math.round(c.v/t*100):null,t};
+  }).filter(l=>l.pct!==null);
+  const top=[...linhas].sort((a,b)=>b.pct-a.pct).slice(0,5);
+  const bottom=[...linhas].sort((a,b)=>a.pct-b.pct).slice(0,5);
+  const linhaHtml=l=>{
+    const cls=l.pct>=90?'':(l.pct>=75?'media':'baixa');
+    return`<div class="rank-linha"><div class="rank-nome" title="${l.nome}">${l.nome}</div><div class="rank-trilho"><div class="rank-barra ${cls}" style="width:${l.pct}%"></div></div><div class="rank-pct ${classePct(l.pct)}">${l.pct}%</div></div>`;
+  };
+  document.getElementById('rankTop').innerHTML=top.length?top.map(linhaHtml).join(''):"<p class='vazio'>Comece a marcar o painel.</p>";
+  document.getElementById('rankBottom').innerHTML=bottom.length?bottom.map(linhaHtml).join(''):"<p class='vazio'>Sem dados ainda.</p>";
+}
+
+function renderJustificativas(){
+  document.getElementById('justMesNome').textContent=MESES[mesAtivo];
+  const marcas=estado.marcas[mesAtivo];
+  const justs=estado.justificativas[mesAtivo];
+  const itens=[];
+  for(const k in marcas){
+    if(marcas[k]!==2) continue;
+    const[ci,d]=k.split("-").map(Number);
+    if(ci>=estado.comportamentos.length) continue;
+    itens.push({k,ci,d,texto:justs[k]||""});
+  }
+  itens.sort((a,b)=>a.d-b.d||a.ci-b.ci);
+  const pendentes=itens.filter(i=>!i.texto).length;
+  document.getElementById('listaJust').innerHTML=itens.length
+    ?(pendentes?`<p class="vazio" style="margin-bottom:10px">⚠ <b style="color:var(--ouro)">${pendentes}</b> vermelho(s) sem justificativa — Lei nº 6.</p>`:'')
+      +itens.map(i=>`
+      <div class="just-item">
+        <div class="just-dia">${String(i.d).padStart(2,'0')}<small>${MESES[mesAtivo].slice(0,3).toUpperCase()}</small></div>
+        <div class="just-corpo"><div class="just-comp">${estado.comportamentos[i.ci]}</div><div class="just-texto ${i.texto?'':'pendente'}">${i.texto?i.texto.replace(/</g,'&lt;'):"Pendente — registre a causa real."}</div></div>
+        <div class="just-acoes"><button class="btn mini" onclick="abrirModal(${i.ci},${i.d})">${i.texto?'Editar':'Justificar'}</button></div>
+      </div>`).join('')
+    :"<p class='vazio'>Nenhum vermelho neste mês. Painel limpo é painel de elite.</p>";
+}
+
+/* ========== MODAL ========== */
+let modalAlvo=null;
+function abrirModal(ci,d){
+  modalAlvo={ci,d};
+  document.getElementById('modalCtx').textContent=`${estado.comportamentos[ci]} · dia ${String(d).padStart(2,'0')} de ${MESES[mesAtivo]}`;
+  document.getElementById('modalTexto').value=estado.justificativas[mesAtivo][ci+"-"+d]||'';
+  document.getElementById('modalJust').style.display='flex';
+  setTimeout(()=>document.getElementById('modalTexto').focus(),30);
+}
+function fecharModal(gravar){
+  if(gravar&&modalAlvo){
+    const k=modalAlvo.ci+"-"+modalAlvo.d;
+    const txt=document.getElementById('modalTexto').value.trim();
+    if(txt){estado.justificativas[mesAtivo][k]=txt;ganharXP(5,'Justificativa registrada');}
+    else delete estado.justificativas[mesAtivo][k];
+    salvar();
+  }
+  modalAlvo=null;
+  document.getElementById('modalJust').style.display='none';
+  render();
+}
+document.getElementById('modalJust').addEventListener('click',e=>{ if(e.target===document.getElementById('modalJust')) fecharModal(false); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&document.getElementById('modalJust').style.display==='flex') fecharModal(false); });
+
+/* ========== AÇÕES ========== */
+let ultimoXpMarca={};
+function alternar(ci,d){
+  const k=ci+"-"+d;
+  const atual=estado.marcas[mesAtivo][k]||0;
+  const prox=(atual+1)%3;
+  const seqAntes=sequenciaAtual();
+  if(prox===0){
+    delete estado.marcas[mesAtivo][k];
+    delete estado.justificativas[mesAtivo][k];
+  } else {
+    estado.marcas[mesAtivo][k]=prox;
+  }
+  // XP
+  if(prox===1){
+    ganharXP(10,'Comportamento verde');
+    // checar dia perfeito
+    const s=statsMes(mesAtivo);
+    const dp=s.porDia[d];
+    if(dp&&dp.v>0&&dp.r===0&&estado.comportamentos.length>=3){
+      ganharXP(50,'Dia perfeito! 🏆');
+      toast(`⭐ Dia ${d} perfeito! +50 XP bonus`,'streak');
+    }
+  } else if(prox===2){
+    toast('🔴 Registre a justificativa — vermelho sem causa é Lei nº 6','falha');
+  }
+  salvar();
+  render();
+  if(prox===2) abrirModal(ci,d);
+  // checar novo streak
+  const seqDepois=sequenciaAtual();
+  if(seqDepois>seqAntes&&seqDepois%5===0) toast(`🔥 ${seqDepois} dias perfeitos seguidos!`,'streak');
+  verificarBadges();
+  renderMissoes();
+}
+
+function trocarMes(i){ mesAtivo=i; render(); }
+
+function trocarTab(tab){
+  document.querySelectorAll('[id^="tab-"]').forEach(s=>s.style.display='none');
+  document.getElementById('tab-'+tab).style.display='';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('ativa',b.dataset.tab===tab));
+  if(tab==='missoes') renderMissoes();
+  if(tab==='badges'){renderBadges();renderNivel();}
+}
+
+function renomear(ci,valor){
+  estado.comportamentos[ci]=valor.trim()||("Comportamento "+(ci+1));
+  salvar();renderRankings();renderKpis();
+}
+
+function adicionarComportamento(){
+  if(estado.comportamentos.length>=20){alert("Limite de 20 comportamentos. Disciplina é foco, não volume.");return;}
+  estado.comportamentos.push("Novo comportamento");
+  salvar();render();
+}
+
+function removerComportamento(ci){
+  if(!confirm(`Remover "${estado.comportamentos[ci]}"?`)) return;
+  estado.comportamentos.splice(ci,1);
+  const reindex=mes=>{
+    const novo={};
+    for(const k in mes){const[i,d]=k.split("-").map(Number);if(i===ci)continue;novo[(i>ci?i-1:i)+"-"+d]=mes[k];}
+    return novo;
+  };
+  estado.marcas=estado.marcas.map(reindex);
+  estado.justificativas=estado.justificativas.map(reindex);
+  salvar();render();
+}
+
+function limparMes(){
+  if(!confirm(`Apagar marcações de ${MESES[mesAtivo]}?`)) return;
+  estado.marcas[mesAtivo]={};estado.justificativas[mesAtivo]={};
+  salvar();render();
+}
+
+function exportarDados(){
+  const blob=new Blob([JSON.stringify(estado,null,2)],{type:"application/json"});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`disciplina-pro-${estado.nome.toLowerCase()}-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();URL.revokeObjectURL(a.href);
+  ganharXP(10,'Backup realizado');
+}
+
+function importarDados(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(d&&Array.isArray(d.comportamentos)&&Array.isArray(d.marcas)&&d.marcas.length===12){
+        estado=migrar(d);salvar();render();
+        toast('Backup importado com sucesso.','xp');
+      } else alert("Arquivo inválido.");
+    }catch(e){alert("Não foi possível ler o arquivo.");}
+  };
+  r.readAsText(f);ev.target.value='';
+}
+
+/* ========== RENDER GERAL ========== */
+function render(){
+  document.getElementById('nomeResp').value=estado.nome;
+  renderKpis();renderMeses();renderTabela();renderRankings();renderJustificativas();
+  renderXP();renderBadges();
+}
+
+/* ========== INICIALIZAÇÃO ========== */
+document.getElementById('nomeResp').addEventListener('change',e=>{
+  estado.nome=e.target.value.trim()||'GUERREIRO';salvar();
+});
+
+document.getElementById('dataHoje').textContent=hoje.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+
+renderCiclos();
+render();
+verificarBadges();
+renderMissoes();
+</script>
+</body>
+</html>

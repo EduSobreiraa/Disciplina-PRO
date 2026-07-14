@@ -1,0 +1,2826 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="P66">
+<meta name="theme-color" content="#000000">
+<title>Protocolo 66 — O Incendiário</title>
+<style>
+/* ═══════════════════════════════════════
+   iOS DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  /* Brand */
+  --fire:   #FF6B00;
+  --amber:  #FF9500;
+  --gold:   #FFD60A;
+  --ember:  #FF3B30;
+  --ph1:    #FF6B00;
+  --ph2:    #BF5AF2;
+  --ph3:    #30D158;
+
+  /* iOS System Colors */
+  --ios-bg:         #000000;
+  --ios-bg2:        #1C1C1E;
+  --ios-bg3:        #2C2C2E;
+  --ios-bg4:        #3A3A3C;
+  --ios-separator:  rgba(84,84,88,0.65);
+  --ios-label:      #FFFFFF;
+  --ios-label2:     rgba(235,235,245,0.6);
+  --ios-label3:     rgba(235,235,245,0.3);
+  --ios-label4:     rgba(235,235,245,0.18);
+  --ios-fill:       rgba(120,120,128,0.36);
+  --ios-fill2:      rgba(120,120,128,0.32);
+  --ios-fill3:      rgba(118,118,128,0.24);
+  --ios-fill4:      rgba(116,116,128,0.18);
+
+  /* iOS Glass */
+  --glass:          rgba(28,28,30,0.72);
+  --glass-border:   rgba(255,255,255,0.08);
+  --glass-hi:       rgba(255,255,255,0.04);
+
+  /* Safe Areas */
+  --sat: env(safe-area-inset-top, 47px);
+  --sab: env(safe-area-inset-bottom, 34px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+
+  /* iOS Tab Bar Height */
+  --tabbar-h: 49px;
+  --tabbar-total: calc(var(--tabbar-h) + var(--sab));
+
+  /* Radii */
+  --r-xs:  6px;
+  --r-sm:  10px;
+  --r-md:  13px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-2xl: 28px;
+
+  /* iOS Springs */
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease:   cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ═══════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  background: var(--ios-bg);
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--ios-bg);
+  color: var(--ios-label);
+  font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  height: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════
+   SCREEN SYSTEM
+═══════════════════════════════════════ */
+.ios-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  bottom: var(--tabbar-total);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease);
+  will-change: transform, opacity;
+  overscroll-behavior: contain;
+}
+.ios-screen.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Dynamic Island spacer */
+.di-spacer {
+  height: calc(var(--sat) + 8px);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════
+   iOS NAVIGATION BAR
+═══════════════════════════════════════ */
+.ios-navbar {
+  position: sticky;
+  top: 0; z-index: 100;
+  padding: calc(var(--sat) + 4px) 20px 12px;
+  background: rgba(0,0,0,0.85);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--ios-separator);
+}
+
+.ios-navbar-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.ios-large-title {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.37px;
+  line-height: 1.15;
+  color: var(--ios-label);
+}
+
+.ios-large-title.gradient {
+  background: linear-gradient(135deg, var(--fire), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ios-nav-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fire);
+  letter-spacing: -0.08px;
+  margin-bottom: 2px;
+}
+
+.ios-nav-badge {
+  background: var(--ios-fill3);
+  border-radius: 12px;
+  padding: 5px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ios-label2);
+  letter-spacing: -0.08px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* ═══════════════════════════════════════
+   iOS TAB BAR
+═══════════════════════════════════════ */
+.ios-tabbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--tabbar-total);
+  padding-bottom: var(--sab);
+  background: rgba(0,0,0,0.88);
+  -webkit-backdrop-filter: saturate(180%) blur(30px);
+  backdrop-filter: saturate(180%) blur(30px);
+  border-top: 0.5px solid var(--ios-separator);
+  display: flex;
+  z-index: 1000;
+}
+
+.ios-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 0 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.18s var(--spring);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.ios-tab:active { transform: scale(0.88); }
+
+.ios-tab-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.ios-tab-icon svg {
+  width: 24px; height: 24px;
+  fill: var(--ios-label3);
+  transition: fill 0.2s var(--ease), transform 0.22s var(--spring);
+}
+
+.ios-tab.active .ios-tab-icon svg {
+  fill: var(--fire);
+  transform: scale(1.08);
+}
+
+.ios-tab-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.24px;
+  color: var(--ios-label3);
+  transition: color 0.2s;
+}
+.ios-tab.active .ios-tab-label { color: var(--fire); }
+
+/* ═══════════════════════════════════════
+   iOS CARD SYSTEM (Grouped Inset)
+═══════════════════════════════════════ */
+.ios-section {
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.ios-section-header {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: var(--ios-label2);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 18px 4px 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ios-grouped {
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+
+.ios-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  min-height: 44px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.1s;
+  -webkit-user-select: none; user-select: none;
+}
+.ios-row:active { background: var(--ios-fill4); }
+
+.ios-row::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 16px; right: 0;
+  height: 0.5px;
+  background: var(--ios-separator);
+}
+.ios-row:last-child::after { display: none; }
+
+.ios-row-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.ios-row-label {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.43px;
+  color: var(--ios-label);
+}
+
+.ios-row-sublabel {
+  font-size: 15px;
+  letter-spacing: -0.24px;
+  color: var(--ios-label2);
+  margin-top: 1px;
+}
+
+.ios-chevron {
+  color: var(--ios-label3);
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.ios-row-value {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.43px;
+  color: var(--ios-label2);
+  margin-right: 4px;
+}
+
+/* ═══════════════════════════════════════
+   HERO CARD — Signature Element
+═══════════════════════════════════════ */
+.hero-card {
+  margin: 12px 16px 8px;
+  border-radius: var(--r-2xl);
+  overflow: hidden;
+  position: relative;
+  background: var(--ios-bg2);
+  min-height: 200px;
+}
+
+.hero-card-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 110% 0%, rgba(255,107,0,0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at -10% 110%, rgba(255,61,0,0.14) 0%, transparent 60%);
+}
+
+.hero-card-inner {
+  position: relative;
+  padding: 20px 20px 16px;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.hero-streak-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.hero-streak-num {
+  font-size: 80px;
+  font-weight: 700;
+  letter-spacing: -4px;
+  line-height: 1;
+  background: linear-gradient(145deg, #FFFFFF 30%, rgba(255,107,0,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-streak-unit {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ios-label2);
+  letter-spacing: -0.43px;
+  padding-bottom: 10px;
+}
+
+.hero-streak-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ios-label2);
+  letter-spacing: -0.24px;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.hero-progress-ring {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 72px; height: 72px;
+}
+
+/* ═══════════════════════════════════════
+   KPI GRID
+═══════════════════════════════════════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.kpi-ios {
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-ios-val {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kpi-ios-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ios-label2);
+  letter-spacing: -0.08px;
+  line-height: 1.3;
+}
+
+.kpi-ios-sub {
+  font-size: 11px;
+  color: var(--ios-label3);
+  margin-top: 3px;
+}
+
+.kpi-icon-bg {
+  position: absolute;
+  bottom: -8px; right: -4px;
+  font-size: 52px;
+  opacity: 0.08;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════
+   GAUGE — iOS Activity Ring Style
+═══════════════════════════════════════ */
+.gauges-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 0 16px 4px;
+  margin-bottom: 8px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.gauges-scroll::-webkit-scrollbar { display: none; }
+
+.gauge-ios {
+  flex-shrink: 0;
+  width: 100px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-lg);
+  padding: 14px 10px 10px;
+  text-align: center;
+}
+
+.gauge-ring-wrap {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+
+.gauge-ring-svg {
+  width: 64px;
+  height: 64px;
+  transform: rotate(-90deg);
+}
+
+.gauge-ring-track {
+  fill: none;
+  stroke: rgba(255,255,255,0.07);
+  stroke-width: 5;
+}
+
+.gauge-ring-fill {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.4s cubic-bezier(0.34,1.2,0.64,1);
+}
+
+.gauge-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-ring-val {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #fff;
+  line-height: 1;
+}
+
+.gauge-ring-unit {
+  font-size: 9px;
+  color: var(--ios-label3);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.gauge-ios-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ios-label2);
+  margin-top: 8px;
+  letter-spacing: -0.1px;
+  line-height: 1.2;
+}
+
+/* ═══════════════════════════════════════
+   HEATMAP
+═══════════════════════════════════════ */
+.heatmap-ios {
+  margin: 0 16px 8px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  padding: 16px;
+}
+
+.heatmap-ios-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.24px;
+  color: var(--ios-label);
+  margin-bottom: 12px;
+}
+
+.heatmap-ios-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heatmap-ios-row {
+  display: flex;
+  gap: 3px;
+}
+
+.heatmap-ios-cell {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+  transition: transform 0.1s var(--spring);
+  cursor: pointer;
+}
+.heatmap-ios-cell:active { transform: scale(0.75); }
+
+/* ═══════════════════════════════════════
+   LINE CHART
+═══════════════════════════════════════ */
+.chart-ios {
+  margin: 0 16px 8px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  overflow: hidden;
+}
+
+.chart-ios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.chart-ios-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.24px;
+  color: var(--ios-label);
+}
+
+.chart-ios-val {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--fire);
+}
+
+/* ═══════════════════════════════════════
+   CHECKLIST — iOS Toggle Style
+═══════════════════════════════════════ */
+.check-ios-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  min-height: 52px;
+  cursor: pointer;
+  transition: background 0.1s;
+  position: relative;
+  -webkit-user-select: none; user-select: none;
+}
+.check-ios-row:active { background: rgba(255,255,255,0.04); }
+
+.check-ios-row::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 60px; right: 0;
+  height: 0.5px;
+  background: var(--ios-separator);
+}
+.check-ios-row:last-child::after { display: none; }
+
+.check-ios-circle {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--ios-fill);
+  margin-right: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.22s var(--spring);
+  background: transparent;
+}
+
+.check-ios-circle.checked {
+  background: var(--fire);
+  border-color: var(--fire);
+  transform: scale(1.05);
+}
+
+.check-ios-circle.checked::after {
+  content: '';
+  width: 6px; height: 10px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(42deg) translate(-1px, -1px);
+  display: block;
+}
+
+.check-ios-content { flex: 1; }
+.check-ios-main {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.43px;
+  color: var(--ios-label);
+  transition: color 0.2s;
+}
+.check-ios-main.checked { color: var(--ios-label3); text-decoration: line-through; }
+.check-ios-sub {
+  font-size: 13px;
+  color: var(--ios-label2);
+  letter-spacing: -0.08px;
+  margin-top: 1px;
+  line-height: 1.3;
+}
+
+/* Score pill */
+.score-pill-ios {
+  background: var(--ios-fill3);
+  border-radius: 20px;
+  padding: 5px 13px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.24px;
+  color: var(--ios-label2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s var(--spring);
+}
+.score-pill-ios.fire { background: rgba(255,107,0,0.25); color: var(--fire); }
+
+/* ═══════════════════════════════════════
+   SLIDERS — iOS Style
+═══════════════════════════════════════ */
+.slider-ios-card {
+  margin: 0 16px 8px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  padding: 16px;
+}
+
+.slider-ios-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.slider-ios-label {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.24px;
+  color: var(--ios-label);
+}
+
+.slider-ios-val {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  min-width: 28px;
+  text-align: right;
+  transition: color 0.2s;
+}
+
+.slider-ios {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  border-radius: 14px;
+  outline: none;
+  cursor: pointer;
+  background: var(--ios-bg3);
+  transition: background 0.1s;
+}
+
+.slider-ios::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.45), 0 0 0 0.5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.18s var(--spring), box-shadow 0.18s;
+}
+
+.slider-ios:active::-webkit-slider-thumb {
+  transform: scale(1.18);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(0,0,0,0.2);
+}
+
+/* ═══════════════════════════════════════
+   REGISTER HERO
+═══════════════════════════════════════ */
+.reg-day-hero {
+  margin: 12px 16px 8px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-2xl);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+}
+.reg-day-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 100% at 100% 50%, rgba(255,107,0,0.15), transparent);
+}
+.rdh-left { position: relative; }
+.rdh-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.5px; color: var(--fire); text-transform: uppercase; margin-bottom: 4px; }
+.rdh-num { font-size: 56px; font-weight: 800; letter-spacing: -3px; line-height: 1; color: #fff; }
+.rdh-of { font-size: 17px; font-weight: 500; color: var(--ios-label2); letter-spacing: -0.43px; margin-top: 2px; }
+.rdh-right { position: relative; text-align: right; }
+.rdh-phase { font-size: 13px; font-weight: 600; color: var(--ios-label3); letter-spacing: -0.08px; margin-bottom: 4px; }
+.rdh-date { font-size: 15px; font-weight: 500; color: var(--ios-label2); letter-spacing: -0.24px; }
+
+/* Placar live */
+.placar-ios {
+  margin: 0 16px 8px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.placar-ios-left {}
+.placar-ios-label { font-size: 13px; font-weight: 600; color: var(--ios-label2); letter-spacing: -0.08px; text-transform: uppercase; letter-spacing: 0.5px; }
+.placar-ios-status { font-size: 13px; color: var(--ios-label3); margin-top: 2px; }
+.placar-ios-val { font-size: 44px; font-weight: 800; letter-spacing: -2px; color: var(--fire); line-height: 1; }
+.placar-ios-max { font-size: 17px; font-weight: 400; color: var(--ios-label3); }
+
+/* Nota */
+.nota-ios-wrap { margin: 0 16px 8px; }
+.nota-ios {
+  width: 100%;
+  background: var(--ios-bg2);
+  border: none;
+  border-radius: var(--r-xl);
+  color: var(--ios-label);
+  font-family: -apple-system, 'SF Pro Text', sans-serif;
+  font-size: 17px;
+  letter-spacing: -0.43px;
+  line-height: 1.5;
+  padding: 14px 16px;
+  resize: none;
+  outline: none;
+  min-height: 88px;
+  -webkit-appearance: none;
+}
+.nota-ios::placeholder { color: var(--ios-label3); }
+
+/* Save button — iOS primary style */
+.save-ios {
+  display: block;
+  margin: 8px 16px 4px;
+  width: calc(100% - 32px);
+  background: var(--fire);
+  border: none;
+  border-radius: var(--r-xl);
+  color: #fff;
+  font-family: -apple-system, 'SF Pro Display', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.43px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.18s var(--spring), opacity 0.15s;
+  -webkit-user-select: none; user-select: none;
+}
+.save-ios:active { transform: scale(0.97); opacity: 0.88; }
+
+/* Destructive btn */
+.destroy-ios {
+  display: block;
+  margin: 0 16px;
+  width: calc(100% - 32px);
+  background: rgba(255,59,48,0.12);
+  border: none;
+  border-radius: var(--r-xl);
+  color: var(--ember);
+  font-family: -apple-system, 'SF Pro Text', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.43px;
+  padding: 14px;
+  cursor: pointer;
+  transition: transform 0.18s var(--spring), opacity 0.15s;
+}
+.destroy-ios:active { transform: scale(0.97); opacity: 0.75; }
+
+/* ═══════════════════════════════════════
+   TRACKER — iOS Calendar-Like
+═══════════════════════════════════════ */
+.tracker-ios-section { padding: 0 16px; margin-bottom: 8px; }
+
+.tracker-ios-phase-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: var(--ios-label2);
+  padding: 12px 0 8px;
+}
+
+.tracker-ios-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.tday {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ios-label3);
+  cursor: pointer;
+  transition: all 0.2s var(--spring);
+  -webkit-user-select: none; user-select: none;
+}
+.tday:active { transform: scale(0.82); }
+.tday.done-1 {
+  background: rgba(255,107,0,0.2);
+  color: var(--ph1);
+  font-weight: 700;
+}
+.tday.done-2 {
+  background: rgba(191,90,242,0.2);
+  color: var(--ph2);
+  font-weight: 700;
+}
+.tday.done-3 {
+  background: rgba(48,209,88,0.2);
+  color: var(--ph3);
+  font-weight: 700;
+}
+.tday.today-ring {
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.3);
+  color: #fff;
+}
+
+/* Progress ring card */
+.ring-card-ios {
+  margin: 12px 16px 8px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ring-large {
+  position: relative;
+  width: 88px; height: 88px;
+  flex-shrink: 0;
+}
+
+.ring-large svg {
+  width: 88px; height: 88px;
+  transform: rotate(-90deg);
+}
+
+.ring-large-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+.ring-large-pct {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -1px; color: #fff; line-height: 1;
+}
+
+.ring-large-label {
+  font-size: 9px; font-weight: 600;
+  color: var(--ios-label3); letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.ring-card-ios-right {}
+.ring-card-title {
+  font-size: 20px; font-weight: 700;
+  letter-spacing: -0.5px; color: #fff;
+  margin-bottom: 4px;
+}
+.ring-card-sub { font-size: 14px; color: var(--ios-label2); letter-spacing: -0.24px; line-height: 1.4; }
+
+/* Phase rings mini */
+.phase-rings-row {
+  display: flex; gap: 10px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+.phase-ring-card {
+  flex: 1;
+  background: var(--ios-bg2);
+  border-radius: var(--r-lg);
+  padding: 14px 10px;
+  text-align: center;
+}
+.phase-ring-num {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -1px; line-height: 1;
+  margin-bottom: 2px;
+}
+.phase-ring-sub { font-size: 11px; font-weight: 600; color: var(--ios-label3); letter-spacing: -0.1px; }
+
+/* ═══════════════════════════════════════
+   PROTOCOL — Expandable Cards
+═══════════════════════════════════════ */
+.proto-segment {
+  display: flex;
+  background: var(--ios-bg2);
+  border-radius: var(--r-lg);
+  padding: 2px;
+  margin: 12px 16px 0;
+}
+
+.proto-seg-btn {
+  flex: 1;
+  padding: 7px 4px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: var(--ios-label2);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  -webkit-user-select: none; user-select: none;
+  text-align: center;
+}
+
+.proto-seg-btn.active {
+  background: var(--ios-bg4);
+  color: var(--ios-label);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 0.5px 0.5px rgba(0,0,0,0.2);
+}
+
+.day-ios {
+  margin: 0 16px 8px;
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+
+.day-ios-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  gap: 12px;
+  -webkit-user-select: none; user-select: none;
+  min-height: 56px;
+}
+.day-ios-header:active { background: rgba(255,255,255,0.04); }
+
+.day-ios-num {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  width: 52px;
+  flex-shrink: 0;
+}
+
+.day-ios-info { flex: 1; }
+.day-ios-title { font-size: 16px; font-weight: 600; letter-spacing: -0.4px; color: var(--ios-label); line-height: 1.2; }
+.day-ios-tag { font-size: 12px; color: var(--ios-label3); margin-top: 2px; }
+
+.day-ios-chevron {
+  color: var(--ios-label3);
+  font-size: 12px;
+  transition: transform 0.25s var(--ease);
+}
+.day-ios-header.open .day-ios-chevron { transform: rotate(90deg); }
+
+.day-ios-body {
+  display: none;
+  padding: 4px 16px 16px;
+}
+.day-ios-body.open { display: block; }
+
+.day-ios-focus {
+  font-size: 15px;
+  letter-spacing: -0.24px;
+  color: var(--ios-label2);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+
+.day-ios-practice {
+  background: rgba(255,107,0,0.1);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  font-size: 13px;
+  letter-spacing: -0.08px;
+  color: var(--amber);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.day-ios-quote {
+  font-size: 13px;
+  color: var(--ios-label3);
+  letter-spacing: -0.08px;
+  font-style: italic;
+  border-left: 2px solid var(--ios-fill);
+  padding-left: 12px;
+  line-height: 1.45;
+}
+
+/* ═══════════════════════════════════════
+   HISTORY ROWS
+═══════════════════════════════════════ */
+.hist-ios {
+  background: var(--ios-bg2);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin: 0 16px 8px;
+}
+
+.hist-ios-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  min-height: 60px;
+  gap: 14px;
+  position: relative;
+}
+.hist-ios-row::after {
+  content: '';
+  position: absolute; bottom: 0; left: 60px; right: 0;
+  height: 0.5px;
+  background: var(--ios-separator);
+}
+.hist-ios-row:last-child::after { display: none; }
+
+.hist-day-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  flex-shrink: 0;
+}
+
+.hist-ios-content { flex: 1; }
+.hist-ios-title { font-size: 15px; font-weight: 600; letter-spacing: -0.24px; color: var(--ios-label); }
+.hist-ios-sub { font-size: 13px; color: var(--ios-label2); margin-top: 1px; }
+
+.hist-ios-placar {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-align: right;
+}
+.hist-ios-placar-max { font-size: 11px; color: var(--ios-label3); text-align: right; }
+
+/* ═══════════════════════════════════════
+   BANNER / CALLOUT
+═══════════════════════════════════════ */
+.callout-ios {
+  margin: 0 16px 8px;
+  background: rgba(255,107,0,0.1);
+  border-radius: var(--r-xl);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 0.5px solid rgba(255,107,0,0.2);
+}
+.callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.callout-text { font-size: 14px; letter-spacing: -0.24px; color: var(--ios-label); line-height: 1.5; }
+.callout-text strong { color: var(--fire); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   TOAST — iOS Notification Style
+═══════════════════════════════════════ */
+.toast-ios {
+  position: fixed;
+  top: calc(var(--sat) + 12px);
+  left: 16px; right: 16px;
+  background: rgba(44,44,46,0.95);
+  -webkit-backdrop-filter: saturate(180%) blur(30px);
+  backdrop-filter: saturate(180%) blur(30px);
+  border-radius: var(--r-2xl);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  transform: translateY(-120%);
+  opacity: 0;
+  transition: transform 0.42s var(--spring), opacity 0.3s;
+  pointer-events: none;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  border: 0.5px solid var(--glass-border);
+}
+.toast-ios.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.toast-ios-icon { font-size: 22px; flex-shrink: 0; }
+.toast-ios-content {}
+.toast-ios-title { font-size: 15px; font-weight: 700; letter-spacing: -0.24px; color: #fff; margin-bottom: 1px; }
+.toast-ios-body { font-size: 13px; color: var(--ios-label2); letter-spacing: -0.08px; }
+
+/* ═══════════════════════════════════════
+   SPACING & UTILS
+═══════════════════════════════════════ */
+.ios-spacer-top { height: calc(var(--sat) + 8px); }
+.ios-spacer-bottom { height: 24px; }
+.ios-divider { height: 0.5px; background: var(--ios-separator); margin: 4px 0; }
+
+/* Section header text */
+.ios-sh {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--ios-label2);
+  padding: 14px 20px 6px;
+}
+
+/* ═══════════════════════════════════════
+   SCROLLBAR HIDE
+═══════════════════════════════════════ */
+.ios-screen::-webkit-scrollbar { display: none; }
+
+  /* ── PERSONALIZAR SCREEN ── */
+  .cfg-item-list { margin-bottom:6px; }
+
+  .cfg-item-row {
+    display:flex; align-items:center; gap:10px;
+    background:var(--ios-bg2); border:0.5px solid var(--ios-separator);
+    border-radius:var(--r-md); padding:10px 12px;
+    margin-bottom:6px;
+  }
+
+  .cfg-item-row input {
+    flex:1; background:transparent; border:none;
+    color:var(--ios-label); font-family:-apple-system,sans-serif;
+    font-size:15px; letter-spacing:-0.24px; outline:none;
+  }
+
+  .cfg-item-row input::placeholder { color:var(--ios-label3); }
+
+  .cfg-item-sub {
+    width:100%; background:transparent; border:none;
+    color:var(--ios-label2); font-family:-apple-system,sans-serif;
+    font-size:13px; letter-spacing:-0.08px; outline:none;
+    margin-top:4px; border-top:0.5px solid var(--ios-separator);
+    padding-top:6px;
+  }
+
+  .cfg-item-sub::placeholder { color:var(--ios-label3); }
+
+  .cfg-del-btn {
+    background:rgba(255,59,48,0.12); border:none; border-radius:6px;
+    color:var(--ember); font-size:14px; font-weight:700;
+    width:28px; height:28px; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform 0.15s;
+  }
+  .cfg-del-btn:active { transform:scale(0.85); }
+
+  .cfg-add-btn {
+    width:calc(100% - 0px); background:rgba(255,255,255,0.04);
+    border:0.5px dashed var(--ios-separator); border-radius:var(--r-md);
+    color:var(--ios-label3); font-size:14px; font-weight:600;
+    padding:11px; cursor:pointer; letter-spacing:-0.24px;
+    transition:all 0.15s;
+  }
+  .cfg-add-btn:active { background:rgba(255,255,255,0.08); }
+
+  .cfg-proto-section { padding:0 16px; }
+
+  .cfg-proto-card {
+    background:var(--ios-bg2); border:0.5px solid var(--ios-separator);
+    border-radius:var(--r-xl); margin-bottom:8px; overflow:hidden;
+  }
+
+  .cfg-proto-header {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 14px;
+  }
+
+  .cfg-proto-header input {
+    flex:1; background:transparent; border:none;
+    color:var(--ios-label); font-family:-apple-system,sans-serif;
+    font-size:15px; font-weight:600; letter-spacing:-0.24px; outline:none;
+  }
+
+  .cfg-proto-body { padding:0 14px 12px; }
+
+  .cfg-proto-field {
+    width:100%; background:var(--ios-bg3); border:none;
+    border-radius:var(--r-sm); color:var(--ios-label);
+    font-family:-apple-system,sans-serif; font-size:13px;
+    letter-spacing:-0.08px; line-height:1.5;
+    padding:10px 12px; resize:none; outline:none;
+    min-height:52px; margin-top:6px; display:block;
+  }
+  .cfg-proto-field::placeholder { color:var(--ios-label3); }
+
+  .cfg-proto-field-label {
+    font-size:10px; font-weight:700; letter-spacing:0.5px;
+    text-transform:uppercase; color:var(--ios-label3);
+    margin-top:8px; display:block;
+  }
+
+  .cfg-frase-row {
+    display:flex; align-items:center; gap:8px;
+    background:var(--ios-bg2); border:0.5px solid var(--ios-separator);
+    border-radius:var(--r-md); padding:10px 12px; margin-bottom:6px;
+  }
+  .cfg-frase-row input {
+    flex:1; background:transparent; border:none;
+    color:var(--ios-label); font-family:-apple-system,sans-serif;
+    font-size:15px; font-style:italic; letter-spacing:-0.24px; outline:none;
+  }
+  .cfg-frase-row input::placeholder { color:var(--ios-label3); font-style:italic; }
+
+  /* Missões diárias no registro */
+  .missao-row {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px; border-bottom:0.5px solid var(--ios-separator);
+  }
+  .missao-row:last-child { border-bottom:none; }
+  .missao-tag {
+    font-size:10px; font-weight:700; letter-spacing:0.5px;
+    text-transform:uppercase; min-width:66px; flex-shrink:0;
+  }
+  .missao-input {
+    flex:1; background:transparent; border:none;
+    color:var(--ios-label); font-family:-apple-system,sans-serif;
+    font-size:15px; letter-spacing:-0.24px; outline:none;
+  }
+  .missao-input::placeholder { color:var(--ios-label3); }
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1: HOJE / DASHBOARD
+══════════════════════════════════════════ -->
+<div class="ios-screen active" id="s-home">
+  <div class="ios-spacer-top"></div>
+
+  <!-- Navbar -->
+  <div style="padding: 4px 20px 14px; display:flex; align-items:flex-end; justify-content:space-between;">
+    <div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--fire);margin-bottom:3px">O Incendiário × Spark</div>
+      <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff;line-height:1">Protocolo <span style="background:linear-gradient(135deg,var(--fire),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">66</span></div>
+    </div>
+    <div class="ios-nav-badge" id="h-day-badge">Dia 1</div>
+  </div>
+
+  <!-- Hero Streak Card -->
+  <div class="hero-card">
+    <div class="hero-card-bg"></div>
+
+    <!-- Progress Ring -->
+    <svg class="hero-progress-ring" viewBox="0 0 72 72">
+      <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="5"/>
+      <circle id="ring-prog" cx="36" cy="36" r="28" fill="none"
+        stroke="url(#ringGrad)" stroke-width="5" stroke-linecap="round"
+        stroke-dasharray="175.9" stroke-dashoffset="175.9"
+        transform="rotate(-90 36 36)"
+        style="transition:stroke-dashoffset 1.4s cubic-bezier(0.34,1.2,0.64,1)"/>
+      <defs>
+        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FF6B00"/>
+          <stop offset="100%" stop-color="#FFD60A"/>
+        </linearGradient>
+      </defs>
+      <text x="36" y="33" text-anchor="middle" font-size="13" font-weight="800" fill="white" dy="0" font-family="-apple-system,sans-serif">
+        <tspan id="ring-pct-txt">0</tspan>
+      </text>
+      <text x="36" y="44" text-anchor="middle" font-size="7.5" fill="rgba(235,235,245,0.4)" font-family="-apple-system,sans-serif">%</text>
+    </svg>
+
+    <div class="hero-card-inner">
+      <div class="hero-eyebrow">🔥 Sequência Atual</div>
+      <div class="hero-streak-row">
+        <div class="hero-streak-num" id="h-streak">0</div>
+        <div class="hero-streak-unit">dias</div>
+      </div>
+      <div class="hero-streak-label" id="h-streak-msg">Registre seu primeiro dia e acenda a chama.</div>
+    </div>
+  </div>
+
+  <!-- Callout Banner -->
+  <div class="callout-ios" id="h-callout">
+    <div class="callout-icon" id="h-callout-icon">🔥</div>
+    <div class="callout-text" id="h-callout-text"><strong>Bem-vindo ao Comando.</strong> Vá em Registrar para salvar seu primeiro dia e ativar o dashboard.</div>
+  </div>
+
+  <!-- KPIs 2x2 -->
+  <div class="kpi-grid">
+    <div class="kpi-ios">
+      <div class="kpi-icon-bg">📅</div>
+      <div class="kpi-ios-val" id="h-dias" style="color:#fff">0</div>
+      <div class="kpi-ios-label">Dias Concluídos</div>
+      <div class="kpi-ios-sub" id="h-dias-sub">0% de 66</div>
+    </div>
+    <div class="kpi-ios">
+      <div class="kpi-icon-bg">📊</div>
+      <div class="kpi-ios-val" id="h-media" style="color:var(--ph2)">—</div>
+      <div class="kpi-ios-label">Média Placar</div>
+      <div class="kpi-ios-sub">últimos 7 dias /10</div>
+    </div>
+    <div class="kpi-ios">
+      <div class="kpi-icon-bg">🏆</div>
+      <div class="kpi-ios-val" id="h-melhor" style="color:var(--ph3)">—</div>
+      <div class="kpi-ios-label">Melhor Placar</div>
+      <div class="kpi-ios-sub" id="h-melhor-dia">—</div>
+    </div>
+    <div class="kpi-ios">
+      <div class="kpi-icon-bg">🔥</div>
+      <div class="kpi-ios-val" id="h-fase-num" style="color:var(--gold)">F1</div>
+      <div class="kpi-ios-label">Fase Atual</div>
+      <div class="kpi-ios-sub" id="h-fase-sub">Quebra do Programa</div>
+    </div>
+  </div>
+
+  <!-- Gauges -->
+  <div class="ios-sh">Velocímetros — Média 7 dias</div>
+  <div class="gauges-scroll" id="h-gauges"></div>
+
+  <!-- Phase rings -->
+  <div class="ios-sh">Progresso por fase</div>
+  <div class="phase-rings-row">
+    <div class="phase-ring-card">
+      <div class="phase-ring-num" id="pr1" style="color:var(--ph1)">0%</div>
+      <div class="phase-ring-sub">Fase 1</div>
+    </div>
+    <div class="phase-ring-card">
+      <div class="phase-ring-num" id="pr2" style="color:var(--ph2)">0%</div>
+      <div class="phase-ring-sub">Fase 2</div>
+    </div>
+    <div class="phase-ring-card">
+      <div class="phase-ring-num" id="pr3" style="color:var(--ph3)">0%</div>
+      <div class="phase-ring-sub">Fase 3</div>
+    </div>
+  </div>
+
+  <!-- Heatmap -->
+  <div class="ios-sh">Mapa de calor — 66 dias</div>
+  <div class="heatmap-ios">
+    <div class="heatmap-ios-title">Intensidade por placar diário</div>
+    <div class="heatmap-ios-grid" id="h-heatmap"></div>
+    <div style="display:flex;gap:16px;margin-top:12px;align-items:center">
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:12px;height:12px;border-radius:3px;background:rgba(255,255,255,0.05)"></div><span style="font-size:11px;color:var(--ios-label3)">Pendente</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:12px;height:12px;border-radius:3px;background:#6B1A00"></div><span style="font-size:11px;color:var(--ios-label3)">Baixo</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:12px;height:12px;border-radius:3px;background:#FF6B00"></div><span style="font-size:11px;color:var(--ios-label3)">Bom</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><div style="width:12px;height:12px;border-radius:3px;background:#FFD60A"></div><span style="font-size:11px;color:var(--ios-label3)">Excelente</span></div>
+    </div>
+  </div>
+
+  <!-- Line Chart -->
+  <div class="ios-sh">Evolução do placar</div>
+  <div class="chart-ios">
+    <div class="chart-ios-header">
+      <div>
+        <div class="chart-ios-title">Linha do tempo</div>
+        <div style="font-size:12px;color:var(--ios-label3)">Placar diário /60</div>
+      </div>
+      <div>
+        <div class="chart-ios-val" id="chart-last-val">—</div>
+        <div style="font-size:11px;color:var(--ios-label3);text-align:right">último dia</div>
+      </div>
+    </div>
+    <div style="position:relative;height:90px">
+      <svg id="h-linechart" width="100%" height="90" style="overflow:visible"></svg>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px">
+      <span style="font-size:10px;color:var(--ios-label3)">Dia 1</span>
+      <span style="font-size:10px;color:var(--ios-label3)">Dia 66</span>
+    </div>
+  </div>
+
+  <div class="ios-spacer-bottom"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2: CHECKLIST
+══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════
+     SCREEN 2: CHECKLIST — TOTALMENTE EDITÁVEL
+══════════════════════════════════════════ -->
+<div class="ios-screen" id="s-check">
+  <div class="ios-spacer-top"></div>
+
+  <div style="padding:4px 20px 14px;display:flex;align-items:flex-end;justify-content:space-between">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ios-label3);margin-bottom:2px" id="check-date-lbl">Hoje</div>
+      <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff">Checklist</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button onclick="goTo('personalizar',document.querySelector('[data-id=personalizar]'))" style="background:rgba(255,107,0,0.12);border:0.5px solid rgba(255,107,0,0.3);border-radius:10px;color:var(--fire);font-size:12px;font-weight:700;padding:6px 11px;cursor:pointer;letter-spacing:0.3px">✏️ Editar</button>
+      <div class="score-pill-ios" id="check-pill">0/12</div>
+    </div>
+  </div>
+
+  <div class="callout-ios" id="check-callout" style="background:rgba(255,255,255,0.04);border-color:var(--ios-fill)">
+    <div class="callout-icon">📋</div>
+    <div class="callout-text" id="check-status-msg" style="color:var(--ios-label2)">Marque cada item ao longo do dia. 10+ pontos = Dia de Comando.</div>
+  </div>
+
+  <!-- Rendered dynamically by JS -->
+  <div id="check-list-render"></div>
+
+  <div style="padding:8px 16px 0">
+    <button class="destroy-ios" onclick="resetChk()">Reiniciar Checklist</button>
+  </div>
+  <div class="ios-spacer-bottom"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3: PROTOCOLO — EDITÁVEL
+══════════════════════════════════════════ -->
+<div class="ios-screen" id="s-proto">
+  <div class="ios-spacer-top"></div>
+
+  <div style="padding:4px 20px 14px;display:flex;align-items:flex-end;justify-content:space-between">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ios-label3);margin-bottom:2px">Joe Dispenza × D.D.P.</div>
+      <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff">Protocolo</div>
+    </div>
+    <button onclick="goTo('personalizar',document.querySelector('[data-id=personalizar]'))" style="background:rgba(255,107,0,0.12);border:0.5px solid rgba(255,107,0,0.3);border-radius:10px;color:var(--fire);font-size:12px;font-weight:700;padding:6px 11px;cursor:pointer">✏️ Editar</button>
+  </div>
+
+  <div class="proto-segment">
+    <button class="proto-seg-btn active" onclick="showPhase(1,this)">🔥 Fase 1</button>
+    <button class="proto-seg-btn" onclick="showPhase(2,this)">💜 Fase 2</button>
+    <button class="proto-seg-btn" onclick="showPhase(3,this)">💚 Fase 3</button>
+  </div>
+
+  <!-- Rendered dynamically by JS -->
+  <div id="proto-render"></div>
+
+  <div class="ios-spacer-bottom"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4: REGISTRAR — COM MISSÕES EDITÁVEIS
+══════════════════════════════════════════ -->
+<div class="ios-screen" id="s-reg">
+  <div class="ios-spacer-top"></div>
+
+  <div style="padding:4px 20px 14px;display:flex;align-items:flex-end;justify-content:space-between">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ios-label3);margin-bottom:2px" id="reg-date-lbl">Hoje</div>
+      <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff">Registrar</div>
+    </div>
+    <button onclick="goTo('personalizar',document.querySelector('[data-id=personalizar]'))" style="background:rgba(255,107,0,0.12);border:0.5px solid rgba(255,107,0,0.3);border-radius:10px;color:var(--fire);font-size:12px;font-weight:700;padding:6px 11px;cursor:pointer">✏️ Editar</button>
+  </div>
+
+  <!-- Dia difícil -->
+  <div style="margin:0 16px 10px">
+    <button onclick="openDificil()" style="width:100%;background:rgba(255,59,48,0.08);border:0.5px solid rgba(255,59,48,0.25);border-radius:var(--r-lg);color:var(--ember);font-size:14px;font-weight:600;padding:11px;cursor:pointer">⚠️ Hoje foi um dia difícil — registrar padrão</button>
+  </div>
+
+  <!-- Day hero -->
+  <div class="reg-day-hero">
+    <div class="rdh-left">
+      <div class="rdh-eyebrow">Você está no</div>
+      <div class="rdh-num" id="reg-day">1</div>
+      <div class="rdh-of" id="reg-day-of">de 66 dias</div>
+    </div>
+    <div class="rdh-right">
+      <div class="rdh-phase" id="reg-phase">Fase 1 — Quebra</div>
+      <div class="rdh-date" id="reg-date-show"></div>
+    </div>
+  </div>
+
+  <!-- Missões do dia editáveis -->
+  <div class="ios-sh">3 Missões de hoje</div>
+  <div style="margin:0 16px 8px;background:var(--ios-bg2);border-radius:var(--r-xl);overflow:hidden" id="missoes-wrap">
+    <!-- rendered by JS -->
+  </div>
+
+  <!-- Sliders -->
+  <div class="ios-sh">Avalie cada pilar — 0 a 10</div>
+
+  <div class="slider-ios-card">
+    <div class="slider-ios-top">
+      <div class="slider-ios-label" id="pillar-label-disc">🎯 Disciplina</div>
+      <div class="slider-ios-val" id="sv-disc" style="color:var(--fire)">5</div>
+    </div>
+    <input type="range" class="slider-ios" id="sl-disc" min="0" max="10" value="5" oninput="slUpd('disc',this,'#FF6B00')">
+  </div>
+  <div class="slider-ios-card">
+    <div class="slider-ios-top">
+      <div class="slider-ios-label" id="pillar-label-foco">🔬 Foco</div>
+      <div class="slider-ios-val" id="sv-foco" style="color:var(--ph2)">5</div>
+    </div>
+    <input type="range" class="slider-ios" id="sl-foco" min="0" max="10" value="5" oninput="slUpd('foco',this,'#BF5AF2')">
+  </div>
+  <div class="slider-ios-card">
+    <div class="slider-ios-top">
+      <div class="slider-ios-label" id="pillar-label-dom">💪 Domínio Próprio</div>
+      <div class="slider-ios-val" id="sv-dom" style="color:var(--ph3)">5</div>
+    </div>
+    <input type="range" class="slider-ios" id="sl-dom" min="0" max="10" value="5" oninput="slUpd('dom',this,'#30D158')">
+  </div>
+  <div class="slider-ios-card">
+    <div class="slider-ios-top">
+      <div class="slider-ios-label" id="pillar-label-exec">⚡ Execução</div>
+      <div class="slider-ios-val" id="sv-exec" style="color:var(--amber)">5</div>
+    </div>
+    <input type="range" class="slider-ios" id="sl-exec" min="0" max="10" value="5" oninput="slUpd('exec',this,'#FF9500')">
+  </div>
+  <div class="slider-ios-card">
+    <div class="slider-ios-top">
+      <div class="slider-ios-label" id="pillar-label-emoc">🧘 Controle Emocional</div>
+      <div class="slider-ios-val" id="sv-emoc" style="color:var(--gold)">5</div>
+    </div>
+    <input type="range" class="slider-ios" id="sl-emoc" min="0" max="10" value="5" oninput="slUpd('emoc',this,'#FFD60A')">
+  </div>
+  <div class="slider-ios-card">
+    <div class="slider-ios-top">
+      <div class="slider-ios-label" id="pillar-label-ener">🌟 Energia Vital</div>
+      <div class="slider-ios-val" id="sv-ener" style="color:var(--ember)">5</div>
+    </div>
+    <input type="range" class="slider-ios" id="sl-ener" min="0" max="10" value="5" oninput="slUpd('ener',this,'#FF3B30')">
+  </div>
+
+  <!-- Frequência emocional -->
+  <div class="ios-sh">Sua frequência emocional hoje</div>
+  <div style="margin:0 16px 8px"><div id="reg-emo-grid" class="emo-grid"></div></div>
+
+  <!-- Gratidão -->
+  <div class="ios-sh">Gratidão específica</div>
+  <div style="margin:0 16px 8px" id="grat-wrap"></div>
+
+  <!-- Placar live -->
+  <div class="placar-ios">
+    <div class="placar-ios-left">
+      <div class="placar-ios-label">Placar do dia</div>
+      <div class="placar-ios-status" id="reg-status">Ajuste os controles acima</div>
+    </div>
+    <div>
+      <div class="placar-ios-val" id="reg-placar">30</div>
+      <div class="placar-ios-max">/60</div>
+    </div>
+  </div>
+
+  <div class="ios-sh">Nota do dia</div>
+  <div class="nota-ios-wrap">
+    <textarea class="nota-ios" id="reg-nota" placeholder="Maior vitória, desculpa vencida, o que corrigir amanhã..."></textarea>
+  </div>
+
+  <button class="save-ios" onclick="salvarDia()">Salvar Dia 🔥</button>
+
+  <div class="ios-sh">Histórico recente</div>
+  <div id="hist-lista-ios"><div style="padding:12px 20px;font-size:15px;color:var(--ios-label3)">Nenhum registro ainda.</div></div>
+  <div class="ios-spacer-bottom"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 8: PERSONALIZAR — EDITOR COMPLETO
+══════════════════════════════════════════ -->
+<div class="ios-screen" id="s-personalizar">
+  <div class="ios-spacer-top"></div>
+
+  <div style="padding:4px 20px 14px">
+    <div style="font-size:13px;font-weight:600;color:var(--ios-label3);margin-bottom:2px">Adapte ao seu perfil</div>
+    <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff">Personalizar</div>
+  </div>
+
+  <div class="callout-ios" style="background:rgba(255,214,10,0.06);border-color:rgba(255,214,10,0.2)">
+    <div class="callout-icon">⚙️</div>
+    <div class="callout-text" style="color:var(--ios-label2)"><strong style="color:var(--gold)">Tudo editável.</strong> Adapte nome, missões, práticas do checklist, atividades do protocolo, nomes dos pilares e frases motivacionais ao seu contexto e ao de cada aluno.</div>
+  </div>
+
+  <!-- PERFIL -->
+  <div class="ios-sh">Perfil do usuário</div>
+  <div style="margin:0 16px 8px;background:var(--ios-bg2);border-radius:var(--r-xl);overflow:hidden">
+    <div style="padding:14px 16px;border-bottom:0.5px solid var(--ios-separator)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--ios-label3);margin-bottom:6px">Nome</div>
+      <input id="cfg-nome" type="text" placeholder="Seu nome ou o nome do aluno" style="width:100%;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:17px;outline:none;letter-spacing:-0.43px">
+    </div>
+    <div style="padding:14px 16px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--ios-label3);margin-bottom:6px">Contexto / Objetivo principal</div>
+      <textarea id="cfg-objetivo" placeholder="Ex: Vendedor querendo bater meta, empreendedor em expansão, líder em transição..." style="width:100%;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;outline:none;resize:none;min-height:56px;letter-spacing:-0.24px;line-height:1.5"></textarea>
+    </div>
+  </div>
+
+  <!-- NOMES DOS PILARES -->
+  <div class="ios-sh">Nomes dos pilares de avaliação</div>
+  <div style="margin:0 16px 8px;background:var(--ios-bg2);border-radius:var(--r-xl);overflow:hidden" id="cfg-pilares-wrap">
+    <!-- rendered by JS -->
+  </div>
+
+  <!-- CHECKLIST ITEMS -->
+  <div class="ios-sh">Itens do Checklist Diário</div>
+  <div style="margin:0 16px 4px">
+    <div style="font-size:12px;color:var(--ios-label3);padding:4px 0 8px;line-height:1.4">Edite cada item. Arraste para reordenar. Toque em + para adicionar ou no × para remover.</div>
+  </div>
+  <div id="cfg-check-manha-wrap" style="margin:0 16px 4px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ios-label3);padding:8px 0 6px">🌅 Manhã</div>
+    <div id="cfg-check-manha" class="cfg-item-list"></div>
+    <button onclick="addCheckItem('manha')" class="cfg-add-btn">+ Adicionar item de manhã</button>
+  </div>
+  <div id="cfg-check-dia-wrap" style="margin:0 16px 4px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ios-label3);padding:8px 0 6px">⚡ Durante o dia</div>
+    <div id="cfg-check-dia" class="cfg-item-list"></div>
+    <button onclick="addCheckItem('dia')" class="cfg-add-btn">+ Adicionar item do dia</button>
+  </div>
+  <div id="cfg-check-noite-wrap" style="margin:0 16px 4px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ios-label3);padding:8px 0 6px">🌙 Noite</div>
+    <div id="cfg-check-noite" class="cfg-item-list"></div>
+    <button onclick="addCheckItem('noite')" class="cfg-add-btn">+ Adicionar item da noite</button>
+  </div>
+
+  <!-- MISSÕES DIÁRIAS -->
+  <div class="ios-sh">Missões diárias padrão</div>
+  <div style="margin:0 16px 4px">
+    <div style="font-size:12px;color:var(--ios-label3);padding:4px 0 8px;line-height:1.4">Estas aparecem como sugestão ao registrar o dia. O usuário pode ajustá-las diariamente.</div>
+  </div>
+  <div style="margin:0 16px 8px;background:var(--ios-bg2);border-radius:var(--r-xl);overflow:hidden">
+    <div style="padding:12px 16px;border-bottom:0.5px solid var(--ios-separator)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--fire);margin-bottom:5px">Missão de Resultado</div>
+      <input id="cfg-missao-resultado" type="text" placeholder="Ex: Fazer 10 ligações comerciais" style="width:100%;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;outline:none;letter-spacing:-0.24px">
+    </div>
+    <div style="padding:12px 16px;border-bottom:0.5px solid var(--ios-separator)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--ph3);margin-bottom:5px">Missão de Saúde</div>
+      <input id="cfg-missao-saude" type="text" placeholder="Ex: Caminhar 30 minutos" style="width:100%;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;outline:none;letter-spacing:-0.24px">
+    </div>
+    <div style="padding:12px 16px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--ph2);margin-bottom:5px">Missão de Organização</div>
+      <input id="cfg-missao-org" type="text" placeholder="Ex: Limpar mesa de trabalho" style="width:100%;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;outline:none;letter-spacing:-0.24px">
+    </div>
+  </div>
+
+  <!-- PROTOCOLO — ATIVIDADES EDITÁVEIS -->
+  <div class="ios-sh">Atividades do protocolo — Fase 1</div>
+  <div id="cfg-proto-ph1" class="cfg-proto-section"></div>
+  <button onclick="addProtoItem(1)" class="cfg-add-btn" style="margin:0 16px 8px">+ Adicionar atividade na Fase 1</button>
+
+  <div class="ios-sh">Atividades do protocolo — Fase 2</div>
+  <div id="cfg-proto-ph2" class="cfg-proto-section"></div>
+  <button onclick="addProtoItem(2)" class="cfg-add-btn" style="margin:0 16px 8px">+ Adicionar atividade na Fase 2</button>
+
+  <div class="ios-sh">Atividades do protocolo — Fase 3</div>
+  <div id="cfg-proto-ph3" class="cfg-proto-section"></div>
+  <button onclick="addProtoItem(3)" class="cfg-add-btn" style="margin:0 16px 8px">+ Adicionar atividade na Fase 3</button>
+
+  <!-- FRASES MOTIVACIONAIS -->
+  <div class="ios-sh">Frases do Mantra Diário</div>
+  <div style="margin:0 16px 4px">
+    <div style="font-size:12px;color:var(--ios-label3);padding:4px 0 8px">Aparecem durante a meditação e no dashboard.</div>
+  </div>
+  <div id="cfg-frases-wrap" style="margin:0 16px 8px"></div>
+  <button onclick="addFrase()" class="cfg-add-btn" style="margin:0 16px 8px">+ Adicionar frase</button>
+
+  <!-- SAVE -->
+  <div style="padding:8px 16px 4px">
+    <button onclick="salvarPersonalizacao()" style="width:100%;background:linear-gradient(135deg,var(--fire),var(--ember));border:none;border-radius:var(--r-xl);color:#fff;font-size:17px;font-weight:600;padding:16px;cursor:pointer;letter-spacing:-0.43px;transition:transform 0.15s,opacity 0.15s">Salvar Personalização ✓</button>
+  </div>
+
+  <div class="ios-sh">Exportar / Importar configuração</div>
+  <div style="margin:0 16px 8px;display:flex;gap:10px">
+    <button onclick="exportarConfig()" style="flex:1;background:rgba(255,255,255,0.06);border:0.5px solid var(--ios-separator);border-radius:var(--r-lg);color:var(--ios-label2);font-size:14px;font-weight:600;padding:13px;cursor:pointer">⬆️ Exportar JSON</button>
+    <button onclick="document.getElementById('import-file').click()" style="flex:1;background:rgba(255,255,255,0.06);border:0.5px solid var(--ios-separator);border-radius:var(--r-lg);color:var(--ios-label2);font-size:14px;font-weight:600;padding:13px;cursor:pointer">⬇️ Importar JSON</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importarConfig(event)">
+  </div>
+
+  <div style="padding:8px 16px 0">
+    <button onclick="resetPersonalizacao()" class="destroy-ios" style="margin:0;width:100%">Restaurar Configuração Padrão</button>
+  </div>
+
+  <div class="ios-spacer-bottom"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TRACKER SCREENS (original, kept)
+══════════════════════════════════════════ -->
+<div class="ios-screen" id="s-tracker">
+  <div class="ios-spacer-top"></div>
+  <div style="padding:4px 20px 14px;display:flex;align-items:flex-end;justify-content:space-between">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ios-label3);margin-bottom:2px">Corrente de Vitórias</div>
+      <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff">Tracker</div>
+    </div>
+    <div class="ios-nav-badge" id="t-pct-badge">0/66</div>
+  </div>
+  <div class="ring-card-ios">
+    <div class="ring-large">
+      <svg viewBox="0 0 88 88">
+        <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="6"/>
+        <circle id="t-ring" cx="44" cy="44" r="36" fill="none" stroke="url(#tGrad)" stroke-width="6" stroke-linecap="round"
+          stroke-dasharray="226.2" stroke-dashoffset="226.2" transform="rotate(-90 44 44)"
+          style="transition:stroke-dashoffset 1.2s cubic-bezier(0.34,1.2,0.64,1)"/>
+        <defs><linearGradient id="tGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#FF6B00"/><stop offset="100%" stop-color="#FFD60A"/>
+        </linearGradient></defs>
+      </svg>
+      <div class="ring-large-center">
+        <div class="ring-large-pct" id="t-ring-pct">0%</div>
+        <div class="ring-large-label">Concluído</div>
+      </div>
+    </div>
+    <div class="ring-card-ios-right">
+      <div class="ring-card-title" id="t-card-title">0 de 66 dias</div>
+      <div class="ring-card-sub">Sequência: <span style="color:var(--fire);font-weight:700" id="t-streak-span">0</span> dias</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--ios-label3)" id="t-card-msg">Toque em um dia para marcá-lo.</div>
+    </div>
+  </div>
+  <div class="tracker-ios-section">
+    <div class="tracker-ios-phase-label" style="color:var(--ph1)">🔥 Fase 1 — Quebra do Programa</div>
+    <div class="tracker-ios-grid" id="tc-1"></div>
+  </div>
+  <div class="tracker-ios-section">
+    <div class="tracker-ios-phase-label" style="color:var(--ph2)">💜 Fase 2 — Construção do Novo Eu</div>
+    <div class="tracker-ios-grid" id="tc-2"></div>
+  </div>
+  <div class="tracker-ios-section">
+    <div class="tracker-ios-phase-label" style="color:var(--ph3)">💚 Fase 3 — Consolidação da Identidade</div>
+    <div class="tracker-ios-grid" id="tc-3"></div>
+  </div>
+  <div style="height:16px"></div>
+  <button class="destroy-ios" onclick="resetAll()">Reiniciar Protocolo</button>
+  <div class="ios-spacer-bottom"></div>
+</div>
+     SCREEN 6: MEDITAÇÃO GUIADA — DISPENZA
+══════════════════════════════════════════ -->
+<div class="ios-screen" id="s-med">
+  <div class="ios-spacer-top"></div>
+  <div style="padding:4px 20px 14px;display:flex;align-items:flex-end;justify-content:space-between">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--ios-label3);margin-bottom:2px">Campo Quântico</div>
+      <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff">Meditar</div>
+    </div>
+    <div class="ios-nav-badge" id="med-sessions-badge">0 sessões</div>
+  </div>
+
+  <!-- Novo Eu preview / CTA -->
+  <div id="med-novoeu-preview" style="display:none;margin:0 16px 10px;background:rgba(191,90,242,0.1);border:0.5px solid rgba(191,90,242,0.3);border-radius:var(--r-xl);padding:14px">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#BF5AF2;margin-bottom:4px">Seu Novo Eu — Foco de Hoje</div>
+    <div id="med-novoeu-txt" style="font-size:14px;color:var(--ios-label2);font-style:italic;line-height:1.5"></div>
+  </div>
+  <div id="med-novoeu-cta" style="margin:0 16px 10px">
+    <button onclick="goTo('novoeu',document.querySelector('.ios-tab[data-id=novoeu]'))" style="width:100%;background:rgba(191,90,242,0.1);border:0.5px solid rgba(191,90,242,0.3);border-radius:var(--r-lg);color:#BF5AF2;font-size:15px;font-weight:600;padding:12px;cursor:pointer">✦ Definir meu Novo Eu primeiro</button>
+  </div>
+
+  <!-- Mode selector -->
+  <div class="ios-sh">Escolha a prática</div>
+  <div style="display:flex;gap:10px;padding:0 16px 4px;overflow-x:auto;scrollbar-width:none">
+    <div class="med-mode-btn active" data-dur="600" data-mode="coerencia" onclick="selMedMode(this)">
+      <div style="font-size:20px;margin-bottom:5px">🌬</div>
+      <div style="font-size:12px;font-weight:700;color:#fff">Respiração</div>
+      <div style="font-size:10px;color:var(--ios-label3);margin-top:2px">10 min</div>
+    </div>
+    <div class="med-mode-btn" data-dur="900" data-mode="quebra" onclick="selMedMode(this)">
+      <div style="font-size:20px;margin-bottom:5px">⚡</div>
+      <div style="font-size:12px;font-weight:700;color:#fff">Quebra do Padrão</div>
+      <div style="font-size:10px;color:var(--ios-label3);margin-top:2px">15 min</div>
+    </div>
+    <div class="med-mode-btn" data-dur="1200" data-mode="visualizacao" onclick="selMedMode(this)">
+      <div style="font-size:20px;margin-bottom:5px">🔮</div>
+      <div style="font-size:12px;font-weight:700;color:#fff">Novo Eu</div>
+      <div style="font-size:10px;color:var(--ios-label3);margin-top:2px">20 min</div>
+    </div>
+  </div>
+
+  <!-- Estado emocional ANTES -->
+  <div class="ios-sh">Estado emocional antes</div>
+  <div style="margin:0 16px 10px"><div id="emo-before-grid" class="emo-grid"></div></div>
+
+  <!-- Campo principal -->
+  <div id="med-field" style="margin:0 16px 10px;background:#080808;border-radius:var(--r-2xl);overflow:hidden;position:relative;min-height:260px;border:0.5px solid rgba(255,107,0,0.2)">
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:260px;padding:24px 20px;text-align:center">
+      <div id="med-orb" style="width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.55),rgba(255,61,0,0.08));margin-bottom:18px;transition:transform 4s ease-in-out;box-shadow:0 0 30px rgba(255,107,0,0.25)"></div>
+      <div id="med-timer" style="font-family:-apple-system,sans-serif;font-size:48px;font-weight:800;letter-spacing:-2px;color:#fff;line-height:1;margin-bottom:8px">10:00</div>
+      <div id="med-phase-lbl" style="font-size:15px;font-weight:600;color:rgba(255,107,0,0.85);margin-bottom:6px;letter-spacing:-0.24px">Pronto para começar</div>
+      <div id="med-phrase" style="font-size:13px;color:rgba(235,235,245,0.45);font-style:italic;line-height:1.5;max-width:260px"></div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div style="display:flex;gap:10px;padding:0 16px;margin-bottom:10px">
+    <button id="med-btn" onclick="medToggle()" style="flex:2;background:var(--fire);border:none;border-radius:var(--r-xl);color:#fff;font-size:17px;font-weight:600;padding:16px;cursor:pointer;transition:transform 0.15s,opacity 0.15s">Iniciar</button>
+    <button onclick="medReset()" style="flex:1;background:var(--ios-bg2);border:0.5px solid var(--ios-separator);border-radius:var(--r-xl);color:var(--ios-label2);font-size:15px;font-weight:600;padding:16px;cursor:pointer">↺</button>
+  </div>
+
+  <!-- Após concluir -->
+  <div id="med-after" style="display:none">
+    <div class="ios-sh">Estado emocional depois</div>
+    <div style="margin:0 16px 8px"><div id="emo-after-grid" class="emo-grid"></div></div>
+    <div style="margin:0 16px 8px;background:var(--ios-bg2);border-radius:var(--r-xl);padding:14px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--ios-label3);margin-bottom:6px">Insight da sessão</div>
+      <textarea id="med-insight" placeholder="O que percebi durante a meditação..." style="width:100%;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;line-height:1.5;resize:none;outline:none;min-height:56px"></textarea>
+    </div>
+    <div style="padding:0 16px 8px">
+      <button onclick="salvarMed()" style="width:100%;background:linear-gradient(135deg,#BF5AF2,#9B59B6);border:none;border-radius:var(--r-xl);color:#fff;font-size:17px;font-weight:600;padding:15px;cursor:pointer">Salvar Sessão 🧠</button>
+    </div>
+  </div>
+
+  <!-- Histórico -->
+  <div class="ios-sh">Sessões recentes</div>
+  <div id="med-hist" style="padding:0 16px 4px"><div style="font-size:15px;color:var(--ios-label3);padding:12px 0">Nenhuma sessão ainda.</div></div>
+  <div class="ios-spacer-bottom"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 7: MEU NOVO EU — DISPENZA
+══════════════════════════════════════════ -->
+<div class="ios-screen" id="s-novoeu">
+  <div class="ios-spacer-top"></div>
+  <div style="padding:4px 20px 14px">
+    <div style="font-size:13px;font-weight:600;color:var(--ios-label3);margin-bottom:2px">Identidade Futura</div>
+    <div style="font-size:34px;font-weight:800;letter-spacing:-1px;color:#fff">Meu Novo Eu</div>
+  </div>
+
+  <div class="callout-ios" style="background:rgba(191,90,242,0.08);border-color:rgba(191,90,242,0.25)">
+    <div class="callout-icon">🔮</div>
+    <div class="callout-text" style="color:var(--ios-label2)"><strong style="color:#BF5AF2">Dispenza:</strong> "Quanto mais detalhada e emocionalmente vívida for a imagem do novo eu, mais rapidamente o cérebro aceita essa realidade como verdadeira."</div>
+  </div>
+
+  <div class="ios-sh">Como o novo eu age e se comporta</div>
+  <div style="margin:0 16px 8px"><textarea id="neu-age" class="neu-textarea" placeholder="O novo eu acorda cedo, executa sem precisar de motivação, fala com clareza e decisão..."></textarea></div>
+
+  <div class="ios-sh">Como o novo eu se sente por dentro</div>
+  <div style="margin:0 16px 8px"><textarea id="neu-sente" class="neu-textarea" placeholder="O novo eu sente expansão, certeza, gratidão profunda pelo que já conquistou..."></textarea></div>
+
+  <div class="ios-sh">Como o novo eu reage quando contrariado</div>
+  <div style="margin:0 16px 8px"><textarea id="neu-reage" class="neu-textarea" placeholder="O novo eu respira, avalia com clareza, não reage no impulso, escolhe a melhor atitude..."></textarea></div>
+
+  <div class="ios-sh">Frase de identidade — diga em voz alta toda manhã</div>
+  <div style="margin:0 16px 8px"><textarea id="neu-frase" class="neu-textarea" placeholder="Eu sou uma pessoa de disciplina, domínio próprio e progresso. Eu já sou quem decidi ser."></textarea></div>
+
+  <div style="padding:0 16px 4px">
+    <button onclick="salvarNeuDef()" style="width:100%;background:linear-gradient(135deg,#BF5AF2,#9B59B6);border:none;border-radius:var(--r-xl);color:#fff;font-size:17px;font-weight:600;padding:15px;cursor:pointer;margin-bottom:8px">Salvar Identidade 🔮</button>
+  </div>
+
+  <!-- Check diário -->
+  <div class="ios-sh">Check de hoje — agi como o novo eu?</div>
+  <div style="margin:0 16px 8px;background:var(--ios-bg2);border-radius:var(--r-xl);overflow:hidden">
+    <div class="check-ios-row" onclick="selNeuCheck(this,'sim')">
+      <div class="check-ios-circle" id="nc-sim"></div>
+      <div class="check-ios-content">
+        <div class="check-ios-main">Sim — tive pelo menos um momento como o novo eu</div>
+        <div class="check-ios-sub">Descreva a evidência concreta abaixo.</div>
+      </div>
+    </div>
+    <div class="check-ios-row" onclick="selNeuCheck(this,'parcial')">
+      <div class="check-ios-circle" id="nc-parcial"></div>
+      <div class="check-ios-content">
+        <div class="check-ios-main">Parcialmente — o velho eu apareceu mas corrigi</div>
+        <div class="check-ios-sub">Transição em progresso.</div>
+      </div>
+    </div>
+    <div class="check-ios-row" onclick="selNeuCheck(this,'nao')">
+      <div class="check-ios-circle" id="nc-nao"></div>
+      <div class="check-ios-content">
+        <div class="check-ios-main">Não — o velho eu dominou hoje</div>
+        <div class="check-ios-sub">Dado valioso. Anote qual padrão venceu.</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin:0 16px 8px">
+    <textarea id="neu-evidencia" class="neu-textarea" style="min-height:64px" placeholder="Evidência concreta ou padrão antigo identificado hoje..."></textarea>
+  </div>
+  <div style="padding:0 16px 4px">
+    <button onclick="salvarNeuCheck()" style="width:100%;background:rgba(191,90,242,0.15);border:0.5px solid rgba(191,90,242,0.35);border-radius:var(--r-xl);color:#BF5AF2;font-size:17px;font-weight:600;padding:14px;cursor:pointer">Salvar Check de Hoje</button>
+  </div>
+
+  <!-- Histórico checks -->
+  <div class="ios-sh">Histórico de checks</div>
+  <div id="neu-hist" style="padding:0 16px"><div style="font-size:15px;color:var(--ios-label3);padding:12px 0">Nenhum check ainda.</div></div>
+  <div class="ios-spacer-bottom"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODO CRISE — OVERLAY DISPENZA
+══════════════════════════════════════════ -->
+<div id="crise-ov" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.94);z-index:9000;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+  <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--fire);margin-bottom:10px">MODO CRISE · QUEBRA DO PADRÃO</div>
+  <div style="font-size:26px;font-weight:800;letter-spacing:-1px;color:#fff;margin-bottom:6px">Pare. Respire. Escolha.</div>
+  <div style="font-size:14px;color:var(--ios-label2);line-height:1.5;margin-bottom:28px">O velho eu quer reagir agora.<br>Você tem 60 segundos para escolher quem responde.</div>
+  <div id="crise-orb" style="width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.5),rgba(255,61,0,0.05));margin-bottom:16px;transition:transform 4s ease-in-out;box-shadow:0 0 40px rgba(255,59,48,0.3)"></div>
+  <div id="crise-timer" style="font-size:52px;font-weight:800;letter-spacing:-2px;color:var(--fire);line-height:1;margin-bottom:6px">60</div>
+  <div id="crise-phase" style="font-size:16px;font-weight:600;color:var(--ios-label2);margin-bottom:8px">Inspire devagar...</div>
+  <div id="crise-phrase" style="font-size:13px;color:var(--ios-label3);font-style:italic;line-height:1.5;margin-bottom:28px;max-width:280px"></div>
+  <div style="display:flex;gap:12px;width:100%;max-width:300px">
+    <button onclick="closeCrise('venceu')" style="flex:1;background:rgba(48,209,88,0.15);border:0.5px solid rgba(48,209,88,0.4);border-radius:var(--r-xl);color:#30D158;font-size:14px;font-weight:600;padding:13px;cursor:pointer">✓ Padrão quebrado</button>
+    <button onclick="closeCrise('cedeu')" style="flex:1;background:rgba(255,59,48,0.1);border:0.5px solid rgba(255,59,48,0.3);border-radius:var(--r-xl);color:var(--ember);font-size:14px;font-weight:600;padding:13px;cursor:pointer">Cedi desta vez</button>
+  </div>
+</div>
+
+<!-- DIA DIFÍCIL — BOTTOM SHEET -->
+<div id="dificil-ov" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:8000;align-items:flex-end">
+  <div style="width:100%;background:var(--ios-bg2);border-radius:28px 28px 0 0;padding:20px 20px calc(20px + var(--sab))">
+    <div style="width:36px;height:4px;background:var(--ios-fill);border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;color:#fff;margin-bottom:4px">⚠️ Dia Difícil</div>
+    <div style="font-size:14px;color:var(--ios-label2);line-height:1.5;margin-bottom:16px">O velho eu venceu hoje. Isso é dado científico, não fracasso. Analise o padrão.</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--ios-label3);margin-bottom:6px">Qual padrão antigo surgiu?</div>
+    <textarea id="dif-padrao" style="width:100%;background:var(--ios-bg3);border:none;border-radius:var(--r-lg);color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;padding:11px 13px;resize:none;outline:none;min-height:64px;margin-bottom:10px;line-height:1.5" placeholder="Ex: ansiedade, procrastinação, raiva, vício em celular..."></textarea>
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--ios-label3);margin-bottom:6px">O que farei diferente amanhã?</div>
+    <textarea id="dif-amanha" style="width:100%;background:var(--ios-bg3);border:none;border-radius:var(--r-lg);color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;padding:11px 13px;resize:none;outline:none;min-height:64px;margin-bottom:12px;line-height:1.5" placeholder="Ex: meditar antes de qualquer coisa, não pegar o celular nas primeiras 2h..."></textarea>
+    <div style="font-size:12px;color:var(--ios-label3);text-align:center;margin-bottom:12px;font-style:italic">"Nunca falhe 2 dias seguidos." — Regra de Ouro</div>
+    <button onclick="salvarDificil()" style="width:100%;background:rgba(255,107,0,0.15);border:0.5px solid rgba(255,107,0,0.35);border-radius:var(--r-xl);color:var(--fire);font-size:17px;font-weight:600;padding:14px;cursor:pointer">Registrar e Aprender</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     REGISTRO — atualizado com gratidão + emoção
+══════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════
+     CSS ADDITIONS
+══════════════════════════════════════════ -->
+<style>
+.med-mode-btn{flex-shrink:0;width:108px;background:var(--ios-bg2);border:0.5px solid var(--ios-separator);border-radius:var(--r-xl);padding:13px 10px;text-align:center;cursor:pointer;transition:all 0.2s var(--spring);-webkit-user-select:none}
+.med-mode-btn.active{border-color:var(--fire);background:rgba(255,107,0,0.1)}
+.med-mode-btn:active{transform:scale(0.92)}
+.emo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.emo-btn{background:var(--ios-bg2);border:0.5px solid var(--ios-separator);border-radius:var(--r-md);padding:9px 4px;text-align:center;cursor:pointer;transition:all 0.2s var(--spring);-webkit-user-select:none}
+.emo-btn:active{transform:scale(0.86)}
+.emo-btn.sel{border-color:var(--fire);background:rgba(255,107,0,0.12)}
+.emo-emoji{font-size:20px;margin-bottom:3px}
+.emo-label{font-size:9px;font-weight:700;letter-spacing:0.3px;color:var(--ios-label3);text-transform:uppercase}
+.neu-textarea{width:100%;background:var(--ios-bg2);border:0.5px solid var(--ios-separator);border-radius:var(--r-xl);color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;letter-spacing:-0.24px;line-height:1.6;padding:13px 15px;resize:none;outline:none;min-height:80px;-webkit-appearance:none;display:block}
+.neu-textarea:focus{border-color:rgba(191,90,242,0.5)}
+.grat-field{width:100%;background:var(--ios-bg2);border:0.5px solid var(--ios-separator);border-radius:var(--r-xl);color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;letter-spacing:-0.24px;line-height:1.5;padding:12px 15px;resize:none;outline:none;min-height:60px;-webkit-appearance:none;display:block;margin-bottom:8px}
+.grat-field:focus{border-color:rgba(255,214,10,0.5)}
+.crise-fab{position:fixed;bottom:calc(var(--tabbar-total)+16px);right:16px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,rgba(255,59,48,0.88),rgba(255,107,0,0.88));border:none;font-size:20px;cursor:pointer;z-index:500;box-shadow:0 3px 16px rgba(255,59,48,0.45);transition:transform 0.2s var(--spring);display:flex;align-items:center;justify-content:center}
+.crise-fab:active{transform:scale(0.85)}
+</style>
+
+<!-- FAB Crise -->
+<button class="crise-fab" onclick="openCrise()" title="Modo Crise">🆘</button>
+
+<!-- ══════════════════════════════════════════
+     iOS TAB BAR — 7 abas Dispenza Edition
+══════════════════════════════════════════ -->
+<nav class="ios-tabbar" style="justify-content:space-around">
+  <button class="ios-tab active" data-id="home" onclick="goTo('home',this)">
+    <div class="ios-tab-icon"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+    <div class="ios-tab-label">Hoje</div>
+  </button>
+  <button class="ios-tab" data-id="check" onclick="goTo('check',this)">
+    <div class="ios-tab-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4m-3 7v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h9"/></svg></div>
+    <div class="ios-tab-label">Checklist</div>
+  </button>
+  <button class="ios-tab" data-id="med" onclick="goTo('med',this)">
+    <div class="ios-tab-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+    <div class="ios-tab-label">Meditar</div>
+  </button>
+  <button class="ios-tab" data-id="reg" onclick="goTo('reg',this)">
+    <div class="ios-tab-icon"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+    <div class="ios-tab-label">Registrar</div>
+  </button>
+  <button class="ios-tab" data-id="novoeu" onclick="goTo('novoeu',this)">
+    <div class="ios-tab-icon"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 3.3 2.4-7.4L2 9.4h7.6z"/></svg></div>
+    <div class="ios-tab-label">Novo Eu</div>
+  </button>
+  <button class="ios-tab" data-id="personalizar" onclick="goTo('personalizar',this)">
+    <div class="ios-tab-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+    <div class="ios-tab-label">Editar</div>
+  </button>
+  <button class="ios-tab" data-id="tracker" onclick="goTo('tracker',this)">
+    <div class="ios-tab-icon"><svg viewBox="0 0 24 24"><path d="M3 3v18h18M7 16l4-4 4 4 4-8"/></svg></div>
+    <div class="ios-tab-label">Tracker</div>
+  </button>
+</nav>
+
+<!-- iOS Toast -->
+<div class="toast-ios" id="ios-toast">
+  <div class="toast-ios-icon" id="toast-icon">✅</div>
+  <div class="toast-ios-content">
+    <div class="toast-ios-title" id="toast-title">Salvo!</div>
+    <div class="toast-ios-body" id="toast-body">Dashboard atualizado.</div>
+  </div>
+</div>
+
+
+
+
+<!-- ══ PERSONALIZAR + FULL JS ENGINE ══ -->
+<script>
+// ═══ DEFAULTS ═══
+const DEFAULT_CFG = {
+  nome: '',
+  objetivo: '',
+  pilares: [
+    {key:'disc', emoji:'🎯', nome:'Disciplina', cor:'#FF6B00'},
+    {key:'foco', emoji:'🔬', nome:'Foco', cor:'#BF5AF2'},
+    {key:'dom',  emoji:'💪', nome:'Domínio Próprio', cor:'#30D158'},
+    {key:'exec', emoji:'⚡', nome:'Execução', cor:'#FF9500'},
+    {key:'emoc', emoji:'🧘', nome:'Controle Emocional', cor:'#FFD60A'},
+    {key:'ener', emoji:'🌟', nome:'Energia Vital', cor:'#FF3B30'}
+  ],
+  checkManha: [
+    {main:'Acordei no primeiro toque', sub:'Sem soneca. Primeira vitória neural.'},
+    {main:'Arrumei a cama', sub:'Primeira missão concluída do dia.'},
+    {main:'Meditação e visualização', sub:'Mínimo 10 minutos antes do celular.'},
+    {main:'Movimentei o corpo', sub:'Exercício antes do feed.'},
+    {main:'Defini as 3 missões', sub:'Por escrito, com clareza e alvo.'}
+  ],
+  checkDia: [
+    {main:'Ataquei a tarefa mais difícil', sub:'Antes do meio-dia, sem procrastinar.'},
+    {main:'Fiz 1 bloco de foco (50 min)', sub:'Sem WhatsApp, sem Instagram.'},
+    {main:'Venci uma desculpa com ação', sub:'Nunca zerei o dia.'},
+    {main:'Fiz uma renúncia consciente', sub:'Impulso vencido por decisão.'}
+  ],
+  checkNoite: [
+    {main:'Cumpri as 3 missões', sub:'Ou a versão mínima delas.'},
+    {main:'Revisei o dia com placar', sub:'Honestamente, sem autoflagelar.'},
+    {main:'Preparei o amanhã', sub:'3 missões + horário + primeira ação.'}
+  ],
+  missoes: {
+    resultado: 'Fazer 10 contatos comerciais',
+    saude: 'Caminhar 30 minutos',
+    org: 'Organizar mesa ou agenda'
+  },
+  proto: {
+    1: [
+      {titulo:'O Contrato com o Novo Eu', dias:'01', tag:'Fundação da transformação', foco:'Escreva quem você é hoje e quem você decide ser. Assine o compromisso dos 66 dias. Leia em voz alta toda manhã.', pratica:'"Eu, [nome], declaro que o velho eu acaba aqui. Durante 66 dias vou agir, pensar e sentir como a pessoa que já sou em potencial."', frase:'"Minha nova identidade começa agora, não quando eu estiver pronto."'},
+      {titulo:'Mapeamento das Desculpas', dias:'02', tag:'Identificar o programa automático', foco:'Liste suas 10 desculpas mais frequentes. Para cada uma, escreva a verdade que ela esconde e o padrão emocional que a dispara.', pratica:'Caça às desculpas — anote cada desculpa e traduza imediatamente para uma decisão de ação.', frase:'"Toda desculpa é um voto pelo velho eu."'},
+      {titulo:'Primeira Meditação de Quebra', dias:'03', tag:'Observar sem se identificar', foco:'10 minutos de meditação silenciosa ao acordar. Observe os pensamentos automáticos sem se identificar com eles.', pratica:'Sente, feche os olhos, respire 3x fundo. Observe por 10 min. Sem julgamento. Só observação pura.', frase:'"Não sou meus pensamentos. Sou quem os observa."'},
+      {titulo:'Semana 1 — Retomada do Controle', dias:'4–7', tag:'Vencer a preguiça inicial', foco:'Acordar no primeiro toque. Corpo em movimento 15 min antes do celular. Caça às desculpas com ação mínima. Renúncia consciente diária.', pratica:'Meta: provar que você consegue cumprir o básico. Registre cada vitória pequena.', frase:'"Eu não estou tentando. Estou treinando."'},
+      {titulo:'Semana 2 — Aprofundamento', dias:'8–14', tag:'Interromper padrões no momento', foco:'Meditação 15 min + Bloco de foco 50 min + Renúncia diária. Identificar e interromper padrões automáticos no exato momento.', pratica:'Diário de padrões: escreva toda vez que o velho eu tentar aparecer. Ação corretiva imediata.', frase:'"Cada interrupção do padrão velho é uma vitória neural."'},
+      {titulo:'Semana 3 — Domínio das Reações', dias:'15–22', tag:'O espaço entre estímulo e resposta', foco:'Treinar a lacuna entre estímulo e resposta. Antes de qualquer reação emocional, conte até 10. Controle de boca e celular.', pratica:'Sem reclamação, sem impulso, sem feed sem propósito. Cada pausa é o espaço da liberdade.', frase:'"No espaço entre estímulo e resposta está minha liberdade."'}
+    ],
+    2: [
+      {titulo:'Semana 4 — Visualização Ativa', dias:'23–29', tag:'Imprimir o futuro no presente', foco:'Meditação de 20 min com visualização do novo eu com emoção genuína. O cérebro não distingue imaginação vívida de realidade.', pratica:'Visualização matinal + 3 missões + 2 blocos de foco. Escreva como o novo eu se comportou hoje.', frase:'"Eu sinto agora o que quero criar. Meu corpo aprende o futuro hoje."'},
+      {titulo:'Marco dos 30 Dias', dias:'30', tag:'Carta ao velho eu', foco:'Metade da jornada. Quais hábitos antigos morreram? Quais novos nasceram? O que surpreendeu você?', pratica:'Escreva uma carta do novo eu para o velho eu. Agradeça as lições. Declare a separação definitiva.', frase:'"30 dias de ação mudaram o que 30 anos de intenção não mudaram."'},
+      {titulo:'Semana 5 — Elevação Emocional', dias:'31–37', tag:'Frequência emocional elevada', foco:'Gratidão, amor e generosidade criam campos que atraem novas experiências. Foco em elevar o estado emocional base.', pratica:'Gratidão específica 5 min ao acordar. Um gesto generoso por dia. Eliminar uma fonte negativa do ambiente.', frase:'"Meu estado emocional é a minha assinatura no campo de possibilidades."'},
+      {titulo:'Semana 6 — Palavra Cumprida', dias:'38–44', tag:'Identidade construída em contratos', foco:'A identidade é o somatório dos contratos honrados. Esta semana cada promessa a si mesmo é sagrada.', pratica:'3 blocos de foco diários. Concluir uma pendência por dia. Zero abandono de tarefa.', frase:'"Sou o tipo de pessoa que cumpre o que promete a si mesma."'}
+    ],
+    3: [
+      {titulo:'Semana 7 — Agir por Decisão', dias:'45–51', tag:'Independente da vontade', foco:'O novo eu não espera vontade. Agir mesmo quando o velho eu grita mais alto — cansado, desmotivado, sem energia.', pratica:'Quando surgir "não quero": ação em 5 segundos. Registre cada vez que agiu sem vontade.', frase:'"Eu não dependo de vontade. Eu dependo de decisão."'},
+      {titulo:'Semana 8 — Consolidação', dias:'52–58', tag:'Auditoria do novo programa', foco:'Quais comportamentos já são automáticos? Para os difíceis, aumentar a intensidade. O inconsciente está sendo gravado.', pratica:'Liste 10 comportamentos que o novo eu já faz automaticamente. Para os difíceis, defina estratégia de reforço.', frase:'"O que antes era esforço agora é quem eu sou."'},
+      {titulo:'Semana 9 — Alta Performance', dias:'59–65', tag:'Provar com resultado', foco:'O novo eu tem musculatura para executar em alto nível. Foco em produção, resultado e expansão.', pratica:'3 blocos de foco obrigatórios. Meditação + visualização + gratidão. Preparação para o fechamento.', frase:'"Resultado respeita execução. Execução respeita identidade."'},
+      {titulo:'🏆 Ritual da Nova Identidade', dias:'66', tag:'O dia mais importante do ciclo', foco:'A reprogramação está completa. Cerimônia, celebração e projeção para o próximo ciclo.', pratica:'Responda as 5 perguntas do ritual. Escreva a declaração de identidade. Defina os próximos 66 dias.', frase:'"Eu não sou mais quem eu era. Sou quem eu decidi ser."'}
+    ]
+  },
+  frases: [
+    'Eu não sou minhas desculpas. Eu faço o que precisa ser feito.',
+    'Minha vontade não manda em mim. Disciplina é liberdade.',
+    'Cada pequena vitória fortalece minha identidade.',
+    'Eu não negocio com a preguiça. O sucesso não aceita desculpas.',
+    'Sinto o futuro como se já fosse presente. Sou grato antes que aconteça.'
+  ]
+};
+
+// ═══ STORAGE ═══
+const SK='p66t4',SC='p66s4',SM='p66m4',SN='p66n4',SD4='p66d4',SNDEF='p66nd4',SCFG='p66cfg4';
+let TD={},SD={},MEDH=[],NEUH=[],DIFH=[],NEUDEF={},CFG={};
+
+function load(){
+  try{TD=JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){TD={};}
+  try{SD=JSON.parse(localStorage.getItem(SC)||'{}');}catch(e){SD={};}
+  try{MEDH=JSON.parse(localStorage.getItem(SM)||'[]');}catch(e){MEDH=[];}
+  try{NEUH=JSON.parse(localStorage.getItem(SN)||'[]');}catch(e){NEUH=[];}
+  try{DIFH=JSON.parse(localStorage.getItem(SD4)||'[]');}catch(e){DIFH=[];}
+  try{NEUDEF=JSON.parse(localStorage.getItem(SNDEF)||'{}');}catch(e){NEUDEF={};}
+  try{const raw=localStorage.getItem(SCFG);CFG=raw?JSON.parse(raw):JSON.parse(JSON.stringify(DEFAULT_CFG));}catch(e){CFG=JSON.parse(JSON.stringify(DEFAULT_CFG));}
+  if(!CFG.pilares) CFG.pilares=JSON.parse(JSON.stringify(DEFAULT_CFG.pilares));
+  if(!CFG.proto) CFG.proto=JSON.parse(JSON.stringify(DEFAULT_CFG.proto));
+  if(!CFG.frases) CFG.frases=JSON.parse(JSON.stringify(DEFAULT_CFG.frases));
+  if(!CFG.checkManha) CFG.checkManha=JSON.parse(JSON.stringify(DEFAULT_CFG.checkManha));
+  if(!CFG.checkDia) CFG.checkDia=JSON.parse(JSON.stringify(DEFAULT_CFG.checkDia));
+  if(!CFG.checkNoite) CFG.checkNoite=JSON.parse(JSON.stringify(DEFAULT_CFG.checkNoite));
+  if(!CFG.missoes) CFG.missoes=JSON.parse(JSON.stringify(DEFAULT_CFG.missoes));
+}
+function save(){
+  try{
+    localStorage.setItem(SK,JSON.stringify(TD));
+    localStorage.setItem(SC,JSON.stringify(SD));
+    localStorage.setItem(SM,JSON.stringify(MEDH));
+    localStorage.setItem(SN,JSON.stringify(NEUH));
+    localStorage.setItem(SD4,JSON.stringify(DIFH));
+    localStorage.setItem(SNDEF,JSON.stringify(NEUDEF));
+    localStorage.setItem(SCFG,JSON.stringify(CFG));
+  }catch(e){}
+}
+
+// ═══ NAV ═══
+function goTo(id,btn){
+  document.querySelectorAll('.ios-screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ios-tab').forEach(b=>b.classList.remove('active'));
+  const scr=document.getElementById('s-'+id);
+  if(scr){scr.classList.add('active');scr.scrollTop=0;}
+  if(btn) btn.classList.add('active');
+  load();
+  if(id==='home') renderHome();
+  if(id==='tracker') renderTracker();
+  if(id==='reg') renderRegScreen();
+  if(id==='check'){renderCheckDate();renderCheckList();}
+  if(id==='med') renderMedScreen();
+  if(id==='novoeu') renderNeuEuScreen();
+  if(id==='proto') renderProtoScreen();
+  if(id==='personalizar') renderPersonalizarScreen();
+}
+
+// ═══ TOAST ═══
+function showToast(icon,title,body){
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-title').textContent=title;
+  document.getElementById('toast-body').textContent=body;
+  const t=document.getElementById('ios-toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+function haptic(el){if(!el)return;el.style.transform='scale(0.92)';setTimeout(()=>el.style.transform='',110);}
+
+// ═══ CHECKLIST — DINÂMICO ═══
+function renderCheckList(){
+  const wrap=document.getElementById('check-list-render');if(!wrap)return;
+  const sections=[
+    {key:'checkManha',label:'🌅 Manhã'},
+    {key:'checkDia',label:'⚡ Durante o dia'},
+    {key:'checkNoite',label:'🌙 Noite'}
+  ];
+  wrap.innerHTML='';
+  sections.forEach(sec=>{
+    const items=CFG[sec.key]||[];
+    if(!items.length) return;
+    const sh=document.createElement('div');sh.className='ios-sh';sh.textContent=sec.label;wrap.appendChild(sh);
+    const group=document.createElement('div');group.style.cssText='margin:0 16px 8px';
+    const inner=document.createElement('div');inner.className='ios-section';
+    const grouped=document.createElement('div');grouped.className='ios-grouped';
+    items.forEach((item,idx)=>{
+      const row=document.createElement('div');row.className='check-ios-row';
+      row.onclick=()=>tChk(row);
+      row.innerHTML='<div class="check-ios-circle"></div><div class="check-ios-content"><div class="check-ios-main">'+escH(item.main)+'</div><div class="check-ios-sub">'+escH(item.sub||'')+'</div></div>';
+      grouped.appendChild(row);
+    });
+    inner.appendChild(grouped);wrap.appendChild(inner);
+  });
+  const total=getAllCheckItems().length;
+  updChk();
+}
+
+function getAllCheckItems(){return[...(CFG.checkManha||[]),...(CFG.checkDia||[]),...(CFG.checkNoite||[])];}
+
+function tChk(row){
+  const c=row.querySelector('.check-ios-circle'),m=row.querySelector('.check-ios-main');
+  c.classList.toggle('checked');m.classList.toggle('checked');haptic(c);updChk();
+}
+function updChk(){
+  const total=getAllCheckItems().length;
+  const done=document.querySelectorAll('#check-list-render .check-ios-circle.checked').length;
+  const pill=document.getElementById('check-pill');
+  if(pill){pill.textContent=done+'/'+total;pill.className='score-pill-ios'+(done>=Math.ceil(total*0.8)?' fire':'');}
+  const threshold=Math.ceil(total*0.8);
+  const mi=done>=total?4:done>=threshold?3:done>=Math.ceil(total*0.6)?2:done>=Math.ceil(total*0.4)?1:0;
+  const msgs=['Marque cada item ao longo do dia.','Continue, está no caminho!','Mais '+(threshold-done)+' para dia forte.','Quase no Dia de Comando!','Dia de Comando conquistado!'];
+  const el=document.getElementById('check-status-msg');
+  if(el) el.innerHTML='<strong style="color:var(--fire)">'+done+' de '+total+'.</strong> '+msgs[mi];
+}
+function resetChk(){
+  document.querySelectorAll('#check-list-render .check-ios-circle').forEach(c=>c.classList.remove('checked'));
+  document.querySelectorAll('#check-list-render .check-ios-main').forEach(m=>m.classList.remove('checked'));
+  updChk();showToast('↺','Checklist reiniciado','Pronto para um novo dia.');
+}
+function renderCheckDate(){const el=document.getElementById('check-date-lbl');if(el)el.textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});}
+
+// ═══ PROTOCOL — DINÂMICO ═══
+let currentProtoPhase=1;
+function renderProtoScreen(){
+  renderProtoPhase(currentProtoPhase);
+  // update active button
+  document.querySelectorAll('.proto-seg-btn').forEach((b,i)=>{
+    b.classList.toggle('active',i+1===currentProtoPhase);
+  });
+}
+function showPhase(n,btn){
+  currentProtoPhase=n;
+  document.querySelectorAll('.proto-seg-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProtoPhase(n);
+}
+function renderProtoPhase(n){
+  const wrap=document.getElementById('proto-render');if(!wrap)return;
+  const phColors={1:'var(--ph1)',2:'var(--ph2)',3:'var(--ph3)'};
+  const phLabels={1:'QUEBRA DO PROGRAMA — Dias 1 a 22',2:'CONSTRUÇÃO DO NOVO EU — Dias 23 a 44',3:'CONSOLIDAÇÃO DA IDENTIDADE — Dias 45 a 66'};
+  const items=CFG.proto[n]||[];
+  const color=phColors[n];
+  wrap.innerHTML='';
+  const sh=document.createElement('div');sh.className='ios-sh';sh.style.color=color;sh.textContent=phLabels[n];wrap.appendChild(sh);
+  items.forEach((item,idx)=>{
+    const card=document.createElement('div');card.className='day-ios';card.style.cssText='margin:0 16px 8px;border-top:2px solid '+color;
+    const hdr=document.createElement('div');hdr.className='day-ios-header';hdr.onclick=()=>tDay(hdr);
+    hdr.innerHTML='<div class="day-ios-num" style="color:'+color+'">'+escH(item.dias)+'</div><div class="day-ios-info"><div class="day-ios-title">'+escH(item.titulo)+'</div><div class="day-ios-tag">'+escH(item.tag||'')+'</div></div><div class="day-ios-chevron">›</div>';
+    const body=document.createElement('div');body.className='day-ios-body';
+    body.innerHTML='<div class="day-ios-focus">'+escH(item.foco)+'</div><div class="day-ios-practice">📋 '+escH(item.pratica)+'</div><div class="day-ios-quote">'+escH(item.frase)+'</div>';
+    card.appendChild(hdr);card.appendChild(body);wrap.appendChild(card);
+  });
+}
+function tDay(hdr){hdr.nextElementSibling.classList.toggle('open');hdr.classList.toggle('open');}
+
+// ═══ SLIDERS ═══
+const slKeys=['disc','foco','dom','exec','emoc','ener'];
+const slColorsDefault=['#FF6B00','#BF5AF2','#30D158','#FF9500','#FFD60A','#FF3B30'];
+function slUpd(key,el,color){
+  const v=parseInt(el.value);
+  const sv=document.getElementById('sv-'+key);if(sv)sv.textContent=v;
+  el.style.background='linear-gradient(90deg,'+color+' '+(v*10)+'%,rgba(58,58,60,1) '+(v*10)+'%)';
+  recalcPlacar();
+}
+function recalcPlacar(){
+  const total=slKeys.reduce((a,k)=>{const e=document.getElementById('sl-'+k);return a+(e?parseInt(e.value):0);},0);
+  const rp=document.getElementById('reg-placar');if(rp)rp.textContent=total;
+  const lbl=total>=50?'🔥 Dia de Comando!':total>=40?'⚡ Dia Forte':total>=30?'⚠️ Dia de Alerta':'❌ Velho Eu Venceu';
+  const rs=document.getElementById('reg-status');if(rs)rs.textContent=lbl;
+}
+function initSliders(){
+  slKeys.forEach((k,i)=>{
+    const el=document.getElementById('sl-'+k);if(!el)return;
+    const color=(CFG.pilares&&CFG.pilares[i])?CFG.pilares[i].cor:slColorsDefault[i];
+    el.style.background='linear-gradient(90deg,'+color+' 50%,rgba(58,58,60,1) 50%)';
+    // update label
+    const lbl=document.getElementById('pillar-label-'+k);
+    if(lbl&&CFG.pilares&&CFG.pilares[i]) lbl.textContent=CFG.pilares[i].emoji+' '+CFG.pilares[i].nome;
+  });
+}
+
+// ═══ MISSÕES DIÁRIAS — REGISTRO ═══
+function renderMissoesWrap(){
+  const wrap=document.getElementById('missoes-wrap');if(!wrap)return;
+  const m=CFG.missoes||DEFAULT_CFG.missoes;
+  wrap.innerHTML=[
+    {key:'resultado',cor:'var(--fire)',label:'Resultado'},
+    {key:'saude',cor:'var(--ph3)',label:'Saúde'},
+    {key:'org',cor:'var(--ph2)',label:'Organização'}
+  ].map(r=>`
+    <div class="missao-row">
+      <div class="missao-tag" style="color:${r.cor}">${r.label}</div>
+      <input class="missao-input" id="missao-${r.key}" placeholder="${escH(m[r.key]||'')}" value="">
+    </div>`).join('');
+}
+function getMissoes(){
+  return {
+    resultado: document.getElementById('missao-resultado')?.value||CFG.missoes?.resultado||'',
+    saude: document.getElementById('missao-saude')?.value||CFG.missoes?.saude||'',
+    org: document.getElementById('missao-org')?.value||CFG.missoes?.org||''
+  };
+}
+
+// ═══ EMOÇÕES DISPENZA ═══
+const EMOCOES=[
+  {emoji:'😨',label:'Medo',val:1},{emoji:'😠',label:'Raiva',val:2},
+  {emoji:'😔',label:'Tristeza',val:3},{emoji:'😐',label:'Neutro',val:4},
+  {emoji:'💪',label:'Coragem',val:5},{emoji:'🙂',label:'Aceitação',val:6},
+  {emoji:'❤️',label:'Amor',val:7},{emoji:'🙏',label:'Gratidão',val:8}
+];
+const EMO_LABELS=['','😨 Medo','😠 Raiva','😔 Tristeza','😐 Neutro','💪 Coragem','🙂 Aceitação','❤️ Amor','🙏 Gratidão'];
+function buildEmoGrid(cid){
+  const c=document.getElementById(cid);if(!c)return;c.innerHTML='';
+  EMOCOES.forEach(e=>{
+    const btn=document.createElement('div');btn.className='emo-btn';btn.dataset.val=e.val;
+    btn.innerHTML='<div class="emo-emoji">'+e.emoji+'</div><div class="emo-label">'+e.label+'</div>';
+    btn.onclick=()=>{c.querySelectorAll('.emo-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');haptic(btn);};
+    c.appendChild(btn);
+  });
+}
+function getSelEmo(cid){const s=document.querySelector('#'+cid+' .emo-btn.sel');return s?parseInt(s.dataset.val):null;}
+
+// ═══ GRATIDÃO ═══
+const GRAT_PH=['🙏 Sou grato porque (passado que me formou)...','✨ Já sinto gratidão por (futuro que estou criando)...','💚 Uma pessoa por quem sou grato hoje e por quê...'];
+function buildGratFields(){
+  const w=document.getElementById('grat-wrap');if(!w)return;
+  w.innerHTML=GRAT_PH.map((ph,i)=>'<textarea class="grat-field" id="grat-'+i+'" placeholder="'+ph+'"></textarea>').join('');
+}
+function getGratValues(){return[0,1,2].map(i=>{const e=document.getElementById('grat-'+i);return e?e.value:'';});}
+
+// ═══ REGISTRO ═══
+function renderRegScreen(){
+  load();
+  const total=Object.values(TD).filter(v=>v).length,next=total+1;
+  const dayEl=document.getElementById('reg-day');if(dayEl)dayEl.textContent=Math.min(next,66);
+  const ofEl=document.getElementById('reg-day-of');if(ofEl)ofEl.textContent=next>66?'✅ Concluído!':'de 66 dias';
+  const ph=next<=22?'Fase 1 — Quebra':next<=44?'Fase 2 — Construção':'Fase 3 — Consolidação';
+  const phEl=document.getElementById('reg-phase');if(phEl)phEl.textContent=ph;
+  const now=new Date();
+  const dsEl=document.getElementById('reg-date-show');if(dsEl)dsEl.textContent=now.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
+  const dlEl=document.getElementById('reg-date-lbl');if(dlEl)dlEl.textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  initSliders();buildGratFields();buildEmoGrid('reg-emo-grid');renderMissoesWrap();renderHistIos();
+}
+
+function salvarDia(){
+  load();
+  const total=Object.values(TD).filter(v=>v).length,dn=total+1;
+  if(dn>66){showToast('🏆','Protocolo concluído!','Você completou os 66 dias.');return;}
+  const vals={};
+  slKeys.forEach(k=>{const e=document.getElementById('sl-'+k);vals[k]=e?parseInt(e.value):5;});
+  const notaEl=document.getElementById('reg-nota');vals.nota=notaEl?notaEl.value:'';
+  vals.placar=slKeys.reduce((a,k)=>a+vals[k],0);
+  vals.date=new Date().toLocaleDateString('pt-BR');
+  vals.grat=getGratValues();vals.emo=getSelEmo('reg-emo-grid');
+  vals.missoes=getMissoes();
+  SD[dn]=vals;TD[dn]=true;save();
+  if(notaEl)notaEl.value='';
+  slKeys.forEach((k,i)=>{const e=document.getElementById('sl-'+k);if(e){e.value=5;const c=(CFG.pilares&&CFG.pilares[i])?CFG.pilares[i].cor:slColorsDefault[i];e.style.background='linear-gradient(90deg,'+c+' 50%,rgba(58,58,60,1) 50%)';const sv=document.getElementById('sv-'+k);if(sv)sv.textContent=5;}});
+  recalcPlacar();buildGratFields();buildEmoGrid('reg-emo-grid');
+  renderRegScreen();renderHome();renderTracker();
+  showToast(vals.placar>=50?'🔥':vals.placar>=40?'⚡':'✅','Dia '+dn+' salvo!','Placar: '+vals.placar+'/60');
+}
+
+// ═══ PERSONALIZAR SCREEN ═══
+function renderPersonalizarScreen(){
+  load();
+  const n=document.getElementById('cfg-nome');if(n)n.value=CFG.nome||'';
+  const o=document.getElementById('cfg-objetivo');if(o)o.value=CFG.objetivo||'';
+  const mr=document.getElementById('cfg-missao-resultado');if(mr)mr.value=CFG.missoes?.resultado||'';
+  const ms=document.getElementById('cfg-missao-saude');if(ms)ms.value=CFG.missoes?.saude||'';
+  const mo=document.getElementById('cfg-missao-org');if(mo)mo.value=CFG.missoes?.org||'';
+  renderCfgPilares();
+  renderCfgCheckItems('manha','cfg-check-manha');
+  renderCfgCheckItems('dia','cfg-check-dia');
+  renderCfgCheckItems('noite','cfg-check-noite');
+  renderCfgProto(1);renderCfgProto(2);renderCfgProto(3);
+  renderCfgFrases();
+}
+
+function renderCfgPilares(){
+  const wrap=document.getElementById('cfg-pilares-wrap');if(!wrap)return;
+  wrap.innerHTML='';
+  (CFG.pilares||[]).forEach((p,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='padding:11px 16px;border-bottom:0.5px solid var(--ios-separator);display:flex;align-items:center;gap:10px';
+    row.innerHTML=`
+      <input value="${escH(p.emoji)}" id="cfg-p-emoji-${i}" maxlength="2" style="width:32px;background:transparent;border:none;color:var(--ios-label);font-size:20px;outline:none;text-align:center">
+      <input value="${escH(p.nome)}" id="cfg-p-nome-${i}" placeholder="Nome do pilar" style="flex:1;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;outline:none;letter-spacing:-0.24px">
+      <input type="color" value="${p.cor}" id="cfg-p-cor-${i}" style="width:28px;height:28px;border:none;background:none;cursor:pointer;border-radius:6px;padding:0">`;
+    if(i===CFG.pilares.length-1) row.style.borderBottom='none';
+    wrap.appendChild(row);
+  });
+}
+
+function renderCfgCheckItems(period,containerId){
+  const wrap=document.getElementById(containerId);if(!wrap)return;
+  const key='check'+period.charAt(0).toUpperCase()+period.slice(1);
+  const items=CFG[key]||[];
+  wrap.innerHTML='';
+  items.forEach((item,idx)=>{
+    const row=document.createElement('div');row.className='cfg-item-row';
+    row.style.flexDirection='column';row.style.alignItems='stretch';
+    row.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px">
+        <input value="${escH(item.main)}" placeholder="Item principal..." style="flex:1;background:transparent;border:none;color:var(--ios-label);font-family:-apple-system,sans-serif;font-size:15px;outline:none;letter-spacing:-0.24px" oninput="CFG['${key}'][${idx}].main=this.value">
+        <button class="cfg-del-btn" onclick="removeCheckItem('${period}',${idx})">×</button>
+      </div>
+      <input class="cfg-item-sub" value="${escH(item.sub||'')}" placeholder="Descrição breve (opcional)..." oninput="CFG['${key}'][${idx}].sub=this.value">`;
+    wrap.appendChild(row);
+  });
+}
+
+function addCheckItem(period){
+  const key='check'+period.charAt(0).toUpperCase()+period.slice(1);
+  if(!CFG[key]) CFG[key]=[];
+  CFG[key].push({main:'Novo item',sub:''});
+  renderCfgCheckItems(period,'cfg-check-'+period);
+}
+function removeCheckItem(period,idx){
+  const key='check'+period.charAt(0).toUpperCase()+period.slice(1);
+  CFG[key].splice(idx,1);
+  renderCfgCheckItems(period,'cfg-check-'+period);
+}
+
+function renderCfgProto(n){
+  const wrap=document.getElementById('cfg-proto-ph'+n);if(!wrap)return;
+  const items=CFG.proto[n]||[];const phC=['','var(--ph1)','var(--ph2)','var(--ph3)'][n];
+  wrap.innerHTML='';
+  items.forEach((item,idx)=>{
+    const card=document.createElement('div');card.className='cfg-proto-card';
+    card.innerHTML=`
+      <div class="cfg-proto-header" style="border-bottom:0.5px solid var(--ios-separator)">
+        <input value="${escH(item.dias)}" placeholder="Dias" style="width:52px;min-width:52px;color:${phC};font-weight:700;font-size:16px;letter-spacing:-0.5px" oninput="CFG.proto[${n}][${idx}].dias=this.value">
+        <input value="${escH(item.titulo)}" placeholder="Título da atividade" oninput="CFG.proto[${n}][${idx}].titulo=this.value">
+        <button class="cfg-del-btn" onclick="removeProtoItem(${n},${idx})">×</button>
+      </div>
+      <div class="cfg-proto-body">
+        <input value="${escH(item.tag||'')}" placeholder="Tag / subtítulo" style="width:100%;background:transparent;border:none;color:var(--ios-label2);font-family:-apple-system,sans-serif;font-size:13px;outline:none;letter-spacing:-0.08px;padding:6px 0;border-bottom:0.5px solid var(--ios-separator)" oninput="CFG.proto[${n}][${idx}].tag=this.value">
+        <span class="cfg-proto-field-label">📖 Foco / Descrição</span>
+        <textarea class="cfg-proto-field" placeholder="Descrição da prática..." oninput="CFG.proto[${n}][${idx}].foco=this.value">${escH(item.foco)}</textarea>
+        <span class="cfg-proto-field-label">📋 Missão prática</span>
+        <textarea class="cfg-proto-field" placeholder="Missão prática do dia..." oninput="CFG.proto[${n}][${idx}].pratica=this.value">${escH(item.pratica)}</textarea>
+        <span class="cfg-proto-field-label">💬 Frase do dia</span>
+        <textarea class="cfg-proto-field" placeholder='"Frase de comando..."' style="min-height:38px" oninput="CFG.proto[${n}][${idx}].frase=this.value">${escH(item.frase)}</textarea>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function addProtoItem(n){
+  if(!CFG.proto[n]) CFG.proto[n]=[];
+  CFG.proto[n].push({titulo:'Nova atividade',dias:'—',tag:'',foco:'',pratica:'',frase:''});
+  renderCfgProto(n);
+}
+function removeProtoItem(n,idx){
+  CFG.proto[n].splice(idx,1);renderCfgProto(n);
+}
+
+function renderCfgFrases(){
+  const wrap=document.getElementById('cfg-frases-wrap');if(!wrap)return;
+  wrap.innerHTML='';
+  (CFG.frases||[]).forEach((f,idx)=>{
+    const row=document.createElement('div');row.className='cfg-frase-row';
+    row.innerHTML=`<input value="${escH(f)}" placeholder='"Frase motivacional..."' style="flex:1" oninput="CFG.frases[${idx}]=this.value"><button class="cfg-del-btn" onclick="removeFrase(${idx})">×</button>`;
+    wrap.appendChild(row);
+  });
+}
+function addFrase(){CFG.frases.push('Nova frase...');renderCfgFrases();}
+function removeFrase(idx){CFG.frases.splice(idx,1);renderCfgFrases();}
+
+function salvarPersonalizacao(){
+  // Pilares
+  (CFG.pilares||[]).forEach((_,i)=>{
+    const em=document.getElementById('cfg-p-emoji-'+i);
+    const nm=document.getElementById('cfg-p-nome-'+i);
+    const co=document.getElementById('cfg-p-cor-'+i);
+    if(em)CFG.pilares[i].emoji=em.value;
+    if(nm)CFG.pilares[i].nome=nm.value;
+    if(co)CFG.pilares[i].cor=co.value;
+  });
+  // Nome/objetivo
+  const n=document.getElementById('cfg-nome');if(n)CFG.nome=n.value;
+  const o=document.getElementById('cfg-objetivo');if(o)CFG.objetivo=o.value;
+  // Missoes
+  const mr=document.getElementById('cfg-missao-resultado');const ms=document.getElementById('cfg-missao-saude');const mo=document.getElementById('cfg-missao-org');
+  CFG.missoes={resultado:mr?mr.value:'',saude:ms?ms.value:'',org:mo?mo.value:''};
+  save();
+  showToast('✅','Personalização salva!','Todas as telas foram atualizadas.');
+  // Refresh dynamic screens
+  renderCheckList();renderProtoScreen();initSliders();renderMissoesWrap();
+}
+
+function exportarConfig(){
+  const blob=new Blob([JSON.stringify(CFG,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='protocolo66-config.json';a.click();
+  URL.revokeObjectURL(url);
+  showToast('⬆️','Configuração exportada!','Arquivo JSON salvo.');
+}
+
+function importarConfig(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const imported=JSON.parse(ev.target.result);
+      CFG={...JSON.parse(JSON.stringify(DEFAULT_CFG)),...imported};
+      save();renderPersonalizarScreen();
+      showToast('⬇️','Configuração importada!','Personalizações aplicadas.');
+    }catch(err){showToast('❌','Erro ao importar','Arquivo JSON inválido.');}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+function resetPersonalizacao(){
+  if(!confirm('Restaurar todas as configurações padrão?')) return;
+  CFG=JSON.parse(JSON.stringify(DEFAULT_CFG));save();
+  renderPersonalizarScreen();renderCheckList();renderProtoScreen();initSliders();renderMissoesWrap();
+  showToast('↺','Configuração restaurada','Padrão D.D.P. aplicado.');
+}
+
+// ═══ MEDITAÇÃO ═══
+let medSecs=600,medMax=600,medRunning=false,medDone=false,medMode='coerencia';
+let medIntv=null,breathST=null,breathStep=0,phraseIdx=0;
+const BREATH={
+  coerencia:[{d:4000,l:'Inspire...',s:1.35},{d:4000,l:'Segure...',s:1.35},{d:8000,l:'Expire devagar...',s:0.75}],
+  quebra:[{d:4000,l:'Inspire profundo...',s:1.4},{d:2000,l:'Segure...',s:1.4},{d:6000,l:'Expire e observe...',s:0.72}],
+  visualizacao:[{d:5000,l:'Inspire e visualize...',s:1.45},{d:3000,l:'Sinta o futuro...',s:1.45},{d:7000,l:'Expire com gratidão...',s:0.68}]
+};
+function getDispenzaPhrases(){
+  if(CFG.frases&&CFG.frases.length) return CFG.frases;
+  return['Você não é seus pensamentos. Você os observa.','Sinta o futuro como se já fosse o presente.','O novo eu age, fala e sente diferente agora.','Seja grato pelo que ainda vai acontecer.','Identifique o programa antigo. Apenas observe.'];
+}
+function selMedMode(btn){
+  document.querySelectorAll('.med-mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');medMode=btn.dataset.mode;
+  medSecs=parseInt(btn.dataset.dur);medMax=medSecs;medRunning=false;medDone=false;
+  clearInterval(medIntv);clearTimeout(breathST);
+  const mb=document.getElementById('med-btn');if(mb)mb.textContent='Iniciar';
+  updateMedTimer();
+  const pl=document.getElementById('med-phase-lbl');if(pl)pl.textContent='Pronto para começar';
+  const ph=document.getElementById('med-phrase');if(ph)ph.textContent='';
+  const ma=document.getElementById('med-after');if(ma)ma.style.display='none';
+}
+function updateMedTimer(){const m=Math.floor(medSecs/60),s=medSecs%60;const el=document.getElementById('med-timer');if(el)el.textContent=m+':'+(s<10?'0':'')+s;}
+function runBreath(){
+  const cycles=BREATH[medMode]||BREATH.coerencia;
+  const step=cycles[breathStep%cycles.length];
+  const orb=document.getElementById('med-orb');if(orb)orb.style.transform='scale('+step.s+')';
+  const pl=document.getElementById('med-phase-lbl');if(pl)pl.textContent=step.l;
+  if(breathStep%3===0){const ph=document.getElementById('med-phrase');const arr=getDispenzaPhrases();if(ph)ph.textContent=arr[phraseIdx%arr.length];phraseIdx++;}
+  breathStep++;breathST=setTimeout(runBreath,step.d);
+}
+function medToggle(){
+  if(medDone)return;const mb=document.getElementById('med-btn');
+  if(!medRunning){medRunning=true;if(mb)mb.textContent='Pausar';runBreath();medIntv=setInterval(()=>{medSecs--;updateMedTimer();if(medSecs<=0)medComplete();},1000);}
+  else{medRunning=false;clearInterval(medIntv);clearTimeout(breathST);if(mb)mb.textContent='Continuar';const pl=document.getElementById('med-phase-lbl');if(pl)pl.textContent='Pausado';}
+}
+function medComplete(){
+  medRunning=false;medDone=true;clearInterval(medIntv);clearTimeout(breathST);
+  const orb=document.getElementById('med-orb');if(orb)orb.style.transform='scale(1)';
+  const mb=document.getElementById('med-btn');if(mb)mb.textContent='Concluído ✓';
+  const pl=document.getElementById('med-phase-lbl');if(pl)pl.textContent='Sessão concluída 🙏';
+  const ph=document.getElementById('med-phrase');if(ph)ph.textContent='"Você acabou de dar ao seu cérebro um sinal de que o futuro já chegou."';
+  const ma=document.getElementById('med-after');if(ma)ma.style.display='block';
+  buildEmoGrid('emo-after-grid');showToast('🧠','Meditação concluída!','Registre seu estado emocional.');
+}
+function medReset(){
+  clearInterval(medIntv);clearTimeout(breathST);medRunning=false;medDone=false;breathStep=0;phraseIdx=0;
+  const ab=document.querySelector('.med-mode-btn.active');if(ab){medSecs=parseInt(ab.dataset.dur);medMax=medSecs;}
+  updateMedTimer();const orb=document.getElementById('med-orb');if(orb)orb.style.transform='scale(1)';
+  const mb=document.getElementById('med-btn');if(mb)mb.textContent='Iniciar';
+  const pl=document.getElementById('med-phase-lbl');if(pl)pl.textContent='Pronto para começar';
+  const ph=document.getElementById('med-phrase');if(ph)ph.textContent='';
+  const ma=document.getElementById('med-after');if(ma)ma.style.display='none';
+}
+function salvarMed(){
+  load();
+  const before=getSelEmo('emo-before-grid'),after=getSelEmo('emo-after-grid');
+  const insEl=document.getElementById('med-insight');
+  const rec={date:new Date().toLocaleDateString('pt-BR'),mode:medMode,duration:medMax-medSecs,before,after,insight:insEl?insEl.value:'',ts:Date.now()};
+  MEDH.unshift(rec);if(MEDH.length>40)MEDH=MEDH.slice(0,40);save();if(insEl)insEl.value='';
+  medReset();renderMedScreen();renderHome();showToast('🧠','Sessão salva!','Modo '+medMode+(after&&before&&after>before?' · +'+(after-before)+' nível emocional':''));
+}
+function renderMedScreen(){
+  load();
+  const badge=document.getElementById('med-sessions-badge');if(badge)badge.textContent=MEDH.length+' sessões';
+  const prev=document.getElementById('med-novoeu-preview'),cta=document.getElementById('med-novoeu-cta'),txt=document.getElementById('med-novoeu-txt');
+  if(NEUDEF.frase){if(prev)prev.style.display='block';if(cta)cta.style.display='none';if(txt)txt.textContent='"'+NEUDEF.frase+'"';}
+  else{if(prev)prev.style.display='none';if(cta)cta.style.display='block';}
+  buildEmoGrid('emo-before-grid');
+  const hist=document.getElementById('med-hist');if(!hist)return;
+  if(!MEDH.length){hist.innerHTML='<div style="font-size:15px;color:var(--ios-label3);padding:12px 0">Nenhuma sessão ainda.</div>';return;}
+  const mL={coerencia:'Respiração',quebra:'Quebra do Padrão',visualizacao:'Novo Eu'};
+  hist.innerHTML='<div class="hist-ios">'+MEDH.slice(0,5).map(m=>{
+    const lift=m.after&&m.before?m.after-m.before:null;const lc=lift>0?'#30D158':lift<0?'#FF3B30':'#8E8E93';const lStr=lift!==null?(lift>0?'↑'+lift:lift<0?'↓'+Math.abs(lift):'='):'';
+    const mins=Math.max(1,Math.floor((m.duration||60)/60));
+    return '<div class="hist-ios-row"><div class="hist-day-circle" style="background:rgba(191,90,242,0.15);color:#BF5AF2;font-size:17px">🧠</div><div class="hist-ios-content"><div class="hist-ios-title">'+(mL[m.mode]||m.mode)+'</div><div class="hist-ios-sub">'+m.date+' · '+mins+' min '+(m.before?EMO_LABELS[m.before]:'')+' → '+(m.after?EMO_LABELS[m.after]:'')+' <span style="color:'+lc+';font-weight:700">'+lStr+'</span></div>'+(m.insight?'<div style="font-size:11px;color:var(--ios-label3);margin-top:2px;font-style:italic">"'+m.insight.slice(0,55)+'…"</div>':'')+'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ═══ NOVO EU ═══
+let neuCheckSel=null;
+function selNeuCheck(row,val){
+  document.querySelectorAll('#s-novoeu .check-ios-circle').forEach(c=>c.classList.remove('checked'));
+  document.querySelectorAll('#s-novoeu .check-ios-main').forEach(m=>m.classList.remove('checked'));
+  const c=row.querySelector('.check-ios-circle'),m=row.querySelector('.check-ios-main');
+  c.classList.add('checked');m.classList.add('checked');neuCheckSel=val;haptic(c);
+}
+function salvarNeuDef(){
+  load();
+  NEUDEF={
+    age:document.getElementById('neu-age')?.value||'',
+    sente:document.getElementById('neu-sente')?.value||'',
+    reage:document.getElementById('neu-reage')?.value||'',
+    frase:document.getElementById('neu-frase')?.value||''
+  };
+  save();showToast('🔮','Identidade salva!','O cérebro recebeu o sinal do novo eu.');
+}
+function salvarNeuCheck(){
+  load();
+  const evEl=document.getElementById('neu-evidencia');
+  const rec={date:new Date().toLocaleDateString('pt-BR'),check:neuCheckSel,evidencia:evEl?evEl.value:'',ts:Date.now()};
+  NEUH.unshift(rec);if(NEUH.length>70)NEUH=NEUH.slice(0,70);save();
+  if(evEl)evEl.value='';neuCheckSel=null;
+  document.querySelectorAll('#s-novoeu .check-ios-circle').forEach(c=>c.classList.remove('checked'));
+  document.querySelectorAll('#s-novoeu .check-ios-main').forEach(m=>m.classList.remove('checked'));
+  renderNeuEuScreen();showToast('🔮','Check salvo!','Dados do novo eu registrados.');
+}
+function renderNeuEuScreen(){
+  load();
+  if(NEUDEF.age){const el=document.getElementById('neu-age');if(el)el.value=NEUDEF.age;}
+  if(NEUDEF.sente){const el=document.getElementById('neu-sente');if(el)el.value=NEUDEF.sente;}
+  if(NEUDEF.reage){const el=document.getElementById('neu-reage');if(el)el.value=NEUDEF.reage;}
+  if(NEUDEF.frase){const el=document.getElementById('neu-frase');if(el)el.value=NEUDEF.frase;}
+  const hist=document.getElementById('neu-hist');if(!hist)return;
+  if(!NEUH.length){hist.innerHTML='<div style="font-size:15px;color:var(--ios-label3);padding:12px 0">Nenhum check ainda.</div>';return;}
+  const ce={sim:'✅',parcial:'⚡',nao:'❌'},cc={sim:'#30D158',parcial:'#FF9500',nao:'#FF3B30'},cl={sim:'Agi como o novo eu',parcial:'Em transição',nao:'Velho eu venceu'};
+  hist.innerHTML='<div class="hist-ios">'+NEUH.slice(0,7).map(n=>{
+    const e=ce[n.check]||'📋',c=cc[n.check]||'#8E8E93';
+    return '<div class="hist-ios-row"><div class="hist-day-circle" style="background:'+c+'20;color:'+c+';font-size:16px">'+e+'</div><div class="hist-ios-content"><div class="hist-ios-title" style="color:'+c+'">'+(cl[n.check]||'Registrado')+'</div><div class="hist-ios-sub">'+n.date+'</div>'+(n.evidencia?'<div style="font-size:11px;color:var(--ios-label3);margin-top:2px;font-style:italic">"'+n.evidencia.slice(0,55)+'…"</div>':'')+'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ═══ MODO CRISE ═══
+let criseIntv=null,criseST=null,criseSecs=60,criseBreathStep=0;
+const CRISE_PH=['Você não é sua reação automática.','O velho eu quer reagir. O novo eu escolhe.','Respire. Cada segundo é uma vitória.','Ninguém pode tirar seu domínio próprio.','Você está quebrando o padrão agora mesmo.'];
+function openCrise(){
+  const ov=document.getElementById('crise-ov');if(!ov)return;
+  ov.style.display='flex';criseSecs=60;criseBreathStep=0;
+  document.getElementById('crise-timer').textContent=60;
+  document.getElementById('crise-phase').textContent='Inspire devagar...';
+  document.getElementById('crise-phrase').textContent='';
+  runCriseBreath();
+  criseIntv=setInterval(()=>{
+    criseSecs--;const el=document.getElementById('crise-timer');if(el)el.textContent=criseSecs;
+    const pe=document.getElementById('crise-phrase');if(pe)pe.textContent='"'+CRISE_PH[Math.floor((60-criseSecs)/12)%CRISE_PH.length]+'"';
+    if(criseSecs<=0){clearInterval(criseIntv);clearTimeout(criseST);const ph=document.getElementById('crise-phase');if(ph)ph.textContent='Agora escolha.';}
+  },1000);
+}
+function runCriseBreath(){
+  const steps=[{l:'Inspire...',s:1.28,d:4000},{l:'Segure...',s:1.28,d:4000},{l:'Expire...',s:0.78,d:8000}];
+  const step=steps[criseBreathStep%3];
+  const orb=document.getElementById('crise-orb');if(orb)orb.style.transform='scale('+step.s+')';
+  const ph=document.getElementById('crise-phase');if(ph)ph.textContent=step.l;
+  criseBreathStep++;criseST=setTimeout(runCriseBreath,step.d);
+}
+function closeCrise(outcome){
+  clearInterval(criseIntv);clearTimeout(criseST);
+  const ov=document.getElementById('crise-ov');if(ov)ov.style.display='none';
+  load();DIFH.unshift({type:'crise',outcome,date:new Date().toLocaleDateString('pt-BR'),ts:Date.now()});save();renderHome();
+  showToast(outcome==='venceu'?'⚡':'📋','Modo Crise encerrado',outcome==='venceu'?'Padrão quebrado!':'Dado registrado. Amanhã você escolhe diferente.');
+}
+
+// ═══ DIA DIFÍCIL ═══
+function openDificil(){const ov=document.getElementById('dificil-ov');if(ov)ov.style.display='flex';}
+function closeDificil(){const ov=document.getElementById('dificil-ov');if(ov)ov.style.display='none';}
+function salvarDificil(){
+  load();
+  const p=document.getElementById('dif-padrao'),a=document.getElementById('dif-amanha');
+  DIFH.unshift({type:'dificil',padrao:p?p.value:'',amanha:a?a.value:'',date:new Date().toLocaleDateString('pt-BR'),ts:Date.now()});
+  if(DIFH.length>40)DIFH=DIFH.slice(0,40);save();if(p)p.value='';if(a)a.value='';closeDificil();
+  showToast('📋','Dia difícil registrado','Amanhã você quebra esse padrão.');
+}
+
+// ═══ TRACKER ═══
+function renderTracker(){
+  const phases=[{id:'tc-1',s:1,e:22,cls:'done-1'},{id:'tc-2',s:23,e:44,cls:'done-2'},{id:'tc-3',s:45,e:66,cls:'done-3'}];
+  phases.forEach(ph=>{
+    const g=document.getElementById(ph.id);if(!g)return;g.innerHTML='';
+    for(let d=ph.s;d<=ph.e;d++){
+      const c=document.createElement('div');c.className='tday'+(TD[d]?' '+ph.cls:'');c.textContent=d;
+      if(TD[d]&&SD[d]&&SD[d].emo>=7)c.style.boxShadow='inset 0 0 0 2px #30D158';
+      c.addEventListener('click',()=>{TD[d]=!TD[d];save();renderTracker();renderHome();haptic(c);});
+      g.appendChild(c);
+    }
+  });
+  const total=Object.values(TD).filter(v=>v).length,pct=Math.round(total/66*100),streak=calcStreak(),maxS=calcMaxStreak();
+  const ring=document.getElementById('t-ring');if(ring)ring.style.strokeDashoffset=(226.2-(pct/100*226.2));
+  const rp=document.getElementById('t-ring-pct');if(rp)rp.textContent=pct+'%';
+  const pb=document.getElementById('t-pct-badge');if(pb)pb.textContent=total+'/66';
+  const ct=document.getElementById('t-card-title');if(ct)ct.textContent=total+' de 66 dias';
+  const ss=document.getElementById('t-streak-span');if(ss)ss.textContent=streak;
+  const cm=document.getElementById('t-card-msg');if(cm)cm.textContent=(streak>=7?'🔥 Não quebre a corrente!':streak>0?'Continue!':'Toque para marcar.')+' | Recorde: '+maxS+' dias';
+}
+function calcStreak(){const t=Object.values(TD).filter(v=>v).length;let s=0;for(let d=t;d>=1;d--){if(TD[d])s++;else break;}return s;}
+function calcMaxStreak(){let mx=0,c=0;for(let d=1;d<=66;d++){if(TD[d]){c++;mx=Math.max(mx,c);}else c=0;}return mx;}
+function resetAll(){if(!confirm('Reiniciar protocolo? Apaga todos os dados.'))return;TD={};SD={};MEDH=[];NEUH=[];DIFH=[];NEUDEF={};save();renderTracker();renderHome();showToast('↺','Reiniciado','Novo ciclo iniciado.');}
+
+// ═══ GAUGES ═══
+function renderGauges(last7){
+  const c=document.getElementById('h-gauges');if(!c)return;c.innerHTML='';
+  const circ=100.5;
+  (CFG.pilares||DEFAULT_CFG.pilares).forEach((p,i)=>{
+    const key=p.key;let avg=0;if(last7.length)avg=last7.reduce((a,d)=>a+(SD[d]?SD[d][key]:0),0)/last7.length;
+    const off=circ-(avg/10*circ);
+    const el=document.createElement('div');el.className='gauge-ios';
+    el.innerHTML='<div class="gauge-ring-wrap" style="width:64px;height:64px"><svg class="gauge-ring-svg" viewBox="0 0 36 36"><circle class="gauge-ring-track" cx="18" cy="18" r="16"/><circle class="gauge-ring-fill" cx="18" cy="18" r="16" stroke="'+p.cor+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" transform="rotate(-90 18 18)"/></svg><div class="gauge-ring-center"><div class="gauge-ring-val" style="color:'+p.cor+'">'+(avg>0?avg.toFixed(1):'—')+'</div><div class="gauge-ring-unit">/10</div></div></div><div class="gauge-ios-name">'+escH(p.nome)+'</div>';
+    c.appendChild(el);
+  });
+  let emoAvg=0;if(last7.length)emoAvg=last7.reduce((a,d)=>a+(SD[d]&&SD[d].emo?SD[d].emo:0),0)/last7.length;
+  const emoLabel=emoAvg>=7.5?'🙏':emoAvg>=6.5?'❤️':emoAvg>=5.5?'🙂':emoAvg>=4.5?'💪':emoAvg>=3.5?'😐':emoAvg>0?'😠':'—';
+  const emoOff=circ-(emoAvg/8*circ);
+  const emoEl=document.createElement('div');emoEl.className='gauge-ios';
+  emoEl.innerHTML='<div class="gauge-ring-wrap" style="width:64px;height:64px"><svg class="gauge-ring-svg" viewBox="0 0 36 36"><circle class="gauge-ring-track" cx="18" cy="18" r="16"/><circle class="gauge-ring-fill" cx="18" cy="18" r="16" stroke="#30D158" stroke-dasharray="'+circ+'" stroke-dashoffset="'+emoOff+'" transform="rotate(-90 18 18)"/></svg><div class="gauge-ring-center"><div style="font-size:20px;line-height:1">'+emoLabel+'</div></div></div><div class="gauge-ios-name">Freq. Emocional</div>';
+  c.appendChild(emoEl);
+}
+
+// ═══ HEATMAP ═══
+function renderHeatmap(){
+  const g=document.getElementById('h-heatmap');if(!g)return;g.innerHTML='';
+  for(let w=0;w<10;w++){
+    const row=document.createElement('div');row.className='heatmap-ios-row';
+    for(let d2=0;d2<7;d2++){
+      const dn=w*7+d2+1,cell=document.createElement('div');cell.className='heatmap-ios-cell';
+      if(dn>66){cell.style.opacity='0.12';cell.style.cursor='default';}
+      else{const s=SD[dn];if(s){const p=s.placar/60;cell.style.background=p>=0.85?'#FFD60A':p>=0.65?'#FF6B00':p>=0.4?'#FF3B30':'#4A1A00';cell.style.opacity='0.9';}else if(TD[dn])cell.style.background='rgba(255,107,0,0.18)';}
+      row.appendChild(cell);
+    }
+    g.appendChild(row);
+  }
+}
+
+// ═══ LINE CHART ═══
+function renderLine(days){
+  const svg=document.getElementById('h-linechart');if(!svg)return;svg.innerHTML='';
+  const W=svg.parentElement.offsetWidth||320,H=90;svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  for(let i=0;i<=3;i++){const y=H-(i/3)*(H-16)-6;const ln=document.createElementNS('http://www.w3.org/2000/svg','line');ln.setAttribute('x1',0);ln.setAttribute('x2',W);ln.setAttribute('y1',y);ln.setAttribute('y2',y);ln.setAttribute('stroke','rgba(255,255,255,0.05)');ln.setAttribute('stroke-width','1');svg.appendChild(ln);}
+  if(days.length<2){const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',W/2);t.setAttribute('y',H/2);t.setAttribute('fill','rgba(235,235,245,0.3)');t.setAttribute('text-anchor','middle');t.setAttribute('font-size','12');t.textContent='Registre 2+ dias para ver o gráfico';svg.appendChild(t);return;}
+  const pts=days.map(d=>({x:((d-1)/65)*(W-12)+6,y:H-8-(SD[d].placar/60)*(H-20),p:SD[d].placar}));
+  const defs=document.createElementNS('http://www.w3.org/2000/svg','defs');const grad=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');grad.setAttribute('id','lgg5');grad.setAttribute('x1','0');grad.setAttribute('x2','0');grad.setAttribute('y1','0');grad.setAttribute('y2','1');const s1=document.createElementNS('http://www.w3.org/2000/svg','stop');s1.setAttribute('offset','0%');s1.setAttribute('stop-color','#FF6B00');s1.setAttribute('stop-opacity','0.22');const s2=document.createElementNS('http://www.w3.org/2000/svg','stop');s2.setAttribute('offset','100%');s2.setAttribute('stop-color','#FF6B00');s2.setAttribute('stop-opacity','0');grad.appendChild(s1);grad.appendChild(s2);defs.appendChild(grad);svg.appendChild(defs);
+  const area=document.createElementNS('http://www.w3.org/2000/svg','polygon');area.setAttribute('points',pts.map(p=>p.x+','+p.y).join(' ')+' '+pts[pts.length-1].x+','+H+' '+pts[0].x+','+H);area.setAttribute('fill','url(#lgg5)');svg.appendChild(area);
+  const poly=document.createElementNS('http://www.w3.org/2000/svg','polyline');poly.setAttribute('points',pts.map(p=>p.x+','+p.y).join(' '));poly.setAttribute('fill','none');poly.setAttribute('stroke','#FF6B00');poly.setAttribute('stroke-width','2');poly.setAttribute('stroke-linejoin','round');poly.setAttribute('stroke-linecap','round');svg.appendChild(poly);
+  pts.forEach(p=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r','3.5');c.setAttribute('fill','#FF6B00');c.setAttribute('stroke','#000');c.setAttribute('stroke-width','2');svg.appendChild(c);});
+  const last=pts[pts.length-1];const cv=document.getElementById('chart-last-val');if(cv)cv.textContent=last?last.p:'—';
+}
+
+// ═══ HIST IOS ═══
+function renderHistIos(){
+  const el=document.getElementById('hist-lista-ios');if(!el)return;
+  const days=Object.keys(SD).map(Number).sort((a,b)=>b-a).slice(0,6);
+  if(!days.length){el.innerHTML='<div style="padding:12px 20px;font-size:15px;color:var(--ios-label3)">Nenhum registro ainda.</div>';return;}
+  el.innerHTML='<div class="hist-ios">'+days.map(d=>{
+    const s=SD[d],p=s.placar/60;const color=p>=0.85?'#FFD60A':p>=0.65?'#FF6B00':p>=0.4?'#FF9500':'#FF3B30';const emoji=p>=0.85?'🔥':p>=0.65?'⚡':p>=0.4?'✅':'⚠️';
+    const emoStr=s.emo?EMO_LABELS[s.emo]:'';
+    return '<div class="hist-ios-row"><div class="hist-day-circle" style="background:'+color+'20;color:'+color+'">'+d+'</div><div class="hist-ios-content"><div class="hist-ios-title">'+emoji+' Dia '+d+' '+emoStr+'</div><div class="hist-ios-sub">'+s.date+(s.missoes&&s.missoes.resultado?' · ✓ '+escH(s.missoes.resultado.slice(0,25)):'')+'</div>'+(s.grat&&s.grat[0]?'<div style="font-size:11px;color:var(--ios-label3);margin-top:2px;font-style:italic">🙏 "'+escH(s.grat[0].slice(0,40))+'…"</div>':'')+'</div><div><div class="hist-ios-placar" style="color:'+color+'">'+s.placar+'</div><div class="hist-ios-placar-max">/60</div></div></div>';
+  }).join('')+'</div>';
+}
+
+// ═══ RENDER HOME ═══
+function renderHome(){
+  load();
+  const days=Object.keys(SD).map(Number).sort((a,b)=>a-b);
+  const total=Object.values(TD).filter(v=>v).length,streak=calcStreak(),pct=Math.round(total/66*100);
+  const ring=document.getElementById('ring-prog');if(ring)ring.style.strokeDashoffset=(175.9-(pct/100*175.9));
+  const rpt=document.getElementById('ring-pct-txt');if(rpt)rpt.textContent=pct;
+  const hs=document.getElementById('h-streak');if(hs)hs.textContent=streak;
+  const msgs=['Registre seu primeiro dia e acenda a chama.','O velho eu está sendo desafiado. Continue.','A corrente está sendo forjada. Não a quebre.','Uma semana completa! O novo eu ganha força.','21 dias. O hábito está sendo instalado.','Metade da jornada. O inconsciente está mudando.','O novo eu é automático. Siga firme até o 66.'];
+  const mi=streak===0?0:streak<3?1:streak<7?2:streak<14?3:streak<22?4:streak<44?5:6;
+  const sm=document.getElementById('h-streak-msg');if(sm)sm.textContent=msgs[mi];
+  const db=document.getElementById('h-day-badge');
+  if(db)db.textContent=(CFG.nome?CFG.nome+' · ':'')+'Dia '+(total+1);
+  const hd=document.getElementById('h-dias');if(hd)hd.textContent=total;
+  const hds=document.getElementById('h-dias-sub');if(hds)hds.textContent=pct+'% de 66';
+  const last7=days.slice(-7);
+  const hm=document.getElementById('h-media');
+  if(last7.length&&hm)hm.textContent=(last7.reduce((a,d)=>a+SD[d].placar,0)/last7.length/60*10).toFixed(1);
+  else if(hm)hm.textContent='—';
+  let best=0,bestDay='—';days.forEach(d=>{if(SD[d].placar>best){best=SD[d].placar;bestDay='Dia '+d;}});
+  const hme=document.getElementById('h-melhor');if(hme)hme.textContent=best||'—';
+  const hmd=document.getElementById('h-melhor-dia');if(hmd)hmd.textContent=bestDay;
+  const fn=total<=22?1:total<=44?2:3;
+  const hfn=document.getElementById('h-fase-num');if(hfn)hfn.textContent='F'+fn;
+  const hfs=document.getElementById('h-fase-sub');if(hfs)hfs.textContent=['','Quebra do Programa','Construção','Consolidação'][fn];
+  const cp=(s,e)=>{let c=0;for(let d=s;d<=e;d++)if(TD[d])c++;return c;};
+  [[1,1,22],[2,23,44],[3,45,66]].forEach(([n,s,e])=>{const p=Math.round(cp(s,e)/(e-s+1)*100);const el=document.getElementById('pr'+n);if(el)el.textContent=p+'%';});
+  const ci=document.getElementById('h-callout-icon'),ct=document.getElementById('h-callout-text');
+  if(ci&&ct){
+    const medCount=MEDH.length,criseV=DIFH.filter(d=>d.type==='crise'&&d.outcome==='venceu').length;
+    if(total===0){ci.textContent='🔥';ct.innerHTML='<strong>Bem-vindo ao Comando'+(CFG.nome?', '+escH(CFG.nome):'')+'.</strong> Registre seu primeiro dia e ative o dashboard.';}
+    else if(medCount===0){ci.textContent='🧠';ct.innerHTML='<strong>Ative a Meditação.</strong> Sem ela o comportamento muda, mas a identidade não.';}
+    else if(!NEUDEF.frase){ci.textContent='🔮';ct.innerHTML='<strong>Defina seu Novo Eu.</strong> O cérebro precisa de uma imagem precisa de quem você está se tornando.';}
+    else if(streak>=21){ci.textContent='🏆';ct.innerHTML='<strong>'+streak+' dias + '+medCount+' sessões + '+criseV+' padrões quebrados.</strong> O inconsciente está sendo reprogramado.';}
+    else if(streak>=7){ci.textContent='⚡';ct.innerHTML='<strong>'+streak+' dias de sequência.</strong> Você está no ponto crítico da mudança neural. Não pare.';}
+    else{ci.textContent='🔥';ct.innerHTML='<strong>Dia '+total+' concluído.</strong> Cada registro é uma sinapse nova sendo formada.';}
+  }
+  renderGauges(last7);renderHeatmap();renderLine(days);
+}
+
+// ═══ UTIL ═══
+function escH(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ═══ INIT ═══
+load();
+initSliders();recalcPlacar();
+buildEmoGrid('emo-before-grid');buildEmoGrid('reg-emo-grid');buildGratFields();
+renderHome();renderTracker();renderCheckDate();
+renderRegScreen();renderMedScreen();renderNeuEuScreen();
+renderCheckList();renderProtoScreen();
+</script>
+</body>
+</html>

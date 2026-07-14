@@ -1,0 +1,2 @@
+.p66-tabbar{justify-content:flex-start;overflow-x:auto;scrollbar-width:none}.p66-tabbar::-webkit-scrollbar{display:none}.p66-tabbar a{flex:0 0 58px}
+@media(min-width:700px){.p66-tabbar{justify-content:center}.p66-tabbar a{flex-basis:64px}}
