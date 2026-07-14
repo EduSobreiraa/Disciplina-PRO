@@ -41,6 +41,7 @@ Documentos principais:
 - [Auditoria do frontend](docs/AUDITORIA_FRONTEND.md)
 - [Relatório técnico de progresso](docs/RELATORIO_PROGRESSO.md)
 - [Checklist de prontidão do backend](docs/PRE_BACKEND_CHECKLIST.md)
+- [Roadmap do restante do projeto](docs/ROADMAP.md)
 
 ## Estrutura atual
 
@@ -163,9 +164,10 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. iniciar o backend modular NestJS;
-2. implementar autenticação e fundação multi-tenant;
-3. substituir repositories locais pela API real por domínio.
+1. concluir a fundação técnica B0;
+2. executar a B0.5 e fechar as decisões que governam schema e autenticação;
+3. gerar o primeiro schema/migration e iniciar `identity-access`;
+4. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável
 

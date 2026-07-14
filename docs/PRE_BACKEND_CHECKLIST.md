@@ -57,17 +57,20 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [x] Playwright MCP disponível e funcional.
 - [ ] Adicionar Sentry MCP apenas quando existir ambiente de staging.
 
-## 5. Decisões arquiteturais antes do schema
+## 5. B0.5 — Decisões arquiteturais antes do schema
 
 - [ ] Fechar o formato e a política de `ProgramVersion`.
 - [ ] Fechar `EnrollmentPause` e cálculo reproduzível dos dias pausados.
 - [ ] Fechar estados e transições de `TenantMembership`.
 - [ ] Fechar a representação de `SUPER_ADMIN` fora de `TenantRole`.
-- [ ] Definir política de soft delete, encerramento e retenção por entidade.
-- [ ] Definir convenção de IDs, timestamps e timezone.
-- [ ] Definir política de conteúdo privado e exclusão pelo titular.
-- [ ] Definir estratégia de access token e refresh token rotativo.
-- [ ] Definir transporte do refresh token e política CORS/CSRF.
+- [ ] Definir convenção de IDs e sua exposição pública.
+- [ ] Definir armazenamento temporal, timezone do tenant e cálculo de `programDay`.
+- [ ] Definir política de soft delete, unicidade, restauração e retenção por entidade.
+- [ ] Definir claims, duração, issuer, audience e chaves do JWT.
+- [ ] Definir rotação, revogação, reuse detection e persistência do refresh token.
+- [ ] Definir transporte da sessão e política CORS/CSRF.
+
+Gate: somente após estes dez itens serão escritos o primeiro `schema.prisma` e a primeira migration; então começa `identity-access`. Política de conteúdo privado e exclusão permanece uma decisão transversal obrigatória antes do módulo `execution`.
 
 ## 6. Fundação técnica planejada — B0
 
@@ -113,13 +116,13 @@ Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microse
 
 **Resultado:** ambiente aprovado e B0 iniciada. Node, npm, Docker, Compose, PostgreSQL, Git, lockfile único e acesso ao repositório estão operacionais. O `gh` CLI sem autenticação válida não bloqueia o desenvolvimento porque Git e GitHub MCP já atendem ao fluxo atual.
 
-Pendências que bloqueiam o **schema de domínio definitivo**, mas não a continuação da B0:
+Pendências da **B0.5 que bloqueiam o primeiro schema de domínio**, mas não a conclusão técnica da B0:
 
 - `ProgramVersion` e política de publicação;
 - pausas de enrollment e cálculo dos dias;
 - estados/transições de membership;
 - representação de `SUPER_ADMIN`;
-- convenções de IDs, timestamps, retenção e exclusão.
+- IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
 Pendências técnicas imediatas da B0:
 

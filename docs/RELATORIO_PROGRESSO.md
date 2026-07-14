@@ -317,17 +317,17 @@ Os dados e recompensas atuais são locais e simulam contratos futuros. Não deve
 A recomendação é iniciar o backend antes das telas administrativas. Ordem proposta:
 
 1. concluir configuração tipada, tratamento de erros e limites HTTP da B0;
-2. criar schema inicial, `PrismaModule` e integração com PostgreSQL;
-3. `identity-access` e sessão;
-4. `organizations` e isolamento multi-tenant;
-5. `invitations`;
-6. catálogo `programs` e habilitação por tenant;
-7. `execution` e Projeto 66 por contrato genérico;
-8. `gamification` com `XpTransaction` e `UserAchievement`;
-9. `audit` e `reporting`;
-10. troca progressiva dos repositories locais por adapters HTTP.
+2. executar a B0.5 exclusivamente para fechar `ProgramVersion`, `EnrollmentPause`, `TenantMembership`, `SUPER_ADMIN`, IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF;
+3. escrever o primeiro `schema.prisma`, gerar a primeira migration e iniciar `identity-access`;
+4. implementar `organizations` e isolamento multi-tenant;
+5. implementar `invitations`;
+6. implementar catálogo `programs` e habilitação por tenant;
+7. implementar `execution` e Projeto 66 por contrato genérico;
+8. implementar eventos, `gamification`, `audit` e `reporting`;
+9. trocar progressivamente os repositories locais por adapters HTTP;
+10. concluir administração, hardening, staging e release do MVP.
 
-Antes do schema definitivo, ainda devem ser fechados `ProgramVersion`, `EnrollmentPause`, estados de membership e representação de `SUPER_ADMIN`.
+A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de domínio e segurança. O plano completo, seus entregáveis e critérios de saída estão em `docs/ROADMAP.md`.
 
 ## 12. Prontidão e pré-requisitos do backend
 
@@ -357,11 +357,11 @@ Antes do schema definitivo, ainda devem ser fechados `ProgramVersion`, `Enrollme
 
 1. versionar o PostgreSQL local em `compose.yaml` sem credenciais reais;
 2. validar variáveis de ambiente com configuração tipada;
-3. criar o schema Prisma inicial e o `PrismaModule` com adapter `pg`;
+3. padronizar exceções, request ID e limite de payload;
 4. adicionar teste de integração contra PostgreSQL real;
-5. padronizar exceções, request ID e limite de payload;
-6. criar CI com lint, typecheck, testes, build e `npm audit`;
-7. fechar as decisões de domínio listadas antes das migrations definitivas.
+5. criar CI com lint, typecheck, testes, build e `npm audit`;
+6. executar e aprovar as dez decisões da B0.5;
+7. somente então criar schema, migration, `PrismaModule` e `identity-access`.
 
 Conclusão de prontidão: **não falta instalação essencial para continuar o backend**. As pendências atuais são de implementação, automação e decisões arquiteturais, não de ambiente local.
 

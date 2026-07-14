@@ -547,7 +547,7 @@ Requisitos mínimos:
 
 ### Fase 1 — Arquitetura mínima
 
-Concluída. Pendências explícitas antes do schema definitivo: fechar `ProgramVersion`, `EnrollmentPause`, estados de membership e representação de `SUPER_ADMIN`.
+Concluída. As decisões que governam o schema foram promovidas para a fase formal B0.5.
 
 ### Fase 2 — Fundação frontend
 
@@ -585,7 +585,18 @@ Estado atual:
 
 ### Fase 4 — Backend core
 
-Implementação do monolito NestJS, schema Prisma, autenticação, tenants, convites, programas, execução, gamificação, auditoria e reporting essencial.
+O backend seguirá gates dependentes, detalhados em `docs/ROADMAP.md`:
+
+1. **B0 — Fundação técnica:** ambiente, configuração, erros, segurança HTTP, banco de desenvolvimento, testes e CI;
+2. **B0.5 — Decisões arquiteturais:** `ProgramVersion`, `EnrollmentPause`, `TenantMembership`, `SUPER_ADMIN`, IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF;
+3. **B1 — Persistência e Identity Access:** primeiro schema/migration, Prisma e sessão;
+4. **B2–B3 — Organizações e convites:** isolamento multi-tenant, roles, escopo e entrada de membros;
+5. **B4–B5 — Programas e execução:** catálogo global, habilitação, enrollments e Projeto 66;
+6. **B6–B7 — Consequências e leitura:** eventos, gamificação, auditoria, reporting e privacidade;
+7. **B8–B9 — Produto integrado:** adapters HTTP e áreas administrativas;
+8. **B10 — Operação:** staging, hardening e release do MVP.
+
+O `schema.prisma` de domínio não será escrito antes da aprovação da B0.5. Seu primeiro schema e migration são entregas de transição para a B1, que inicia `identity-access`.
 
 ## 20. Histórico de decisões
 
@@ -620,6 +631,7 @@ Implementação do monolito NestJS, schema Prisma, autenticação, tenants, conv
 | 14/07/2026 | Relatório consolidado de progresso, práticas, testes, tecnologias e preparação do backend registrado em `docs/RELATORIO_PROGRESSO.md`. |
 | 14/07/2026 | Checklist operacional pré-backend criado em `docs/PRE_BACKEND_CHECKLIST.md`, incluindo runtime, PostgreSQL, GitHub, MCPs, segurança e decisões pendentes. |
 | 14/07/2026 | B0 iniciada com workspace npm, scaffold NestJS/TypeScript, health check, validação global, Swagger, Helmet, throttling, logging estruturado e lockfile único; scaffold Express acidental removido. |
+| 14/07/2026 | B0.5 criada como gate obrigatório anterior ao schema Prisma; decisões de domínio, identidade e segurança passam a preceder a primeira migration e o início de `identity-access`. |
 
 ## 21. Versionamento e documentação
 
