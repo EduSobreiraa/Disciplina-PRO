@@ -607,6 +607,7 @@ Implementação do monolito NestJS, schema Prisma, autenticação, tenants, conv
 | 12/07/2026 | Tracker comportamental definido como capacidade transversal do Disciplina PRO em “Minha evolução”, separado do catálogo de programas. |
 | 12/07/2026 | Primeira fatia do tracker migrada: grade mensal, ciclo de marcas, justificativas, comportamentos e métricas com repository local. |
 | 14/07/2026 | README raiz criado e fluxo de versionamento definido: documentação, validações, revisão de diff, commit descritivo e push de mudanças aprovadas. |
+| 14/07/2026 | F6 concluída: tracker comportamental com central de justificativas, rankings, dias perfeitos, backup validado e teste Playwright mobile-first. |
 
 ## 21. Versionamento e documentação
 

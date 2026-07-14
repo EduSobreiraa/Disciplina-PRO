@@ -1,0 +1,3 @@
+export function JustificationCenter({ items, onEdit }) {
+  return <section className="justification-center"><header><div><span className="eyebrow">Lei nº 6</span><h2>Central de justificativas</h2></div><strong>{items.filter((item) => !item.text).length} pendentes</strong></header>{items.length ? <div>{items.map((item) => <article key={item.key}><b>{item.day}<small>dia</small></b><span><strong>{item.behaviorName}</strong><p className={item.text ? '' : 'pending'}>{item.text || 'Causa ainda não registrada.'}</p></span><button type="button" onClick={() => onEdit(item)}>{item.text ? 'Editar' : 'Justificar'}</button></article>)}</div> : <p className="tracker-empty">Nenhuma marca vermelha neste mês.</p>}</section>
+}

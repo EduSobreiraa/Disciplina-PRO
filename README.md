@@ -139,11 +139,10 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. concluir justificativas, rankings e estatísticas do tracker comportamental;
-2. migrar rituais e timer 30/30 do Disciplina PRO;
-3. integrar gamificação no frontend;
-4. iniciar o backend modular NestJS;
-5. substituir repositories locais pela API real.
+1. migrar rituais e timer 30/30 do Disciplina PRO;
+2. integrar gamificação no frontend;
+3. iniciar o backend modular NestJS;
+4. substituir repositories locais pela API real.
 
 ## Responsável
 

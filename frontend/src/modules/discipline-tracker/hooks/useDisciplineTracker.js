@@ -24,5 +24,6 @@ export function useDisciplineTracker(year, month) {
   }
   function renameBehavior(id, name) { commit({ ...state, behaviors: state.behaviors.map((behavior) => behavior.id === id ? { ...behavior, name: name.trim() || behavior.name } : behavior) }) }
   function removeBehavior(id) { commit({ ...state, behaviors: state.behaviors.map((behavior) => behavior.id === id ? { ...behavior, active: false } : behavior) }) }
-  return { state, stats, cycleMark, saveJustification, addBehavior, renameBehavior, removeBehavior }
+  function replaceState(nextState) { commit(nextState) }
+  return { state, stats, cycleMark, saveJustification, addBehavior, renameBehavior, removeBehavior, replaceState }
 }

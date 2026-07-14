@@ -347,7 +347,7 @@ Implementado em 12/07/2026:
 - navegação inferior rolável e mobile-first para todas as ferramentas;
 - repository privado v2 separado do ciclo e dos relatórios objetivos.
 
-### F6 — Disciplina PRO legado (em andamento)
+### F6 — Disciplina PRO legado (concluída)
 
 - decidir o limite de domínio do tracker;
 - migrar painel, rituais, missões e conquistas conforme a decisão;
@@ -365,25 +365,30 @@ Decisão e primeira fatia implementadas em 12/07/2026:
 - KPIs do mês e percentual por comportamento;
 - repository local e cálculos puros com testes.
 
-Pendências da F6:
+Conclusão em 14/07/2026:
 
-- lista e edição de justificativas existentes;
-- rankings de comportamentos;
-- resumo por dia e dias perfeitos;
-- importação e exportação;
-- integração futura com gamificação e API.
+- central mensal de justificativas pendentes e preenchidas;
+- edição posterior de causas registradas;
+- rankings de forças e comportamentos críticos;
+- dias marcados e dias perfeitos;
+- backup JSON versionado;
+- importação com validação estrutural e confirmação antes da substituição;
+- testes unitários de estatísticas, rankings e backup;
+- validação Playwright em 375×812, incluindo persistência após reload e console sem erros.
+
+Integrações com gamificação e API permanecem nas fases próprias e não bloqueiam a conclusão visual/funcional da migração local.
 
 ## 8. Próximo incremento de implementação
 
-O próximo incremento de código será a F6:
+O próximo incremento de código será a F7 — rituais do Disciplina PRO:
 
-1. fechar o limite de domínio do tracker comportamental legado;
-2. extrair o painel mensal, comportamentos e marcas;
-3. migrar justificativas e estatísticas;
-4. preservar a estética de sala de guerra;
-5. adaptar a grade densa para uso mobile-first;
-6. manter persistência atrás de repository;
-7. validar regras, lint, testes, build e navegação.
+1. migrar abertura, execução, fechamento e ritual semanal;
+2. modelar checks por data e etapa;
+3. migrar o timer 30/30 com oito ciclos;
+4. separar temporizador, regras e persistência da interface;
+5. adaptar todos os controles para toque e retomada de sessão;
+6. preparar eventos idempotentes para futura gamificação;
+7. validar lint, testes, build e Playwright mobile-first.
 
 ## 9. Matriz de validação
 
