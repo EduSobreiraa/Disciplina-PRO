@@ -665,6 +665,8 @@ Cada conjunto coerente de mudanças deve:
 
 Commits devem representar unidades compreensíveis de trabalho. Não incluir `.env`, relatórios de teste, builds, caches, perfis de navegador ou outros dados locais.
 
+Mudanças exclusivamente em arquivos Markdown exigem revisão documental e de links, mas não acionam lint, testes, build, cobertura ou SonarQube. O workflow de CI ignora commits cujo conjunto de arquivos seja integralmente Markdown.
+
 ---
 
 Este é um documento vivo. Toda alteração relevante de módulos, ownership, entidades, permissões, privacidade, eventos ou contratos deve atualizá-lo no mesmo conjunto de mudanças.

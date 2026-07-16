@@ -119,7 +119,9 @@ npm run build
 npm run audit:dependencies
 ```
 
-Antes de um commit funcional, os três comandos devem ser aprovados. Mudanças de interface também devem ser verificadas em viewport móvel com Playwright quando o ambiente estiver disponível.
+Antes de um commit funcional, os comandos aplicáveis devem ser aprovados. Mudanças de interface também devem ser verificadas em viewport móvel com Playwright quando o ambiente estiver disponível.
+
+Commits exclusivamente Markdown passam por revisão de diff e links, sem executar testes, build, cobertura ou SonarQube. Alterações de código, configuração, dependências ou infraestrutura continuam sujeitas ao gate completo.
 
 ## Análise de qualidade
 
