@@ -1,17 +1,19 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 14/07/2026
+> Spark Inteligência Corporativa · Atualizado em 16/07/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado de partida
 
 - frontend individual F0–F9 concluído e validado em React;
-- fundação B0 do backend NestJS iniciada;
+- fundação B0, decisões B0.5 e B1.1–B1.3 concluídas;
 - PostgreSQL local e ferramentas essenciais operacionais;
-- schema Prisma de domínio ainda não criado;
+- schema Prisma inicial, migration baseline, identidade e bootstrap de plataforma implementados;
 - áreas empresariais, autenticação real e integração frontend–API ainda pendentes.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
+
+Riscos e dívidas conscientemente adiados são acompanhados separadamente em [`PROBLEMAS_POSTERGADOS.md`](PROBLEMAS_POSTERGADOS.md).
 
 ## 2. Ordem de implementação
 

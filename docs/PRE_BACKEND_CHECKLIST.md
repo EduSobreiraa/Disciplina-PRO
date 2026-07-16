@@ -1,6 +1,6 @@
 # Checklist de prontidão para o backend
 
-> Disciplina PRO · Atualizado em 14/07/2026
+> Disciplina PRO · Atualizado em 16/07/2026
 > Objetivo: acompanhar a prontidão do ambiente e as pendências da fundação B0.
 
 ## 1. Ambiente local
@@ -19,7 +19,7 @@
 ## 2. GitHub CLI e MCP
 
 - [ ] Refazer autenticação local: `gh auth login -h github.com`.
-- [ ] Confirmar `gh auth status` sem token inválido.
+- [x] Confirmar GitHub CLI operacional; usado para acompanhar o CI remoto de B1.1–B1.3.
 - [x] Garantir acesso do GitHub MCP ao repositório `EduSobreiraa/Disciplina-PRO`.
 - [x] Repetir leitura de commits pelo MCP após ajustar o acesso.
 - [ ] Restringir o token do MCP somente ao repositório do projeto.
@@ -31,7 +31,7 @@
 - [ ] Manter `Administration`, exclusão de repositório e gestão de secrets sem escrita automática.
 - [ ] Avaliar um GitHub MCP complementar para Actions, branch protection e security alerts.
 
-Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, branches, issues, PRs, reviews e merge. Não há ferramentas expostas para listar execuções do Actions, configurar branch protection ou consultar Dependabot/CodeQL/secret scanning. O `gh` local ainda requer nova autenticação.
+Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, branches, issues, PRs, reviews e merge. O `gh` local está autenticado e acompanha execuções do Actions; branch protection e recursos de segurança dependem das capacidades do plano/repositório.
 
 ## 3. Segurança do repositório
 
@@ -118,7 +118,7 @@ Cada sub-bloco deve fechar seu próprio gate antes do seguinte. A autorização 
 
 ## 9. Serviços externos — não bloquear B0
 
-- [ ] Adicionar Mailpit em desenvolvimento quando B5 (convites) começar.
+- [ ] Adicionar Mailpit em desenvolvimento quando B3 (convites) começar.
 - [ ] Escolher provedor transacional de e-mail somente antes de staging.
 - [ ] Escolher hospedagem após autenticação, migrations e health check estarem estáveis.
 - [ ] Configurar Sentry/observabilidade antes do primeiro staging público.

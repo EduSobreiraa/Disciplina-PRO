@@ -1,7 +1,7 @@
 # Disciplina PRO — Arquitetura do Produto
 
 > Spark Inteligência Corporativa · Documento vivo  
-> Versão arquitetural: 2.0 · Atualizado em: 14/07/2026
+> Versão arquitetural: 2.0 · Atualizado em: 16/07/2026
 
 ## 1. Visão do produto
 
@@ -684,6 +684,7 @@ A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entrega
 | 15/07/2026 | B0.5 concluída: JWT curto, refresh rotativo com reuse detection e sessão por cookie protegida por CORS estrito e CSRF assinado. |
 | 15/07/2026 | B1 decomposta em sete gates menores, separando schema, migration, credenciais, sessão, transporte, autenticação e hardening. |
 | 16/07/2026 | B1.1–B1.3 concluídas: schema Prisma inicial, baseline SQL, PrismaModule, identidade Argon2id e bootstrap transacional do primeiro SUPER_ADMIN. |
+| 16/07/2026 | Registro central de problemas postergados criado em `docs/PROBLEMAS_POSTERGADOS.md`, com prioridades, mitigação, fase de retomada e gates para dados reais/staging. |
 
 ## 21. Versionamento e documentação
 

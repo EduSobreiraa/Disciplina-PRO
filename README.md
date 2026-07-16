@@ -39,6 +39,7 @@ Documentos principais:
 - [Arquitetura do produto](ARQUITETURA.md)
 - [Inventário e plano de migração do frontend](docs/MIGRACAO_FRONTEND.md)
 - [Auditoria do frontend](docs/AUDITORIA_FRONTEND.md)
+- [Problemas postergados](docs/PROBLEMAS_POSTERGADOS.md)
 - [Relatório técnico de progresso](docs/RELATORIO_PROGRESSO.md)
 - [Checklist de prontidão do backend](docs/PRE_BACKEND_CHECKLIST.md)
 - [Roadmap do restante do projeto](docs/ROADMAP.md)

@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 15/07/2026 · Estado: frontend individual F0–F9 e backend B0 concluídos
+> Atualizado em 16/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1.1–B1.3 concluídos
 
 ## 1. Visão geral do produto
 
@@ -373,6 +373,7 @@ B1.1–B1.3 foram concluídas em 16/07/2026. O schema inicial cobre identidade, 
 - O GitHub CLI ainda precisa de nova autenticação, mas Git e GitHub MCP já permitem o trabalho necessário.
 - MCP de PostgreSQL, Sentry, provedor de e-mail e hospedagem não são necessários para concluir a B0.
 - Prisma 7.8.0 fixa `@hono/node-server` 1.19.11 via `@prisma/dev`; o advisory moderado afeta `serveStatic`, não usado pelo NestJS nem pelo runtime de produção. O downgrade forçado para Prisma 6 foi rejeitado; atualizar quando a cadeia oficial incorporar a correção.
+- Riscos, limitações e dependências adiadas passaram a ser governados pelo relatório `docs/PROBLEMAS_POSTERGADOS.md`.
 
 ### Pendências prioritárias
 
