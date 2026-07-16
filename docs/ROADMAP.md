@@ -91,16 +91,103 @@ Entregáveis:
 
 **Objetivo:** estabelecer dados persistentes, identidade e sessões seguras.
 
+#### B1.1 — Contrato do primeiro schema
+
+**Objetivo:** traduzir os ADRs para o modelo Prisma antes de gerar SQL.
+
 Entregas:
 
-- primeiro `schema.prisma` e migration versionada;
-- Prisma CLI instalado na versão estável auditada;
-- `PrismaModule` com adapter `pg` e ciclo de vida controlado;
-- modelos iniciais de usuário, acesso de plataforma, membership e sessão;
-- login, refresh rotativo e logout;
-- hashing de senha e tokens opacos quando aplicável;
-- guards de autenticação e contexto inicial;
-- testes de integração e E2E dos fluxos de sessão.
+- instalar e fixar o Prisma CLI em versão compatível e auditada;
+- definir generator, datasource, enums, IDs UUIDv7 e tipos temporais;
+- modelar `User`, `Tenant`, `TenantMembership`, `PlatformAccess`, `AuthSession` e `RefreshToken`;
+- representar constraints, índices e relações exigidos pelos ADRs 001–010;
+- documentar invariantes que exigirão SQL manual ou casos de uso.
+
+**Gate:** `schema.prisma` formata e valida; nenhuma migration é criada antes da revisão do modelo.
+
+#### B1.2 — Baseline de banco e PrismaModule
+
+**Objetivo:** transformar o contrato revisado em persistência reproduzível.
+
+Entregas:
+
+- gerar e revisar a primeira migration SQL;
+- acrescentar UUIDv7, checks e índices parciais não expressáveis diretamente no Prisma;
+- aplicar a migration em banco vazio e reaplicá-la em banco descartável;
+- criar `PrismaModule` global com adapter `pg`, shutdown limpo e configuração validada;
+- adicionar comandos de generate, migrate e verificação de drift apropriados ao ambiente.
+
+**Gate:** um banco vazio chega ao schema esperado somente pelas migrations versionadas e a aplicação abre/fecha conexões corretamente.
+
+#### B1.3 — Identidade e credenciais
+
+**Objetivo:** estabelecer identidade global sem misturar role empresarial em `User`.
+
+Entregas:
+
+- repositories e casos de uso mínimos de `User`;
+- normalização e unicidade de e-mail;
+- hashing e verificação de senha com Argon2id;
+- política de senha, respostas sem enumeração de contas e rate limit de login;
+- bootstrap operacional do primeiro `PlatformAccess`, sem endpoint público.
+
+**Gate:** credenciais nunca são persistidas ou logadas em texto puro; bootstrap é único, auditável e testado.
+
+#### B1.4 — Núcleo de sessões
+
+**Objetivo:** implementar emissão e revogação independentemente do transporte HTTP.
+
+Entregas:
+
+- `AuthSession` e famílias de `RefreshToken` opaco;
+- access token JWT `RS256` conforme o ADR 008;
+- rotação transacional, expiração, logout e revogação global;
+- detecção de reutilização com revogação da família;
+- rotação de chaves por `kid` e redação integral de segredos em logs.
+
+**Gate:** testes de domínio e integração provam emissão, rotação única, concorrência, reuse detection e revogação imediata.
+
+#### B1.5 — Contrato HTTP de autenticação
+
+**Objetivo:** expor a sessão ao frontend com transporte seguro.
+
+Entregas:
+
+- `POST /auth/login`, `POST /auth/refresh` e `POST /auth/logout`;
+- cookies `__Host-`, flags por ambiente e token CSRF assinado;
+- allowlist CORS exata e validação de `Origin`;
+- DTOs, erros estáveis, OpenAPI e integração com throttling;
+- fluxo de refresh single-flight documentado para o frontend.
+
+**Gate:** E2E cobre sucesso e rejeição de origem, cookie, CSRF, expiração, replay e logout.
+
+#### B1.6 — AuthenticationGuard e principal atual
+
+**Objetivo:** fornecer identidade autenticada confiável aos módulos seguintes.
+
+Entregas:
+
+- `AuthenticationGuard` valida JWT, usuário e sessão atuais;
+- objeto `CurrentPrincipal` tipado, sem role ou tenant embutidos;
+- decorators mínimos para acesso ao principal;
+- contrato de `X-Tenant-Id` preparado, sem antecipar autorização organizacional da B2;
+- boundary separado para futura validação de `PlatformAccess`.
+
+**Gate:** rotas protegidas rejeitam tokens inválidos, sessões revogadas e usuários desabilitados; nenhuma autorização confia somente em claims.
+
+#### B1.7 — Hardening e encerramento
+
+**Objetivo:** provar que persistência e sessão estão prontas para organizações.
+
+Entregas:
+
+- testes unitários, integração PostgreSQL real e E2E dos fluxos críticos;
+- casos de concorrência, falha transacional e limpeza de sessões expiradas;
+- cobertura, lint, typecheck, build, migration check e auditoria de dependências;
+- documentação operacional de chaves, bootstrap, cookies e migrations;
+- atualização de arquitetura, relatório, OpenAPI e checklist.
+
+**Gate:** sessão pode ser criada, renovada e revogada sem expor segredos; migrations funcionam em banco vazio; CI e Quality Gate são aprovados.
 
 **Gate de saída:** sessão pode ser criada, renovada e revogada sem expor segredos; migrations funcionam em banco vazio.
 

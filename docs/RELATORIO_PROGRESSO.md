@@ -345,6 +345,8 @@ A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de d
 
 A B0.5 está concluída com dez decisões aprovadas nos ADRs 001–010. O bloco final definiu JWT curto sem autorização embarcada, refresh token opaco e rotativo com detecção de reutilização e transporte híbrido protegido por CORS estrito e CSRF assinado. O primeiro schema e `identity-access` estão liberados para a B1.
 
+A B1 foi dividida em sete gates: contrato do schema, baseline/Prisma, identidade e credenciais, núcleo de sessões, contrato HTTP, guard/principal atual e hardening. Essa ordem mantém autenticação separada da autorização organizacional, que começa somente na B2.
+
 ## 12. Prontidão e pré-requisitos do backend
 
 ### Aprovados

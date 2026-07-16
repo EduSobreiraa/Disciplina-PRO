@@ -179,9 +179,9 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. escrever o primeiro `schema.prisma` conforme os ADRs 001–010;
-2. gerar e revisar a primeira migration;
-3. criar o `PrismaModule` e iniciar `identity-access`;
+1. B1.1 — escrever e revisar o primeiro `schema.prisma` conforme os ADRs 001–010;
+2. B1.2 — gerar a migration baseline e criar o `PrismaModule`;
+3. B1.3–B1.7 — implementar credenciais, sessões, HTTP seguro, autenticação e hardening;
 4. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável

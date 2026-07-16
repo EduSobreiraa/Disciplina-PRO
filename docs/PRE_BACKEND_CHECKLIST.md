@@ -104,7 +104,19 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 - [x] Contratos: `@nestjs/swagger`.
 - [x] Testes: Jest, Supertest e estratégia de integração com PostgreSQL real.
 
-## 8. Serviços externos — não bloquear B0
+## 8. B1 — Ordem de implementação
+
+- [ ] B1.1 — Validar o primeiro `schema.prisma` contra os ADRs 001–010.
+- [ ] B1.2 — Revisar a migration baseline e criar o `PrismaModule`.
+- [ ] B1.3 — Implementar identidade, Argon2id e bootstrap de plataforma.
+- [ ] B1.4 — Implementar JWT, sessões e refresh rotativo no domínio/aplicação.
+- [ ] B1.5 — Expor login, refresh e logout com CORS/CSRF.
+- [ ] B1.6 — Implementar `AuthenticationGuard` e `CurrentPrincipal`.
+- [ ] B1.7 — Executar hardening, testes completos e gate de encerramento.
+
+Cada sub-bloco deve fechar seu próprio gate antes do seguinte. A autorização por role e escopo, `TenantContextGuard` completo e operações organizacionais permanecem na B2.
+
+## 9. Serviços externos — não bloquear B0
 
 - [ ] Adicionar Mailpit em desenvolvimento quando B5 (convites) começar.
 - [ ] Escolher provedor transacional de e-mail somente antes de staging.
@@ -114,7 +126,7 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 
 Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microserviços, billing ou IA.
 
-## 9. Situação de prontidão
+## 10. Situação de prontidão
 
 **Resultado:** ambiente aprovado e B0 concluída em 15/07/2026. Node, npm, Docker, Compose, PostgreSQL, Git, lockfile único e acesso ao repositório estão operacionais. O `gh` CLI sem autenticação válida não bloqueia o desenvolvimento porque Git e GitHub MCP já atendem ao fluxo atual.
 

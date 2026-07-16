@@ -622,7 +622,7 @@ O backend seguirá gates dependentes, detalhados em `docs/ROADMAP.md`:
 
 1. **B0 — Fundação técnica:** ambiente, configuração, erros, segurança HTTP, banco de desenvolvimento, testes e CI;
 2. **B0.5 — Decisões arquiteturais:** `ProgramVersion`, `EnrollmentPause`, `TenantMembership`, `SUPER_ADMIN`, IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF;
-3. **B1 — Persistência e Identity Access:** primeiro schema/migration, Prisma e sessão;
+3. **B1 — Persistência e Identity Access:** dividida em contrato do schema (B1.1), baseline e Prisma (B1.2), credenciais (B1.3), núcleo de sessões (B1.4), HTTP/CORS/CSRF (B1.5), autenticação (B1.6) e hardening (B1.7);
 4. **B2–B3 — Organizações e convites:** isolamento multi-tenant, roles, escopo e entrada de membros;
 5. **B4–B5 — Programas e execução:** catálogo global, habilitação, enrollments e Projeto 66;
 6. **B6–B7 — Consequências e leitura:** eventos, gamificação, auditoria, reporting e privacidade;
@@ -671,6 +671,7 @@ A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entrega
 | 15/07/2026 | Segundo bloco da B0.5 aprovado: lifecycle de TenantMembership, proteção do CEO e acesso SUPER_ADMIN isolado do contexto de tenant. |
 | 15/07/2026 | Terceiro bloco da B0.5 aprovado: versões publicadas imutáveis, vínculo no início do enrollment e pausas por dias civis completos. |
 | 15/07/2026 | B0.5 concluída: JWT curto, refresh rotativo com reuse detection e sessão por cookie protegida por CORS estrito e CSRF assinado. |
+| 15/07/2026 | B1 decomposta em sete gates menores, separando schema, migration, credenciais, sessão, transporte, autenticação e hardening. |
 
 ## 21. Versionamento e documentação
 
