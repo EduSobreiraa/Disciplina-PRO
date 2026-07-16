@@ -39,6 +39,7 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [ ] Reavaliar CodeQL quando disponível no plano atual.
 - [ ] Ativar secret scanning e push protection, conforme disponibilidade.
 - [x] Criar `.github/workflows/ci.yml` antes de adotar checks obrigatórios.
+- [x] Integrar SonarQube Cloud ao CI e gerar cobertura LCOV de frontend/backend.
 - [ ] Configurar checks obrigatórios antes de proteger `main`.
 - [ ] Impedir force push em `main`.
 - [ ] Adotar feature branches e pull requests durante o backend.

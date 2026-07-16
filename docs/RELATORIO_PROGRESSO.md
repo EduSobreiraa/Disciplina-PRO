@@ -27,7 +27,7 @@ O frontend individual foi migrado dos protótipos HTML para React. A fundação 
 |---|---|
 | Frontend | React 19, JavaScript ESM, React Router 7 |
 | Build | Vite 8 |
-| Qualidade | ESLint 10, `node:test`, Playwright |
+| Qualidade | ESLint 10, `node:test`, Jest, Playwright e SonarQube Cloud |
 | Estilos | CSS por módulo, tokens e media queries mobile-first |
 | Persistência atual | repositories sobre `localStorage`, temporários |
 | Backend | NestJS 11 + TypeScript 5.9, fundação B0 concluída |
@@ -277,6 +277,19 @@ npm run test:integration --workspace backend
 ```
 
 Além do health check, a suíte cobre configuração de ambiente, readiness do PostgreSQL, request ID, contrato de erros e limite de payload. A integração executa uma consulta real no PostgreSQL.
+
+### Cobertura e análise contínua
+
+O workspace gera relatórios LCOV separados em `frontend/coverage/lcov.info` e `backend/coverage/lcov.info`. O GitHub Actions envia esses relatórios ao SonarQube Cloud por análise CI-based, mantendo a análise automática desativada para evitar resultados duplicados.
+
+Baseline de 15/07/2026:
+
+| Camada | Statements/linhas aproximados |
+|---|---:|
+| Frontend | 19,89% |
+| Backend | 33,33% |
+
+Esses números expõem a dívida real de testes e não serão elevados por exclusões artificiais. O primeiro Quality Gate deve incidir sobre código novo; a cobertura total será ampliada progressivamente conforme os módulos migrarem para a API.
 
 ### Critério de aceite
 

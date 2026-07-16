@@ -111,6 +111,7 @@ Na raiz do repositório:
 npm run lint
 npm run typecheck
 npm test
+npm run test:coverage
 npm run test:e2e
 npm run test:integration
 npm run build
@@ -118,6 +119,12 @@ npm run audit:dependencies
 ```
 
 Antes de um commit funcional, os três comandos devem ser aprovados. Mudanças de interface também devem ser verificadas em viewport móvel com Playwright quando o ambiente estiver disponível.
+
+## Análise de qualidade
+
+O CI envia análise estática e cobertura LCOV ao SonarQube Cloud no projeto `EduSobreiraa_Disciplina-PRO`. A configuração versionada está em `sonar-project.properties`; o token permanece exclusivamente no secret `SONAR_TOKEN` do GitHub Actions.
+
+A cobertura atual é uma baseline, não um gate retroativo. O Quality Gate deve priorizar bugs, vulnerabilidades, duplicação e cobertura do código novo, aumentando a exigência progressivamente.
 
 ## Rotas implementadas
 
