@@ -347,6 +347,8 @@ A B0.5 está concluída com dez decisões aprovadas nos ADRs 001–010. O bloco 
 
 A B1 foi dividida em sete gates: contrato do schema, baseline/Prisma, identidade e credenciais, núcleo de sessões, contrato HTTP, guard/principal atual e hardening. Essa ordem mantém autenticação separada da autorização organizacional, que começa somente na B2.
 
+B1.1–B1.3 foram concluídas em 16/07/2026. O schema inicial cobre identidade, tenant mínimo, acesso de plataforma, sessões, refresh e auditoria; a baseline foi aplicada em banco descartável vazio; `PrismaModule` substituiu a conexão técnica da B0. Identidade usa e-mail canônico, Argon2id e bootstrap único do primeiro `SUPER_ADMIN`, protegido por lock transacional e `AuditEvent` imutável.
+
 ## 12. Prontidão e pré-requisitos do backend
 
 ### Aprovados
@@ -359,22 +361,23 @@ A B1 foi dividida em sete gates: contrato do schema, baseline/Prisma, identidade
 | Cliente SQL | `psql` 18.3; conexão autenticada e consulta SQL aprovadas |
 | Versionamento | Git 2.55.0; leitura pelo GitHub MCP; commit e push operacionais |
 | Workspace | npm workspaces para `frontend` e `backend`, com lockfile único |
-| Backend | NestJS, TypeScript, Prisma client/adapter `pg` e Supertest instalados; CLI entra na B1 |
+| Backend | NestJS, TypeScript, Prisma 7.8.0 com adapter `pg`, Argon2id e Supertest |
 | Segurança básica | Helmet, CORS, throttling, validação global e redação de headers sensíveis |
 | Observabilidade inicial | logging estruturado, health check e Swagger |
-| Qualidade | lint, typecheck, builds e 14 testes aprovados no gate B0 |
-| Dependências | `npm audit --workspaces`: zero vulnerabilidades na última verificação |
+| Qualidade | lint, typecheck, builds, 29 testes unitários, 3 E2E e 2 integrações aprovados até B1.3 |
+| Dependências | zero vulnerabilidades altas/críticas; três avisos moderados na cadeia de desenvolvimento do Prisma CLI |
 
 ### Não bloqueadores no fluxo atual
 
 - Dependabot e CodeQL foram retirados por limitações do plano/repositório privado; a compensação atual é `npm audit` local, devendo ser incorporado ao CI.
 - O GitHub CLI ainda precisa de nova autenticação, mas Git e GitHub MCP já permitem o trabalho necessário.
 - MCP de PostgreSQL, Sentry, provedor de e-mail e hospedagem não são necessários para concluir a B0.
+- Prisma 7.8.0 fixa `@hono/node-server` 1.19.11 via `@prisma/dev`; o advisory moderado afeta `serveStatic`, não usado pelo NestJS nem pelo runtime de produção. O downgrade forçado para Prisma 6 foi rejeitado; atualizar quando a cadeia oficial incorporar a correção.
 
 ### Pendências prioritárias
 
-1. criar schema, migration e `PrismaModule` conforme a B0.5 aprovada;
-2. implementar `identity-access` e o contrato de sessão definido nos ADRs 008–010;
+1. implementar B1.4, núcleo de sessão e refresh rotativo;
+2. implementar B1.5–B1.7, transporte HTTP, autenticação e hardening;
 3. confirmar a primeira execução remota do workflow de CI após o push.
 
 Conclusão de prontidão: **a B0 está concluída e não falta instalação essencial para continuar o backend**. A próxima pendência é arquitetural, não de ambiente ou infraestrutura.

@@ -3,16 +3,20 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { randomUUID } from 'node:crypto'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { LoggerModule } from 'nestjs-pino'
 import { type Environment, validateEnvironment } from './config/environment.js'
-import { DatabaseModule } from './database/database.module.js'
+import { PrismaModule } from './database/prisma.module.js'
 import { HealthController } from './health/health.controller.js'
 import { HealthService } from './health/health.service.js'
+import { IdentityAccessModule } from './modules/identity-access/identity-access.module.js'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }),
-    DatabaseModule,
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: resolve(dirname(fileURLToPath(import.meta.url)), '../../.env'), validate: validateEnvironment }),
+    PrismaModule,
+    IdentityAccessModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<Environment, true>) => [{ ttl: config.get('RATE_LIMIT_TTL_MS', { infer: true }), limit: config.get('RATE_LIMIT_MAX', { infer: true }) }],

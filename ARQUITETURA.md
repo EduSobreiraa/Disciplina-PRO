@@ -407,6 +407,9 @@ Serão usados eventos internos do monolito. Não haverá broker, fila externa ou
 User
 Tenant
 TenantMembership
+PlatformAccess
+AuthSession
+RefreshToken
 Team
 TeamMembership
 
@@ -454,6 +457,14 @@ A B0.5 foi integralmente fechada pelos ADRs em [`docs/adr/`](docs/adr/README.md)
 - refresh token é opaco, rotativo e protegido por cookie, CORS estrito e CSRF assinado.
 
 Essas convenções são obrigatórias para o primeiro schema e só podem ser substituídas por um novo ADR.
+
+### 15.2 Baseline Prisma da B1
+
+A migration `20260716030447_identity_baseline` materializa o primeiro recorte persistente: `User`, `Tenant`, `TenantMembership`, `PlatformAccess`, `AuthSession`, `RefreshToken` e `AuditEvent`. IDs usam `uuidv7()` do PostgreSQL 18 e instantes usam `timestamptz(3)`.
+
+Constraints SQL complementam o Prisma com lifecycle coerente, CEO ativo único por tenant, expirações válidas, ator exclusivo de auditoria e eventos de auditoria protegidos contra update/delete. `PrismaModule` possui um único client com adapter `pg` e lifecycle controlado pelo NestJS.
+
+O módulo `identity-access` separa casos de uso, portas e infraestrutura. E-mails possuem forma normalizada única; senhas usam Argon2id com 19 MiB, duas iterações e paralelismo 1. O primeiro `PlatformAccess` é criado por comando operacional único, sob lock transacional e com auditoria de sistema, nunca por endpoint público.
 
 ## 16. Rotas essenciais planejadas
 
@@ -672,6 +683,7 @@ A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entrega
 | 15/07/2026 | Terceiro bloco da B0.5 aprovado: versões publicadas imutáveis, vínculo no início do enrollment e pausas por dias civis completos. |
 | 15/07/2026 | B0.5 concluída: JWT curto, refresh rotativo com reuse detection e sessão por cookie protegida por CORS estrito e CSRF assinado. |
 | 15/07/2026 | B1 decomposta em sete gates menores, separando schema, migration, credenciais, sessão, transporte, autenticação e hardening. |
+| 16/07/2026 | B1.1–B1.3 concluídas: schema Prisma inicial, baseline SQL, PrismaModule, identidade Argon2id e bootstrap transacional do primeiro SUPER_ADMIN. |
 
 ## 21. Versionamento e documentação
 

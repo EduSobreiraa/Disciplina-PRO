@@ -3,6 +3,7 @@ node_modules/
 
 # Build and test outputs
 dist/
+backend/src/generated/
 coverage/
 test-results/
 playwright-report/

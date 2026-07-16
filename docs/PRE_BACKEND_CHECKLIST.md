@@ -81,8 +81,8 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 - [x] Criar configuração tipada e validada por ambiente.
 - [x] Criar `compose.yaml` com PostgreSQL e health check.
 - [x] Adicionar `@prisma/client`, `@prisma/adapter-pg` e `pg`.
-- [ ] Instalar o Prisma CLI na B1, após a B0.5; removido da B0 enquanto sua dependência transitiva possuía alerta sem correção compatível.
-- [ ] Criar `PrismaModule`/adapter na B1, após schema e migration liberados pela B0.5.
+- [x] Instalar e fixar Prisma CLI 7.8.0 na B1; alerta transitivo moderado documentado e isolado à ferramenta de desenvolvimento.
+- [x] Criar `PrismaModule` com adapter `pg`, conexão única e shutdown limpo.
 - [x] Configurar `ValidationPipe` global.
 - [x] Configurar filtro e contrato padronizado de exceções.
 - [x] Configurar Helmet, CORS, throttling e limite explícito de payload.
@@ -97,18 +97,18 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 
 - [x] NestJS: `@nestjs/common`, `@nestjs/core`, `@nestjs/platform-express`, `@nestjs/config`.
 - [x] DTOs: `class-validator`, `class-transformer`.
-- [x] Banco: `@prisma/client`, `@prisma/adapter-pg`, `pg`; CLI `prisma` adiado para a B1.
+- [x] Banco: `prisma`, `@prisma/client`, `@prisma/adapter-pg` e `pg` em 7.8.0 quando aplicável.
 - [x] Segurança: `helmet`, `@nestjs/throttler`.
-- [ ] Autenticação futura: `@nestjs/passport`, `passport`, `passport-jwt`, `@nestjs/jwt`, `argon2`.
+- [x] Credenciais: `argon2` 0.44.0 com Argon2id; bibliotecas JWT permanecem para B1.4.
 - [x] Logging: `nestjs-pino`, `pino`, `pino-pretty` apenas no desenvolvimento.
 - [x] Contratos: `@nestjs/swagger`.
 - [x] Testes: Jest, Supertest e estratégia de integração com PostgreSQL real.
 
 ## 8. B1 — Ordem de implementação
 
-- [ ] B1.1 — Validar o primeiro `schema.prisma` contra os ADRs 001–010.
-- [ ] B1.2 — Revisar a migration baseline e criar o `PrismaModule`.
-- [ ] B1.3 — Implementar identidade, Argon2id e bootstrap de plataforma.
+- [x] B1.1 — Primeiro `schema.prisma` validado contra os ADRs 001–010.
+- [x] B1.2 — Migration baseline revisada em banco vazio e `PrismaModule` implementado.
+- [x] B1.3 — Identidade, Argon2id e bootstrap transacional de plataforma implementados.
 - [ ] B1.4 — Implementar JWT, sessões e refresh rotativo no domínio/aplicação.
 - [ ] B1.5 — Expor login, refresh e logout com CORS/CSRF.
 - [ ] B1.6 — Implementar `AuthenticationGuard` e `CurrentPrincipal`.
@@ -128,7 +128,7 @@ Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microse
 
 ## 10. Situação de prontidão
 
-**Resultado:** ambiente aprovado e B0 concluída em 15/07/2026. Node, npm, Docker, Compose, PostgreSQL, Git, lockfile único e acesso ao repositório estão operacionais. O `gh` CLI sem autenticação válida não bloqueia o desenvolvimento porque Git e GitHub MCP já atendem ao fluxo atual.
+**Resultado:** ambiente, B0, B0.5 e B1.1–B1.3 concluídos. Node, npm, Docker, Compose, PostgreSQL, Prisma, Argon2, Git, lockfile único e acesso ao repositório estão operacionais.
 
 Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**:
 
@@ -138,4 +138,4 @@ Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**
 - representação de `SUPER_ADMIN`;
 - IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
-O `PrismaModule`, o primeiro `schema.prisma` e a primeira migration pertencem à B1. A próxima etapa é materializar os ADRs 001–010 no schema e iniciar `identity-access`.
+O `PrismaModule`, o primeiro `schema.prisma`, a migration baseline e a fundação de identidade já estão implementados. A próxima etapa é B1.4: núcleo de sessões, JWT e refresh rotativo.

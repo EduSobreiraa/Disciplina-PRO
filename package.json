@@ -20,6 +20,16 @@
     "test:e2e": "npm run test:e2e --workspace backend",
     "test:integration": "npm run test:integration --workspace backend",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "prisma:generate": "npm run prisma:generate --workspace backend",
+    "prisma:validate": "npm run prisma:validate --workspace backend",
+    "prisma:migrate:deploy": "npm run prisma:migrate:deploy --workspace backend",
+    "prisma:migrate:status": "npm run prisma:migrate:status --workspace backend",
     "audit:dependencies": "npm audit --workspaces"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.8.0": true,
+    "argon2@0.44.0": true,
+    "prisma@7.8.0": true,
+    "@scarf/scarf": false
   }
 }

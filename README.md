@@ -104,6 +104,25 @@ npm run dev:backend
 
 O backend expõe `GET /api/health`, `GET /api/health/ready` e a documentação OpenAPI em `/docs`.
 
+### Prisma e primeiro acesso de plataforma
+
+```bash
+npm run prisma:generate
+npm run prisma:validate
+npm run prisma:migrate:deploy
+```
+
+O bootstrap do primeiro `SUPER_ADMIN` não possui endpoint público e só funciona enquanto não existir acesso de plataforma ativo:
+
+```bash
+export SUPER_ADMIN_EMAIL='admin@example.com'
+read -rsp 'Senha inicial: ' SUPER_ADMIN_PASSWORD && export SUPER_ADMIN_PASSWORD
+npm run platform:bootstrap --workspace backend
+unset SUPER_ADMIN_PASSWORD
+```
+
+A senha deve ter entre 15 e 128 caracteres. Não coloque credenciais no repositório, em `.env.example` ou diretamente na linha do comando.
+
 ## Comandos de qualidade
 
 Na raiz do repositório:
@@ -179,9 +198,9 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. B1.1 — escrever e revisar o primeiro `schema.prisma` conforme os ADRs 001–010;
-2. B1.2 — gerar a migration baseline e criar o `PrismaModule`;
-3. B1.3–B1.7 — implementar credenciais, sessões, HTTP seguro, autenticação e hardening;
+1. B1.4 — implementar JWT, sessões e refresh rotativo;
+2. B1.5 — expor login, refresh e logout com CORS/CSRF;
+3. B1.6–B1.7 — implementar guard, principal autenticado e hardening;
 4. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável

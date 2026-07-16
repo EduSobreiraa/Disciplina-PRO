@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { DatabaseService } from '../database/database.service.js'
+import { PrismaService } from '../database/prisma.service.js'
 
 @Injectable()
 export class HealthService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(private readonly database: PrismaService) {}
 
   getHealth() {
     return { status: 'ok', service: 'disciplina-pro-api' as const }

@@ -105,6 +105,8 @@ Entregas:
 
 **Gate:** `schema.prisma` formata e valida; nenhuma migration é criada antes da revisão do modelo.
 
+**Estado:** concluído em 16/07/2026.
+
 #### B1.2 — Baseline de banco e PrismaModule
 
 **Objetivo:** transformar o contrato revisado em persistência reproduzível.
@@ -119,6 +121,8 @@ Entregas:
 
 **Gate:** um banco vazio chega ao schema esperado somente pelas migrations versionadas e a aplicação abre/fecha conexões corretamente.
 
+**Estado:** concluído em 16/07/2026.
+
 #### B1.3 — Identidade e credenciais
 
 **Objetivo:** estabelecer identidade global sem misturar role empresarial em `User`.
@@ -128,10 +132,12 @@ Entregas:
 - repositories e casos de uso mínimos de `User`;
 - normalização e unicidade de e-mail;
 - hashing e verificação de senha com Argon2id;
-- política de senha, respostas sem enumeração de contas e rate limit de login;
+- política de senha e contrato de erros preparado para não enumerar contas;
 - bootstrap operacional do primeiro `PlatformAccess`, sem endpoint público.
 
 **Gate:** credenciais nunca são persistidas ou logadas em texto puro; bootstrap é único, auditável e testado.
+
+**Estado:** concluído em 16/07/2026.
 
 #### B1.4 — Núcleo de sessões
 
@@ -157,6 +163,7 @@ Entregas:
 - cookies `__Host-`, flags por ambiente e token CSRF assinado;
 - allowlist CORS exata e validação de `Origin`;
 - DTOs, erros estáveis, OpenAPI e integração com throttling;
+- respostas de autenticação sem enumeração de contas;
 - fluxo de refresh single-flight documentado para o frontend.
 
 **Gate:** E2E cobre sucesso e rejeição de origem, cookie, CSRF, expiração, replay e logout.
