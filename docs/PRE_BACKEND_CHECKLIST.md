@@ -60,8 +60,8 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 
 ## 5. B0.5 — Decisões arquiteturais antes do schema
 
-- [ ] Fechar o formato e a política de `ProgramVersion`.
-- [ ] Fechar `EnrollmentPause` e cálculo reproduzível dos dias pausados.
+- [x] Fechar o formato e a política de `ProgramVersion` — ADR 006.
+- [x] Fechar `EnrollmentPause` e cálculo reproduzível dos dias pausados — ADR 007.
 - [x] Fechar estados e transições de `TenantMembership` — ADR 004.
 - [x] Fechar a representação de `SUPER_ADMIN` fora de `TenantRole` — ADR 005.
 - [x] Definir convenção de IDs e sua exposição pública — ADR 001.

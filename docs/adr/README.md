@@ -9,3 +9,5 @@ Os ADRs registram decisões que alteram contratos, schema, segurança ou operaç
 | [003](003-lifecycle-exclusao-retencao.md) | Lifecycle explícito e exclusão seletiva | Aceita |
 | [004](004-lifecycle-tenant-membership.md) | Estados, transições e efeitos de TenantMembership | Aceita |
 | [005](005-acesso-plataforma-super-admin.md) | Acesso SUPER_ADMIN separado do contexto de tenant | Aceita |
+| [006](006-versionamento-de-programas.md) | Versões publicadas imutáveis e enrollment fixado no início | Aceita |
+| [007](007-intervalos-de-pausa-do-enrollment.md) | Intervalos civis reproduzíveis de pausa do enrollment | Aceita |

@@ -202,7 +202,7 @@ Regras:
 Entidades:
 
 - `Program`
-- `ProgramVersion` (planejada)
+- `ProgramVersion`
 - `ProgramPhase`
 - `ProgramActivity`
 - `TenantProgram`
@@ -218,9 +218,10 @@ Tenant
     └── Program
 ```
 
-`Program` é global e não possui `tenantId` no MVP. `TenantProgram` representa a habilitação de um programa para uma empresa.
+`Program` é global e não possui `tenantId` no MVP. `TenantProgram` representa a habilitação da identidade do programa para uma empresa, não de uma versão específica.
 
-Status de `Program`: `DRAFT`, `PUBLISHED`, `ARCHIVED`.  
+Status de `Program`: `ACTIVE`, `ARCHIVED`.
+Status de `ProgramVersion`: `DRAFT`, `PUBLISHED`, `ARCHIVED`.
 Status de `TenantProgram`: `ENABLED`, `DISABLED`.
 
 Tipos iniciais de atividade: `CHECKLIST`, `TASK`, `MISSION`, `DAILY_SCORE`, `MEDITATION`, `REFLECTION`.
@@ -229,7 +230,9 @@ Frequências iniciais: `ONCE`, `DAILY`, `WEEKLY`.
 
 ### 7.1 Versionamento
 
-Uma execução deve permanecer associada à versão do programa com que foi iniciada, mesmo que o catálogo seja atualizado posteriormente. O formato final de `ProgramVersion` e a política de publicação serão definidos antes da implementação do schema.
+`ProgramVersion` usa número crescente por programa e estados `DRAFT`, `PUBLISHED` e `ARCHIVED`. Rascunhos são editáveis; publicação torna toda a árvore imutável; arquivamento impede novos inícios sem afetar execuções existentes. Existe no máximo uma versão rascunho e uma publicada por programa.
+
+O enrollment `AVAILABLE` ainda não fixa uma versão. Ao iniciar, captura atomicamente a versão publicada corrente; esse vínculo nunca muda. Desabilitar o programa no tenant bloqueia novas ofertas e inícios, mas não interrompe ciclos em andamento. O contrato completo está no [ADR 006](docs/adr/006-versionamento-de-programas.md).
 
 ## 8. Disponibilização, adesão e ciclos
 
@@ -278,14 +281,16 @@ Consequências:
 
 ### 8.1 Histórico de pausas
 
-Será criada uma estrutura como `EnrollmentPause`, com início e término, para que a contagem seja reproduzível e auditável. Um simples estado `PAUSED` não é suficiente para calcular o dia corrente.
+`EnrollmentPause` persiste instante da solicitação, primeira data civil congelada, instante e data civil da retomada, origem, motivo e ator. O bloqueio de operações é imediato, mas somente dias civis completos são descontados: a pausa começa a congelar em D + 1 e a data de retomada volta a ser ativa.
+
+Existe no máximo uma pausa aberta por enrollment e intervalos nunca se sobrepõem. Pausas administrativas não retomam automaticamente e bloqueios simultâneos precisam estar todos resolvidos. O cálculo e os casos de borda estão no [ADR 007](docs/adr/007-intervalos-de-pausa-do-enrollment.md).
 
 ## 9. Execução de programas
 
 Entidades:
 
 - `Enrollment`
-- `EnrollmentPause` (planejada)
+- `EnrollmentPause`
 - `ActivityCompletion`
 - `DailyRecord`
 - `PillarScore`
@@ -403,13 +408,13 @@ Invitation
 InvitationTeam
 
 Program
-ProgramVersion (planejada)
+ProgramVersion
 ProgramPhase
 ProgramActivity
 TenantProgram
 
 Enrollment
-EnrollmentPause (planejada)
+EnrollmentPause
 ActivityCompletion
 DailyRecord
 PillarScore
@@ -654,6 +659,7 @@ O `schema.prisma` de domínio não será escrito antes da aprovação da B0.5. S
 | 15/07/2026 | SonarQube Cloud integrado ao CI com análise baseada no GitHub Actions e cobertura LCOV de frontend/backend; análise automática deve permanecer desativada e o gate inicial observa código novo. |
 | 15/07/2026 | Primeiro bloco da B0.5 aprovado: UUIDv7 gerado pelo PostgreSQL, tempo UTC com calendário IANA por enrollment e lifecycle explícito sem soft delete universal. |
 | 15/07/2026 | Segundo bloco da B0.5 aprovado: lifecycle de TenantMembership, proteção do CEO e acesso SUPER_ADMIN isolado do contexto de tenant. |
+| 15/07/2026 | Terceiro bloco da B0.5 aprovado: versões publicadas imutáveis, vínculo no início do enrollment e pausas por dias civis completos. |
 
 ## 21. Versionamento e documentação
 

@@ -76,7 +76,7 @@ Esta fase contém exclusivamente:
 9. refresh token: rotação, revogação, reuse detection e persistência;
 10. CORS/CSRF: origens, cookies, credenciais e proteção conforme o transporte escolhido.
 
-Progresso: **5/10 decisões aprovadas**. IDs, timezone, lifecycle/exclusão, `TenantMembership` e `SUPER_ADMIN` foram fechados nos ADRs 001–005.
+Progresso: **7/10 decisões aprovadas**. Os contratos de domínio e dados foram fechados nos ADRs 001–007; resta o bloco de sessão e segurança HTTP.
 
 Entregáveis:
 
