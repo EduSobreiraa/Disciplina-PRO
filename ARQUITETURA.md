@@ -422,6 +422,19 @@ Calculados: dia atual, percentual de progresso, adesão, streak atual e máximo,
 
 Indicadores não devem criar uma segunda fonte de verdade. Projeções futuras precisam poder ser reconstruídas a partir dos fatos.
 
+### 15.1 Convenções estruturais da B0.5
+
+O primeiro bloco da B0.5 foi fechado pelos ADRs em [`docs/adr/`](docs/adr/README.md):
+
+- IDs canônicos são UUIDv7 gerados pelo PostgreSQL 18 e mapeados como `@db.Uuid`; continuam opacos e não substituem `createdAt` nem autorização;
+- instantes usam `timestamptz(3)` em UTC; `Tenant.timeZone` usa IANA e cada enrollment captura um snapshot imutável do timezone e sua data civil inicial;
+- `programDay` usa diferença entre datas civis no timezone capturado, nunca divisão de milissegundos por 24 horas;
+- não existe soft delete universal: tenant, membership, time, convite, programa e enrollment expressam lifecycle próprio;
+- auditoria e transações de XP são imutáveis; conteúdo privado possui fluxo específico de exclusão/anonimização;
+- índices únicos parciais necessários serão migrations SQL revisadas enquanto o recurso equivalente do Prisma permanecer preview.
+
+Essas convenções são obrigatórias para o primeiro schema e só podem ser substituídas por um novo ADR.
+
 ## 16. Rotas essenciais planejadas
 
 ```text
@@ -634,6 +647,7 @@ O `schema.prisma` de domínio não será escrito antes da aprovação da B0.5. S
 | 14/07/2026 | B0.5 criada como gate obrigatório anterior ao schema Prisma; decisões de domínio, identidade e segurança passam a preceder a primeira migration e o início de `identity-access`. |
 | 15/07/2026 | B0 concluída com configuração validada, contrato de erros, request ID, limite de payload, PostgreSQL em Compose, readiness, integração real e CI; `PrismaModule` permanece na B1 para respeitar o gate B0.5. |
 | 15/07/2026 | SonarQube Cloud integrado ao CI com análise baseada no GitHub Actions e cobertura LCOV de frontend/backend; análise automática deve permanecer desativada e o gate inicial observa código novo. |
+| 15/07/2026 | Primeiro bloco da B0.5 aprovado: UUIDv7 gerado pelo PostgreSQL, tempo UTC com calendário IANA por enrollment e lifecycle explícito sem soft delete universal. |
 
 ## 21. Versionamento e documentação
 

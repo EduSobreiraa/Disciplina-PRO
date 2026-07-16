@@ -64,9 +64,9 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [ ] Fechar `EnrollmentPause` e cálculo reproduzível dos dias pausados.
 - [ ] Fechar estados e transições de `TenantMembership`.
 - [ ] Fechar a representação de `SUPER_ADMIN` fora de `TenantRole`.
-- [ ] Definir convenção de IDs e sua exposição pública.
-- [ ] Definir armazenamento temporal, timezone do tenant e cálculo de `programDay`.
-- [ ] Definir política de soft delete, unicidade, restauração e retenção por entidade.
+- [x] Definir convenção de IDs e sua exposição pública — ADR 001.
+- [x] Definir armazenamento temporal, timezone do tenant e cálculo de `programDay` — ADR 002.
+- [x] Definir política de soft delete, unicidade, restauração e retenção por entidade — ADR 003.
 - [ ] Definir claims, duração, issuer, audience e chaves do JWT.
 - [ ] Definir rotação, revogação, reuse detection e persistência do refresh token.
 - [ ] Definir transporte da sessão e política CORS/CSRF.

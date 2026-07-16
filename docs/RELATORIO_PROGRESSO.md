@@ -343,6 +343,8 @@ A recomendação é iniciar o backend antes das telas administrativas. Ordem pro
 
 A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de domínio e segurança. O plano completo, seus entregáveis e critérios de saída estão em `docs/ROADMAP.md`.
 
+O primeiro bloco da B0.5 está aprovado em ADRs: UUIDv7 gerado pelo PostgreSQL, instantes UTC com calendário IANA capturado por enrollment e lifecycle explícito sem soft delete universal. Restam sete decisões antes do primeiro schema.
+
 ## 12. Prontidão e pré-requisitos do backend
 
 ### Aprovados

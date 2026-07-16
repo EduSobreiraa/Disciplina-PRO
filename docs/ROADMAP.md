@@ -76,6 +76,8 @@ Esta fase contém exclusivamente:
 9. refresh token: rotação, revogação, reuse detection e persistência;
 10. CORS/CSRF: origens, cookies, credenciais e proteção conforme o transporte escolhido.
 
+Progresso: **3/10 decisões aprovadas**. IDs, timezone e lifecycle/exclusão foram fechados nos ADRs 001–003.
+
 Entregáveis:
 
 - decisões registradas em `ARQUITETURA.md` ou ADRs vinculados;

@@ -42,6 +42,7 @@ Documentos principais:
 - [Relatório técnico de progresso](docs/RELATORIO_PROGRESSO.md)
 - [Checklist de prontidão do backend](docs/PRE_BACKEND_CHECKLIST.md)
 - [Roadmap do restante do projeto](docs/ROADMAP.md)
+- [Registros de decisões arquiteturais](docs/adr/README.md)
 
 ## Estrutura atual
 
