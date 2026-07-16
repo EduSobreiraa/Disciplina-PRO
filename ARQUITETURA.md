@@ -150,11 +150,15 @@ USER → MANAGER → CEO
 
 ### 5.3 Estados de membership
 
-`TenantMembership` deverá possuir um estado explícito. Estados iniciais planejados: `ACTIVE`, `SUSPENDED` e `INACTIVE`. A semântica e as transições serão fechadas antes do schema Prisma definitivo.
+`TenantMembership` possui os estados `ACTIVE`, `SUSPENDED` e `INACTIVE`. Convite pendente não cria membership: a aceitação cria uma membership ativa. Suspensão é temporária; inativação representa desligamento; reativação é explícita, auditada e não recupera automaticamente times ou escopos administrativos.
+
+O acesso efetivo exige usuário, tenant e membership habilitados. Suspensão ou desligamento bloqueia operações imediatamente e provoca pausa administrativa dos enrollments ativos, sem retomada automática. O MVP mantém exatamente um CEO ativo por tenant operacional e sua substituição ocorre atomicamente por caso de uso de plataforma. As transições completas estão no [ADR 004](docs/adr/004-lifecycle-tenant-membership.md).
 
 ### 5.4 Super-admin
 
-`SUPER_ADMIN` não será modelado como `TenantRole`. Sua representação será uma capacidade de plataforma vinculada ao `User` ou uma entidade específica de acesso administrativo. A decisão final será registrada antes da implementação do módulo administrativo.
+`SUPER_ADMIN` não é `TenantRole` nem atributo de `User`. Ele é representado por `PlatformAccess`, vinculado a `User` e independente de memberships. Usa contexto, guards, rotas e casos de uso de plataforma próprios; não ignora o isolamento das rotas de tenant, não permite impersonação e não concede acesso a conteúdo privado.
+
+O primeiro acesso é criado por comando operacional único, sem endpoint público ou segredo versionado. A plataforma admite múltiplos administradores ativos, mas protege o último contra suspensão. A decisão e o modelo de auditoria estão no [ADR 005](docs/adr/005-acesso-plataforma-super-admin.md).
 
 ## 6. Convites e criação de contas
 
@@ -327,11 +331,12 @@ A gestão acompanha adesão, não conteúdo íntimo. Dados objetivos e conteúdo
 
 ## 11. Auditoria, logging e reporting
 
-`AuditEvent` é imutável e contém:
+`AuditEvent` é imutável. Eventos de tenant possuem `tenantId`; eventos estritamente globais podem omiti-lo. O ator humano é identificado exclusivamente por `actorMembershipId` ou `actorPlatformAccessId`, enquanto o bootstrap usa ator de sistema tipado. Seu contrato contém:
 
 ```text
 tenantId
 actorMembershipId
+actorPlatformAccessId
 targetMembershipId
 entityType
 entityId
@@ -648,6 +653,7 @@ O `schema.prisma` de domínio não será escrito antes da aprovação da B0.5. S
 | 15/07/2026 | B0 concluída com configuração validada, contrato de erros, request ID, limite de payload, PostgreSQL em Compose, readiness, integração real e CI; `PrismaModule` permanece na B1 para respeitar o gate B0.5. |
 | 15/07/2026 | SonarQube Cloud integrado ao CI com análise baseada no GitHub Actions e cobertura LCOV de frontend/backend; análise automática deve permanecer desativada e o gate inicial observa código novo. |
 | 15/07/2026 | Primeiro bloco da B0.5 aprovado: UUIDv7 gerado pelo PostgreSQL, tempo UTC com calendário IANA por enrollment e lifecycle explícito sem soft delete universal. |
+| 15/07/2026 | Segundo bloco da B0.5 aprovado: lifecycle de TenantMembership, proteção do CEO e acesso SUPER_ADMIN isolado do contexto de tenant. |
 
 ## 21. Versionamento e documentação
 

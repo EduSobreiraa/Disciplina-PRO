@@ -7,3 +7,5 @@ Os ADRs registram decisões que alteram contratos, schema, segurança ou operaç
 | [001](001-identificadores-uuidv7.md) | Identificadores UUIDv7 gerados pelo PostgreSQL | Aceita |
 | [002](002-tempo-timezone-calendario.md) | Instantes UTC e calendário por timezone IANA | Aceita |
 | [003](003-lifecycle-exclusao-retencao.md) | Lifecycle explícito e exclusão seletiva | Aceita |
+| [004](004-lifecycle-tenant-membership.md) | Estados, transições e efeitos de TenantMembership | Aceita |
+| [005](005-acesso-plataforma-super-admin.md) | Acesso SUPER_ADMIN separado do contexto de tenant | Aceita |
