@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 14/07/2026 · Estado: frontend individual F0–F9 concluído; backend B0 iniciado
+> Atualizado em 15/07/2026 · Estado: frontend individual F0–F9 e backend B0 concluídos
 
 ## 1. Visão geral do produto
 
@@ -19,7 +19,7 @@ Disciplina PRO
     └── Projeto 66 (primeiro programa)
 ```
 
-O frontend individual foi migrado dos protótipos HTML para React. A fundação B0 do backend NestJS foi iniciada; schema Prisma, módulos de negócio e áreas administrativas B2B ainda serão implementados.
+O frontend individual foi migrado dos protótipos HTML para React. A fundação B0 do backend NestJS foi concluída; a B0.5 decidirá os contratos que liberam schema Prisma, módulos de negócio e áreas administrativas B2B.
 
 ## 2. Tecnologias e decisões
 
@@ -30,7 +30,7 @@ O frontend individual foi migrado dos protótipos HTML para React. A fundação 
 | Qualidade | ESLint 10, `node:test`, Playwright |
 | Estilos | CSS por módulo, tokens e media queries mobile-first |
 | Persistência atual | repositories sobre `localStorage`, temporários |
-| Backend | NestJS 11 + TypeScript 5.9, em fundação B0 |
+| Backend | NestJS 11 + TypeScript 5.9, fundação B0 concluída |
 | ORM/banco | Prisma 7 + adapter `pg` + PostgreSQL 18 |
 | Arquitetura backend | monolito modular em camadas |
 | Multi-tenancy | banco compartilhado com isolamento obrigatório por `tenantId` |
@@ -273,7 +273,10 @@ A fundação NestJS possui teste unitário do serviço de saúde e teste HTTP E2
 ```bash
 npm test
 npm run test:e2e --workspace backend
+npm run test:integration --workspace backend
 ```
+
+Além do health check, a suíte cobre configuração de ambiente, readiness do PostgreSQL, request ID, contrato de erros e limite de payload. A integração executa uma consulta real no PostgreSQL.
 
 ### Critério de aceite
 
@@ -307,7 +310,6 @@ Ainda não concluído:
 - relatórios por time/tenant e auditoria real;
 - sincronização entre dispositivos;
 - proteção server-side de dados privados;
-- suíte E2E versionada no pipeline;
 - validação final com leitores de tela e dispositivos físicos.
 
 Os dados e recompensas atuais são locais e simulam contratos futuros. Não devem ser tratados como produção.
@@ -316,16 +318,15 @@ Os dados e recompensas atuais são locais e simulam contratos futuros. Não deve
 
 A recomendação é iniciar o backend antes das telas administrativas. Ordem proposta:
 
-1. concluir configuração tipada, tratamento de erros e limites HTTP da B0;
-2. executar a B0.5 exclusivamente para fechar `ProgramVersion`, `EnrollmentPause`, `TenantMembership`, `SUPER_ADMIN`, IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF;
-3. escrever o primeiro `schema.prisma`, gerar a primeira migration e iniciar `identity-access`;
-4. implementar `organizations` e isolamento multi-tenant;
-5. implementar `invitations`;
-6. implementar catálogo `programs` e habilitação por tenant;
-7. implementar `execution` e Projeto 66 por contrato genérico;
-8. implementar eventos, `gamification`, `audit` e `reporting`;
-9. trocar progressivamente os repositories locais por adapters HTTP;
-10. concluir administração, hardening, staging e release do MVP.
+1. executar a B0.5 exclusivamente para fechar `ProgramVersion`, `EnrollmentPause`, `TenantMembership`, `SUPER_ADMIN`, IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF;
+2. escrever o primeiro `schema.prisma`, gerar a primeira migration e iniciar `identity-access`;
+3. implementar `organizations` e isolamento multi-tenant;
+4. implementar `invitations`;
+5. implementar catálogo `programs` e habilitação por tenant;
+6. implementar `execution` e Projeto 66 por contrato genérico;
+7. implementar eventos, `gamification`, `audit` e `reporting`;
+8. trocar progressivamente os repositories locais por adapters HTTP;
+9. concluir administração, hardening, staging e release do MVP.
 
 A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de domínio e segurança. O plano completo, seus entregáveis e critérios de saída estão em `docs/ROADMAP.md`.
 
@@ -341,10 +342,10 @@ A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de d
 | Cliente SQL | `psql` 18.3; conexão autenticada e consulta SQL aprovadas |
 | Versionamento | Git 2.55.0; leitura pelo GitHub MCP; commit e push operacionais |
 | Workspace | npm workspaces para `frontend` e `backend`, com lockfile único |
-| Backend | NestJS, TypeScript, Prisma CLI/client, adapter `pg` e Supertest instalados |
+| Backend | NestJS, TypeScript, Prisma client/adapter `pg` e Supertest instalados; CLI entra na B1 |
 | Segurança básica | Helmet, CORS, throttling, validação global e redação de headers sensíveis |
 | Observabilidade inicial | logging estruturado, health check e Swagger |
-| Qualidade | lint, typecheck, builds e 7 testes aprovados |
+| Qualidade | lint, typecheck, builds e 14 testes aprovados no gate B0 |
 | Dependências | `npm audit --workspaces`: zero vulnerabilidades na última verificação |
 
 ### Não bloqueadores no fluxo atual
@@ -355,15 +356,11 @@ A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de d
 
 ### Pendências prioritárias
 
-1. versionar o PostgreSQL local em `compose.yaml` sem credenciais reais;
-2. validar variáveis de ambiente com configuração tipada;
-3. padronizar exceções, request ID e limite de payload;
-4. adicionar teste de integração contra PostgreSQL real;
-5. criar CI com lint, typecheck, testes, build e `npm audit`;
-6. executar e aprovar as dez decisões da B0.5;
-7. somente então criar schema, migration, `PrismaModule` e `identity-access`.
+1. executar e aprovar as dez decisões da B0.5;
+2. somente então criar schema, migration, `PrismaModule` e `identity-access`;
+3. confirmar a primeira execução remota do workflow de CI após o push.
 
-Conclusão de prontidão: **não falta instalação essencial para continuar o backend**. As pendências atuais são de implementação, automação e decisões arquiteturais, não de ambiente local.
+Conclusão de prontidão: **a B0 está concluída e não falta instalação essencial para continuar o backend**. A próxima pendência é arquitetural, não de ambiente ou infraestrutura.
 
 ## 13. Conclusão
 

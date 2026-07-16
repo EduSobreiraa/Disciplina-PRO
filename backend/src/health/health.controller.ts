@@ -12,4 +12,10 @@ export class HealthController {
   getHealth() {
     return this.healthService.getHealth()
   }
+
+  @Get('ready')
+  @ApiOperation({ summary: 'Verifica se a API e suas dependências estão disponíveis' })
+  getReadiness() {
+    return this.healthService.getReadiness()
+  }
 }

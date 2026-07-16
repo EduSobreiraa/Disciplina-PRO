@@ -38,7 +38,7 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [ ] Reavaliar Dependabot quando o plano/repositório oferecer o fluxo desejado; por enquanto usar `npm audit` local e no CI.
 - [ ] Reavaliar CodeQL quando disponível no plano atual.
 - [ ] Ativar secret scanning e push protection, conforme disponibilidade.
-- [ ] Criar `.github/workflows/ci.yml` antes de adotar checks obrigatórios.
+- [x] Criar `.github/workflows/ci.yml` antes de adotar checks obrigatórios.
 - [ ] Configurar checks obrigatórios antes de proteger `main`.
 - [ ] Impedir force push em `main`.
 - [ ] Adotar feature branches e pull requests durante o backend.
@@ -77,30 +77,31 @@ Gate: somente após estes dez itens serão escritos o primeiro `schema.prisma` e
 - [x] Criar `backend/` com NestJS + TypeScript.
 - [x] Criar package raiz com workspaces para `frontend` e `backend`.
 - [x] Instalar dependências e gerar lockfile único na raiz.
-- [ ] Criar configuração tipada por ambiente.
-- [ ] Criar `compose.yaml` com PostgreSQL e health check.
-- [x] Adicionar Prisma CLI, `@prisma/client`, `@prisma/adapter-pg` e `pg`.
-- [ ] Criar `PrismaModule`/adapter sem expor Prisma aos controllers.
+- [x] Criar configuração tipada e validada por ambiente.
+- [x] Criar `compose.yaml` com PostgreSQL e health check.
+- [x] Adicionar `@prisma/client`, `@prisma/adapter-pg` e `pg`.
+- [ ] Instalar o Prisma CLI na B1, após a B0.5; removido da B0 enquanto sua dependência transitiva possuía alerta sem correção compatível.
+- [ ] Criar `PrismaModule`/adapter na B1, após schema e migration liberados pela B0.5.
 - [x] Configurar `ValidationPipe` global.
-- [ ] Configurar filtro padronizado de exceções.
-- [x] Configurar Helmet, CORS e throttling inicial; limite explícito de payload permanece pendente.
-- [x] Configurar logging estruturado e redação de headers sensíveis; request ID explícito permanece pendente.
+- [x] Configurar filtro e contrato padronizado de exceções.
+- [x] Configurar Helmet, CORS, throttling e limite explícito de payload.
+- [x] Configurar logging estruturado, redação de headers sensíveis e request ID.
 - [x] Criar endpoint de health check inicial da API.
 - [x] Gerar OpenAPI com Swagger.
 - [x] Configurar Jest, teste unitário e teste HTTP E2E do health check.
-- [ ] Configurar testes de integração com PostgreSQL real.
+- [x] Configurar testes de integração com PostgreSQL real.
 - [x] Criar comandos de lint, typecheck, test e build; migration check depende do Prisma schema.
 
 ## 7. Dependências previstas
 
 - [x] NestJS: `@nestjs/common`, `@nestjs/core`, `@nestjs/platform-express`, `@nestjs/config`.
 - [x] DTOs: `class-validator`, `class-transformer`.
-- [x] Banco: `prisma`, `@prisma/client`, `@prisma/adapter-pg`, `pg`.
+- [x] Banco: `@prisma/client`, `@prisma/adapter-pg`, `pg`; CLI `prisma` adiado para a B1.
 - [x] Segurança: `helmet`, `@nestjs/throttler`.
 - [ ] Autenticação futura: `@nestjs/passport`, `passport`, `passport-jwt`, `@nestjs/jwt`, `argon2`.
 - [x] Logging: `nestjs-pino`, `pino`, `pino-pretty` apenas no desenvolvimento.
 - [x] Contratos: `@nestjs/swagger`.
-- [ ] Testes: Jest e Supertest instalados; Testcontainers ou estratégia equivalente com PostgreSQL real permanece pendente.
+- [x] Testes: Jest, Supertest e estratégia de integração com PostgreSQL real.
 
 ## 8. Serviços externos — não bloquear B0
 
@@ -114,7 +115,7 @@ Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microse
 
 ## 9. Situação de prontidão
 
-**Resultado:** ambiente aprovado e B0 iniciada. Node, npm, Docker, Compose, PostgreSQL, Git, lockfile único e acesso ao repositório estão operacionais. O `gh` CLI sem autenticação válida não bloqueia o desenvolvimento porque Git e GitHub MCP já atendem ao fluxo atual.
+**Resultado:** ambiente aprovado e B0 concluída em 15/07/2026. Node, npm, Docker, Compose, PostgreSQL, Git, lockfile único e acesso ao repositório estão operacionais. O `gh` CLI sem autenticação válida não bloqueia o desenvolvimento porque Git e GitHub MCP já atendem ao fluxo atual.
 
 Pendências da **B0.5 que bloqueiam o primeiro schema de domínio**, mas não a conclusão técnica da B0:
 
@@ -124,12 +125,4 @@ Pendências da **B0.5 que bloqueiam o primeiro schema de domínio**, mas não a 
 - representação de `SUPER_ADMIN`;
 - IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
-Pendências técnicas imediatas da B0:
-
-- configuração tipada e validada de ambiente;
-- `compose.yaml` versionado;
-- schema Prisma inicial e `PrismaModule`;
-- filtro padronizado de exceções;
-- limite explícito de payload e request ID;
-- integração automatizada com PostgreSQL;
-- workflow de CI compatível com o plano atual.
+O `PrismaModule`, o primeiro `schema.prisma` e a primeira migration pertencem à transição B0.5 → B1. A próxima etapa é exclusivamente a aprovação das dez decisões da B0.5.

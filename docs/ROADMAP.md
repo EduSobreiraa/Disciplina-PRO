@@ -43,21 +43,21 @@ B10 Hardening, staging e release MVP
 
 ## 3. Fases restantes
 
-### B0 — Fundação técnica
+### B0 — Fundação técnica ✅
 
 **Objetivo:** tornar a API previsível, testável e pronta para receber o domínio.
 
-Entregas restantes:
+Concluída em 15/07/2026 com:
 
 - configuração tipada e validada por ambiente;
 - `compose.yaml` com PostgreSQL e health check;
 - filtro e contrato padronizado de erros;
 - request ID e limite explícito de payload;
-- estrutura inicial do `PrismaModule`, sem antecipar o schema de domínio;
+- conexão técnica por `pg`, sem antecipar o schema ou o `PrismaModule` da B1;
 - teste de integração com PostgreSQL real;
 - CI com lint, typecheck, testes, build e auditoria de dependências.
 
-**Gate de saída:** ambiente novo sobe por instruções versionadas; API e banco passam pelos checks locais e de CI.
+**Gate de saída aprovado:** ambiente versionado, API e PostgreSQL verificáveis, checks locais aprovados e workflow de CI criado. A execução remota do workflow será confirmada no GitHub após o push.
 
 ### B0.5 — Decisões arquiteturais
 
@@ -92,6 +92,7 @@ Entregáveis:
 Entregas:
 
 - primeiro `schema.prisma` e migration versionada;
+- Prisma CLI instalado na versão estável auditada;
 - `PrismaModule` com adapter `pg` e ciclo de vida controlado;
 - modelos iniciais de usuário, acesso de plataforma, membership e sessão;
 - login, refresh rotativo e logout;

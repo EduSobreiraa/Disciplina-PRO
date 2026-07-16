@@ -632,6 +632,7 @@ O `schema.prisma` de domínio não será escrito antes da aprovação da B0.5. S
 | 14/07/2026 | Checklist operacional pré-backend criado em `docs/PRE_BACKEND_CHECKLIST.md`, incluindo runtime, PostgreSQL, GitHub, MCPs, segurança e decisões pendentes. |
 | 14/07/2026 | B0 iniciada com workspace npm, scaffold NestJS/TypeScript, health check, validação global, Swagger, Helmet, throttling, logging estruturado e lockfile único; scaffold Express acidental removido. |
 | 14/07/2026 | B0.5 criada como gate obrigatório anterior ao schema Prisma; decisões de domínio, identidade e segurança passam a preceder a primeira migration e o início de `identity-access`. |
+| 15/07/2026 | B0 concluída com configuração validada, contrato de erros, request ID, limite de payload, PostgreSQL em Compose, readiness, integração real e CI; `PrismaModule` permanece na B1 para respeitar o gate B0.5. |
 
 ## 21. Versionamento e documentação
 

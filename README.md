@@ -21,7 +21,7 @@ Já estão disponíveis:
 - separação local entre dados objetivos e conteúdo privado;
 - repositories locais preparados para futura substituição pela API.
 
-O backend NestJS está na B0, com workspace, health check, validação, segurança HTTP, logging, Swagger e testes iniciais. O schema Prisma e os módulos de negócio ainda não foram iniciados.
+O backend NestJS concluiu a B0, com ambiente validado, contrato HTTP, PostgreSQL reproduzível, health/readiness, testes reais e CI. A próxima fase é a B0.5; schema Prisma e módulos de negócio aguardam suas decisões arquiteturais.
 
 ## Arquitetura planejada
 
@@ -53,7 +53,8 @@ Documentos principais:
 │   ├── MIGRACAO_FRONTEND.md
 │   ├── PRE_BACKEND_CHECKLIST.md
 │   └── RELATORIO_PROGRESSO.md
-├── backend/                   # fundação NestJS em implementação
+├── backend/                   # fundação NestJS concluída
+├── compose.yaml              # PostgreSQL local reproduzível
 └── frontend/
     ├── disciplina-pro.html    # protótipo de referência
     ├── protocolo_66_ios (1).html
@@ -94,11 +95,13 @@ Na raiz do workspace, também é possível executar:
 
 ```bash
 npm install
+cp .env.example .env
+docker compose up -d
 npm run dev:frontend
 npm run dev:backend
 ```
 
-O backend inicial expõe `GET /api/health` e a documentação OpenAPI em `/docs`.
+O backend expõe `GET /api/health`, `GET /api/health/ready` e a documentação OpenAPI em `/docs`.
 
 ## Comandos de qualidade
 
@@ -108,6 +111,8 @@ Na raiz do repositório:
 npm run lint
 npm run typecheck
 npm test
+npm run test:e2e
+npm run test:integration
 npm run build
 npm run audit:dependencies
 ```
