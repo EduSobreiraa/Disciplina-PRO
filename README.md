@@ -21,7 +21,7 @@ Já estão disponíveis:
 - separação local entre dados objetivos e conteúdo privado;
 - repositories locais preparados para futura substituição pela API.
 
-O backend NestJS concluiu a B0, com ambiente validado, contrato HTTP, PostgreSQL reproduzível, health/readiness, testes reais e CI. A próxima fase é a B0.5; schema Prisma e módulos de negócio aguardam suas decisões arquiteturais.
+O backend NestJS concluiu a fundação B0 e as dez decisões arquiteturais da B0.5. Ambiente, contrato HTTP, PostgreSQL, health/readiness, testes e CI estão validados; o primeiro schema Prisma e `identity-access` iniciam agora a B1.
 
 ## Arquitetura planejada
 
@@ -179,9 +179,9 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. concluir a fundação técnica B0;
-2. executar a B0.5 e fechar as decisões que governam schema e autenticação;
-3. gerar o primeiro schema/migration e iniciar `identity-access`;
+1. escrever o primeiro `schema.prisma` conforme os ADRs 001–010;
+2. gerar e revisar a primeira migration;
+3. criar o `PrismaModule` e iniciar `identity-access`;
 4. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável

@@ -11,3 +11,6 @@ Os ADRs registram decisões que alteram contratos, schema, segurança ou operaç
 | [005](005-acesso-plataforma-super-admin.md) | Acesso SUPER_ADMIN separado do contexto de tenant | Aceita |
 | [006](006-versionamento-de-programas.md) | Versões publicadas imutáveis e enrollment fixado no início | Aceita |
 | [007](007-intervalos-de-pausa-do-enrollment.md) | Intervalos civis reproduzíveis de pausa do enrollment | Aceita |
+| [008](008-access-token-jwt.md) | JWT curto identifica usuário e sessão, não autorização | Aceita |
+| [009](009-refresh-token-rotativo.md) | Refresh token opaco, rotativo e com reuse detection | Aceita |
+| [010](010-transporte-cors-csrf.md) | Sessão híbrida, CORS estrito e CSRF assinado | Aceita |

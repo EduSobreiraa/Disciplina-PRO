@@ -67,11 +67,11 @@ Estado verificado: o MCP atual lê o repositório privado e expõe arquivos, bra
 - [x] Definir convenção de IDs e sua exposição pública — ADR 001.
 - [x] Definir armazenamento temporal, timezone do tenant e cálculo de `programDay` — ADR 002.
 - [x] Definir política de soft delete, unicidade, restauração e retenção por entidade — ADR 003.
-- [ ] Definir claims, duração, issuer, audience e chaves do JWT.
-- [ ] Definir rotação, revogação, reuse detection e persistência do refresh token.
-- [ ] Definir transporte da sessão e política CORS/CSRF.
+- [x] Definir claims, duração, issuer, audience e chaves do JWT — ADR 008.
+- [x] Definir rotação, revogação, reuse detection e persistência do refresh token — ADR 009.
+- [x] Definir transporte da sessão e política CORS/CSRF — ADR 010.
 
-Gate: somente após estes dez itens serão escritos o primeiro `schema.prisma` e a primeira migration; então começa `identity-access`. Política de conteúdo privado e exclusão permanece uma decisão transversal obrigatória antes do módulo `execution`.
+Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `schema.prisma`, a primeira migration e o início de `identity-access` estão liberados para a B1. Política de conteúdo privado e exclusão permanece uma decisão transversal obrigatória antes do módulo `execution`.
 
 ## 6. Fundação técnica planejada — B0
 
@@ -118,7 +118,7 @@ Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microse
 
 **Resultado:** ambiente aprovado e B0 concluída em 15/07/2026. Node, npm, Docker, Compose, PostgreSQL, Git, lockfile único e acesso ao repositório estão operacionais. O `gh` CLI sem autenticação válida não bloqueia o desenvolvimento porque Git e GitHub MCP já atendem ao fluxo atual.
 
-Pendências da **B0.5 que bloqueiam o primeiro schema de domínio**, mas não a conclusão técnica da B0:
+Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**:
 
 - `ProgramVersion` e política de publicação;
 - pausas de enrollment e cálculo dos dias;
@@ -126,4 +126,4 @@ Pendências da **B0.5 que bloqueiam o primeiro schema de domínio**, mas não a 
 - representação de `SUPER_ADMIN`;
 - IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
-O `PrismaModule`, o primeiro `schema.prisma` e a primeira migration pertencem à transição B0.5 → B1. A próxima etapa é exclusivamente a aprovação das dez decisões da B0.5.
+O `PrismaModule`, o primeiro `schema.prisma` e a primeira migration pertencem à B1. A próxima etapa é materializar os ADRs 001–010 no schema e iniciar `identity-access`.

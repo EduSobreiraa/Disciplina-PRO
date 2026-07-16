@@ -76,7 +76,7 @@ Esta fase contém exclusivamente:
 9. refresh token: rotação, revogação, reuse detection e persistência;
 10. CORS/CSRF: origens, cookies, credenciais e proteção conforme o transporte escolhido.
 
-Progresso: **7/10 decisões aprovadas**. Os contratos de domínio e dados foram fechados nos ADRs 001–007; resta o bloco de sessão e segurança HTTP.
+Progresso: **10/10 decisões aprovadas** nos ADRs 001–010. O gate da B0.5 está concluído e libera o primeiro schema, migration e `identity-access` na B1.
 
 Entregáveis:
 

@@ -19,7 +19,7 @@ Disciplina PRO
     └── Projeto 66 (primeiro programa)
 ```
 
-O frontend individual foi migrado dos protótipos HTML para React. A fundação B0 do backend NestJS foi concluída; a B0.5 decidirá os contratos que liberam schema Prisma, módulos de negócio e áreas administrativas B2B.
+O frontend individual foi migrado dos protótipos HTML para React. A fundação B0 e as dez decisões da B0.5 foram concluídas; o primeiro schema Prisma e `identity-access` iniciam a B1.
 
 ## 2. Tecnologias e decisões
 
@@ -331,8 +331,8 @@ Os dados e recompensas atuais são locais e simulam contratos futuros. Não deve
 
 A recomendação é iniciar o backend antes das telas administrativas. Ordem proposta:
 
-1. executar a B0.5 exclusivamente para fechar `ProgramVersion`, `EnrollmentPause`, `TenantMembership`, `SUPER_ADMIN`, IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF;
-2. escrever o primeiro `schema.prisma`, gerar a primeira migration e iniciar `identity-access`;
+1. escrever o primeiro `schema.prisma` conforme os ADRs 001–010, gerar a primeira migration e iniciar `identity-access`;
+2. implementar login, refresh rotativo, logout e guards de autenticação/contexto;
 3. implementar `organizations` e isolamento multi-tenant;
 4. implementar `invitations`;
 5. implementar catálogo `programs` e habilitação por tenant;
@@ -343,7 +343,7 @@ A recomendação é iniciar o backend antes das telas administrativas. Ordem pro
 
 A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de domínio e segurança. O plano completo, seus entregáveis e critérios de saída estão em `docs/ROADMAP.md`.
 
-Os três primeiros blocos da B0.5 estão aprovados nos ADRs 001–007: identidade e tempo, lifecycle de memberships e acesso de plataforma, versões imutáveis de programas e intervalos civis de pausa. Restam as três decisões de sessão e segurança HTTP antes do primeiro schema.
+A B0.5 está concluída com dez decisões aprovadas nos ADRs 001–010. O bloco final definiu JWT curto sem autorização embarcada, refresh token opaco e rotativo com detecção de reutilização e transporte híbrido protegido por CORS estrito e CSRF assinado. O primeiro schema e `identity-access` estão liberados para a B1.
 
 ## 12. Prontidão e pré-requisitos do backend
 
@@ -371,8 +371,8 @@ Os três primeiros blocos da B0.5 estão aprovados nos ADRs 001–007: identidad
 
 ### Pendências prioritárias
 
-1. executar e aprovar as dez decisões da B0.5;
-2. somente então criar schema, migration, `PrismaModule` e `identity-access`;
+1. criar schema, migration e `PrismaModule` conforme a B0.5 aprovada;
+2. implementar `identity-access` e o contrato de sessão definido nos ADRs 008–010;
 3. confirmar a primeira execução remota do workflow de CI após o push.
 
 Conclusão de prontidão: **a B0 está concluída e não falta instalação essencial para continuar o backend**. A próxima pendência é arquitetural, não de ambiente ou infraestrutura.

@@ -90,6 +90,12 @@ PostgreSQL
 
 Toda consulta a dados de empresa deve possuir escopo explícito de tenant. O isolamento não pode depender apenas de filtros fornecidos pelo cliente.
 
+O access token JWT identifica somente usuário e sessão; não carrega tenant, role ou permissões. `X-Tenant-Id` seleciona explicitamente o contexto e seu estado atual é validado no banco. Claims, assinatura e rotação de chaves estão no [ADR 008](docs/adr/008-access-token-jwt.md).
+
+Sessões usam refresh token opaco, rotativo e persistido apenas por hash. Reutilização revoga a família; access token permanece somente em memória e refresh permanece em cookie `HttpOnly`. A política está no [ADR 009](docs/adr/009-refresh-token-rotativo.md).
+
+CORS aceita apenas origens exatas por ambiente. Refresh e logout exigem origem permitida e token CSRF assinado ligado à sessão. O transporte completo está no [ADR 010](docs/adr/010-transporte-cors-csrf.md).
+
 ## 5. Identidade, organização e permissões
 
 ### 5.1 Modelo organizacional
@@ -434,7 +440,7 @@ Indicadores não devem criar uma segunda fonte de verdade. Projeções futuras p
 
 ### 15.1 Convenções estruturais da B0.5
 
-O primeiro bloco da B0.5 foi fechado pelos ADRs em [`docs/adr/`](docs/adr/README.md):
+A B0.5 foi integralmente fechada pelos ADRs em [`docs/adr/`](docs/adr/README.md):
 
 - IDs canônicos são UUIDv7 gerados pelo PostgreSQL 18 e mapeados como `@db.Uuid`; continuam opacos e não substituem `createdAt` nem autorização;
 - instantes usam `timestamptz(3)` em UTC; `Tenant.timeZone` usa IANA e cada enrollment captura um snapshot imutável do timezone e sua data civil inicial;
@@ -442,6 +448,10 @@ O primeiro bloco da B0.5 foi fechado pelos ADRs em [`docs/adr/`](docs/adr/README
 - não existe soft delete universal: tenant, membership, time, convite, programa e enrollment expressam lifecycle próprio;
 - auditoria e transações de XP são imutáveis; conteúdo privado possui fluxo específico de exclusão/anonimização;
 - índices únicos parciais necessários serão migrations SQL revisadas enquanto o recurso equivalente do Prisma permanecer preview.
+- memberships possuem lifecycle explícito e `SUPER_ADMIN` usa acesso de plataforma isolado;
+- versões publicadas são imutáveis e enrollments registram pausas por dias civis completos;
+- JWT identifica usuário e sessão, enquanto autorização permanece atual no banco;
+- refresh token é opaco, rotativo e protegido por cookie, CORS estrito e CSRF assinado.
 
 Essas convenções são obrigatórias para o primeiro schema e só podem ser substituídas por um novo ADR.
 
@@ -619,7 +629,7 @@ O backend seguirá gates dependentes, detalhados em `docs/ROADMAP.md`:
 7. **B8–B9 — Produto integrado:** adapters HTTP e áreas administrativas;
 8. **B10 — Operação:** staging, hardening e release do MVP.
 
-O `schema.prisma` de domínio não será escrito antes da aprovação da B0.5. Seu primeiro schema e migration são entregas de transição para a B1, que inicia `identity-access`.
+A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entregas da B1, que inicia `identity-access`.
 
 ## 20. Histórico de decisões
 
@@ -660,6 +670,7 @@ O `schema.prisma` de domínio não será escrito antes da aprovação da B0.5. S
 | 15/07/2026 | Primeiro bloco da B0.5 aprovado: UUIDv7 gerado pelo PostgreSQL, tempo UTC com calendário IANA por enrollment e lifecycle explícito sem soft delete universal. |
 | 15/07/2026 | Segundo bloco da B0.5 aprovado: lifecycle de TenantMembership, proteção do CEO e acesso SUPER_ADMIN isolado do contexto de tenant. |
 | 15/07/2026 | Terceiro bloco da B0.5 aprovado: versões publicadas imutáveis, vínculo no início do enrollment e pausas por dias civis completos. |
+| 15/07/2026 | B0.5 concluída: JWT curto, refresh rotativo com reuse detection e sessão por cookie protegida por CORS estrito e CSRF assinado. |
 
 ## 21. Versionamento e documentação
 
