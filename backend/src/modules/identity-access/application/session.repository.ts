@@ -12,6 +12,7 @@ export type RotateRefreshResult =
 export abstract class SessionRepository {
   abstract create(input: { userId: string; refreshTokenHash: string; refreshExpiresAt: Date; absoluteExpiresAt: Date; now: Date }): Promise<PersistedSession>
   abstract rotate(input: { currentTokenHash: string; nextTokenHash: string; nextExpiresAt: Date; now: Date }): Promise<RotateRefreshResult>
+  abstract findSessionIdByRefreshTokenHash(tokenHash: string): Promise<string | null>
   abstract revokeSession(input: { sessionId: string; reason: string; now: Date }): Promise<void>
   abstract revokeAllForUser(input: { userId: string; reason: string; now: Date }): Promise<void>
 }

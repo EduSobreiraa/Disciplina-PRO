@@ -27,7 +27,7 @@ import { IdentityAccessModule } from './modules/identity-access/identity-access.
         pinoHttp: {
           level: config.get('LOG_LEVEL', { infer: true }),
           genReqId: (request) => request.headers['x-request-id']?.toString() ?? randomUUID(),
-          redact: ['req.headers.authorization', 'req.headers.cookie', 'res.headers.set-cookie'],
+          redact: ['req.headers.authorization', 'req.headers.cookie', 'req.headers.x-csrf-token', 'res.headers.set-cookie'],
         },
       }),
     }),

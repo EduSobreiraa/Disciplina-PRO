@@ -474,6 +474,14 @@ Refresh tokens possuem 256 bits aleatórios, são persistidos apenas por HMAC-SH
 
 Logout por sessão e revogação global são idempotentes. Falha de assinatura depois de persistir ou rotacionar revoga a sessão para não deixar credenciais ativas sem resposta válida. O transporte HTTP e a consulta de sessão pelo guard permanecem em B1.5 e B1.6.
 
+### 15.4 Transporte HTTP da B1.5
+
+`POST /api/auth/login`, `/refresh` e `/logout` validam `Origin` contra `FRONTEND_URL`; CORS declara origens, métodos e headers exatos. Login possui throttling mais restritivo e devolve o mesmo erro para usuário inexistente, desabilitado ou senha incorreta.
+
+O access token é devolvido somente no corpo. Em produção, refresh e CSRF usam cookies `__Host-`, `Secure`, `SameSite=Lax`, `Path=/` e nenhum `Domain`; no HTTP de desenvolvimento, os nomes perdem o prefixo porque `__Host-` exige `Secure`. O refresh é `HttpOnly`; o CSRF é legível e deve ser repetido em `X-CSRF-Token`.
+
+O token CSRF usa HMAC com uma chave derivada do pepper por separação de contexto, contém nonce aleatório e fica ligado ao `AuthSession.id`. Cookie e header são comparados antes da rotação/revogação, e o logger redige ambos. O frontend deve aplicar refresh single-flight: uma única rotação em andamento é compartilhada por todas as requisições que aguardam novo access token.
+
 ## 16. Rotas essenciais planejadas
 
 ```text
@@ -694,6 +702,7 @@ A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entrega
 | 16/07/2026 | B1.1–B1.3 concluídas: schema Prisma inicial, baseline SQL, PrismaModule, identidade Argon2id e bootstrap transacional do primeiro SUPER_ADMIN. |
 | 16/07/2026 | Registro central de problemas postergados criado em `docs/PROBLEMAS_POSTERGADOS.md`, com prioridades, mitigação, fase de retomada e gates para dados reais/staging. |
 | 20/07/2026 | B1.4 concluída: JWT RS256 por kid, refresh opaco rotativo, expiração 7/30 dias, revogação e reuse detection transacional. |
+| 20/07/2026 | B1.5 concluída: contrato HTTP de login/refresh/logout, origem exata, cookies por ambiente, CSRF ligado à sessão e refresh single-flight documentado. |
 
 ## 21. Versionamento e documentação
 

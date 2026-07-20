@@ -15,7 +15,12 @@ export function configureApp(app: INestApplication) {
   app.use(helmet())
   app.use(json({ limit: bodyLimit }))
   app.use(urlencoded({ extended: true, limit: bodyLimit }))
-  app.enableCors({ origin: config.get('FRONTEND_URL', { infer: true }), credentials: true })
+  app.enableCors({
+    origin: config.get('FRONTEND_URL', { infer: true }),
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Authorization', 'Content-Type', 'X-Tenant-Id', 'X-CSRF-Token', 'X-Request-Id'],
+  })
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
   app.useGlobalFilters(new HttpExceptionFilter())
   app.setGlobalPrefix('api')

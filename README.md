@@ -21,7 +21,7 @@ Já estão disponíveis:
 - separação local entre dados objetivos e conteúdo privado;
 - repositories locais preparados para futura substituição pela API.
 
-O backend NestJS concluiu B0, as dez decisões arquiteturais da B0.5 e os blocos B1.1–B1.4. O schema Prisma, a identidade, as credenciais e o núcleo seguro de sessões estão validados; o contrato HTTP de autenticação será implementado na B1.5.
+O backend NestJS concluiu B0, as dez decisões arquiteturais da B0.5 e os blocos B1.1–B1.5. Schema, identidade, credenciais, sessões e transporte HTTP seguro estão validados; o guard de autenticação será implementado na B1.6.
 
 ## Arquitetura planejada
 
@@ -106,6 +106,10 @@ npm run dev:backend
 O backend expõe `GET /api/health`, `GET /api/health/ready` e a documentação OpenAPI em `/docs`.
 
 Em desenvolvimento e testes, chaves RSA efêmeras são geradas por processo. Produção exige `JWT_PRIVATE_KEY_BASE64`, `JWT_PUBLIC_KEYS_JSON`, `JWT_ACTIVE_KID` e `REFRESH_TOKEN_PEPPER`; nenhum desses segredos deve ser versionado. O access token dura 10 minutos, o refresh expira após 7 dias de inatividade e a sessão possui limite absoluto de 30 dias.
+
+Login, refresh e logout usam `POST /api/auth/*` e exigem `Origin` exatamente igual a `FRONTEND_URL`. Em produção, o refresh fica em `__Host-dp_refresh` (`HttpOnly`) e o CSRF em `__Host-dp_csrf`; ambos usam `Secure`, `SameSite=Lax` e `Path=/`. Desenvolvimento usa os nomes sem `__Host-`, pois HTTP local não satisfaz a exigência `Secure` desse prefixo.
+
+O frontend mantém o access token somente em memória e coordena refresh com uma única Promise compartilhada. Requisições concorrentes aguardam essa Promise e não enviam simultaneamente o mesmo refresh token, pois replay revoga a sessão inteira.
 
 ### Prisma e primeiro acesso de plataforma
 
@@ -201,10 +205,9 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. B1.5 — expor login, refresh e logout com cookies, CORS e CSRF;
-2. B1.6 — implementar `AuthenticationGuard` e principal autenticado;
-3. B1.7 — concluir hardening e gate da fase;
-4. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
+1. B1.6 — implementar `AuthenticationGuard` e principal autenticado;
+2. B1.7 — concluir hardening e gate da fase;
+3. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável
 

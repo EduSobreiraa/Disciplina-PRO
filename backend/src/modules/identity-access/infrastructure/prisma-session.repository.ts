@@ -100,6 +100,11 @@ export class PrismaSessionRepository extends SessionRepository {
       })
   }
 
+  async findSessionIdByRefreshTokenHash(tokenHash: string) {
+    const token = await this.prisma.refreshToken.findUnique({ where: { tokenHash }, select: { sessionId: true } })
+    return token?.sessionId ?? null
+  }
+
   async revokeSession(input: { sessionId: string; reason: string; now: Date }) {
     await this.prisma.$transaction(async (transaction) => {
       const updated = await transaction.authSession.updateMany({

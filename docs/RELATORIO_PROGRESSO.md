@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 20/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1.1–B1.4 concluídos
+> Atualizado em 20/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1.1–B1.5 concluídos
 
 ## 1. Visão geral do produto
 
@@ -351,6 +351,8 @@ B1.1–B1.3 foram concluídas em 16/07/2026. O schema inicial cobre identidade, 
 
 B1.4 foi concluída em 20/07/2026 com `jose` 6.2.3: JWT RS256 curto e tipado, rotação de chaves por `kid`, refresh opaco com HMAC, expiração 7/30 dias, logout, revogação global e detecção transacional de replay. Testes PostgreSQL cobrem duas rotações concorrentes e comprovam a revogação da família.
 
+B1.5 expôs login, refresh e logout com DTOs e OpenAPI, origem exata, CORS explícito, throttling de login, cookies seguros por ambiente e CSRF assinado ligado à sessão. Credenciais inválidas não enumeram usuários; cookies, bearer e CSRF são redigidos dos logs. O contrato frontend exige access token em memória e refresh single-flight.
+
 ## 12. Prontidão e pré-requisitos do backend
 
 ### Aprovados
@@ -366,7 +368,7 @@ B1.4 foi concluída em 20/07/2026 com `jose` 6.2.3: JWT RS256 curto e tipado, ro
 | Backend | NestJS, TypeScript, Prisma 7.9.0 com adapter `pg`, Argon2id, `jose` e Supertest |
 | Segurança básica | Helmet, CORS, throttling, validação global e redação de headers sensíveis |
 | Observabilidade inicial | logging estruturado, health check e Swagger |
-| Qualidade | lint, typecheck, builds, 36 testes unitários, 3 E2E e 3 integrações aprovados no encerramento B1.4 |
+| Qualidade | lint, typecheck, builds, 37 testes unitários, 3 E2E e 8 integrações aprovados até B1.5 |
 | Dependências | `npm audit --workspaces` sem vulnerabilidades após atualização coordenada para Prisma 7.9.0 |
 
 ### Não bloqueadores no fluxo atual
@@ -379,8 +381,8 @@ B1.4 foi concluída em 20/07/2026 com `jose` 6.2.3: JWT RS256 curto e tipado, ro
 
 ### Pendências prioritárias
 
-1. implementar B1.5, transporte HTTP seguro de autenticação;
-2. implementar B1.6–B1.7, guard, principal atual e hardening;
+1. implementar B1.6, guard e principal atual;
+2. implementar B1.7, hardening e gate de encerramento;
 3. confirmar a primeira execução remota do workflow de CI após o push.
 
 Conclusão de prontidão: **a B0 está concluída e não falta instalação essencial para continuar o backend**. A próxima pendência é arquitetural, não de ambiente ou infraestrutura.

@@ -5,19 +5,25 @@ import { Clock, SystemClock } from './application/clock.js'
 import { CreateUserUseCase } from './application/create-user.use-case.js'
 import { CreateSessionUseCase } from './application/create-session.use-case.js'
 import { IdentityRepository } from './application/identity.repository.js'
+import { LoginUseCase } from './application/login.use-case.js'
 import { PasswordHasher } from './application/password-hasher.js'
 import { RefreshTokenService } from './application/refresh-token.js'
+import { ResolveRefreshSessionUseCase } from './application/resolve-refresh-session.use-case.js'
 import { RevokeAllSessionsUseCase } from './application/revoke-all-sessions.use-case.js'
 import { RevokeSessionUseCase } from './application/revoke-session.use-case.js'
 import { RotateSessionUseCase } from './application/rotate-session.use-case.js'
 import { SessionRepository } from './application/session.repository.js'
+import { CsrfTokenService } from './application/csrf-token.js'
 import { Argon2PasswordHasher } from './infrastructure/argon2-password-hasher.js'
 import { JoseAccessTokenService } from './infrastructure/jose-access-token.service.js'
 import { OpaqueRefreshTokenService } from './infrastructure/opaque-refresh-token.service.js'
+import { HmacCsrfTokenService } from './infrastructure/hmac-csrf-token.service.js'
 import { PrismaIdentityRepository } from './infrastructure/prisma-identity.repository.js'
 import { PrismaSessionRepository } from './infrastructure/prisma-session.repository.js'
+import { AuthController } from './http/auth.controller.js'
 
 @Module({
+  controllers: [AuthController],
   providers: [
     CreateUserUseCase,
     BootstrapSuperAdminUseCase,
@@ -25,11 +31,14 @@ import { PrismaSessionRepository } from './infrastructure/prisma-session.reposit
     RotateSessionUseCase,
     RevokeSessionUseCase,
     RevokeAllSessionsUseCase,
+    LoginUseCase,
+    ResolveRefreshSessionUseCase,
     { provide: IdentityRepository, useClass: PrismaIdentityRepository },
     { provide: SessionRepository, useClass: PrismaSessionRepository },
     { provide: PasswordHasher, useClass: Argon2PasswordHasher },
     { provide: AccessTokenService, useClass: JoseAccessTokenService },
     { provide: RefreshTokenService, useClass: OpaqueRefreshTokenService },
+    { provide: CsrfTokenService, useClass: HmacCsrfTokenService },
     { provide: Clock, useClass: SystemClock },
   ],
   exports: [

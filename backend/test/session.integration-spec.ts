@@ -68,7 +68,9 @@ describe('Session core integration', () => {
     await expect(rotateSession.execute({ refreshToken: deviceOne.refreshToken })).rejects.toThrow('Sessão inválida ou expirada')
     await expect(rotateSession.execute({ refreshToken: deviceTwo.refreshToken })).rejects.toThrow('Sessão inválida ou expirada')
 
-    const reuseAudit = await prisma.auditEvent.count({ where: { action: 'REFRESH_TOKEN_REUSE_DETECTED' } })
+    const reuseAudit = await prisma.auditEvent.count({
+      where: { action: 'REFRESH_TOKEN_REUSE_DETECTED', entityId: { in: [first.sessionId, concurrent.sessionId] } },
+    })
     expect(reuseAudit).toBe(2)
     await moduleRef.close()
   })

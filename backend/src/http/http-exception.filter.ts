@@ -13,10 +13,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const exceptionResponse = exception instanceof HttpException ? exception.getResponse() : undefined
     const body: object = typeof exceptionResponse === 'object' && exceptionResponse !== null ? exceptionResponse : {}
     const bodyMessage: unknown = 'message' in body ? body.message : undefined
+    const bodyCode: unknown = 'code' in body ? body.code : undefined
     const rawMessage = typeof exceptionResponse === 'string' ? exceptionResponse : bodyMessage
     const validationDetails = Array.isArray(rawMessage) ? rawMessage : undefined
     const requestId = typeof request.id === 'string' || typeof request.id === 'number' ? String(request.id) : undefined
-    const code = validationDetails ? 'VALIDATION_ERROR' : statusCode === 413 ? 'PAYLOAD_TOO_LARGE' : statusCode >= 500 ? 'INTERNAL_SERVER_ERROR' : 'HTTP_ERROR'
+    const code = validationDetails ? 'VALIDATION_ERROR' : typeof bodyCode === 'string' ? bodyCode : statusCode === 413 ? 'PAYLOAD_TOO_LARGE' : statusCode >= 500 ? 'INTERNAL_SERVER_ERROR' : 'HTTP_ERROR'
     const message = validationDetails ? 'Dados inválidos' : statusCode === 413 ? 'Payload excede o limite permitido' : typeof rawMessage === 'string' ? rawMessage : statusCode >= 500 ? 'Erro interno do servidor' : 'Requisição inválida'
 
     response.status(statusCode).json({

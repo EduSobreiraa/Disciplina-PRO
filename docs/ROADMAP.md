@@ -172,6 +172,8 @@ Entregas:
 
 **Gate:** E2E cobre sucesso e rejeição de origem, cookie, CSRF, expiração, replay e logout.
 
+**Estado:** concluído em 20/07/2026.
+
 #### B1.6 — AuthenticationGuard e principal atual
 
 **Objetivo:** fornecer identidade autenticada confiável aos módulos seguintes.

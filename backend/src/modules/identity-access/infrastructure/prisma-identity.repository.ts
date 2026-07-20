@@ -23,6 +23,10 @@ export class PrismaIdentityRepository extends IdentityRepository {
     }
   }
 
+  findForLogin(normalizedEmail: string) {
+    return this.prisma.user.findUnique({ where: { normalizedEmail }, select: { id: true, passwordHash: true, status: true } })
+  }
+
   bootstrapSuperAdmin(input: { email: string; normalizedEmail: string; passwordHash: string }) {
     return this.prisma.$transaction(async (transaction) => {
       await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('disciplina-pro:platform-bootstrap'))`
