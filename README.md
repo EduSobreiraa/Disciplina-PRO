@@ -21,7 +21,7 @@ Já estão disponíveis:
 - separação local entre dados objetivos e conteúdo privado;
 - repositories locais preparados para futura substituição pela API.
 
-O backend NestJS concluiu a fundação B0 e as dez decisões arquiteturais da B0.5. Ambiente, contrato HTTP, PostgreSQL, health/readiness, testes e CI estão validados; o primeiro schema Prisma e `identity-access` iniciam agora a B1.
+O backend NestJS concluiu B0, as dez decisões arquiteturais da B0.5 e os blocos B1.1–B1.4. O schema Prisma, a identidade, as credenciais e o núcleo seguro de sessões estão validados; o contrato HTTP de autenticação será implementado na B1.5.
 
 ## Arquitetura planejada
 
@@ -104,6 +104,8 @@ npm run dev:backend
 ```
 
 O backend expõe `GET /api/health`, `GET /api/health/ready` e a documentação OpenAPI em `/docs`.
+
+Em desenvolvimento e testes, chaves RSA efêmeras são geradas por processo. Produção exige `JWT_PRIVATE_KEY_BASE64`, `JWT_PUBLIC_KEYS_JSON`, `JWT_ACTIVE_KID` e `REFRESH_TOKEN_PEPPER`; nenhum desses segredos deve ser versionado. O access token dura 10 minutos, o refresh expira após 7 dias de inatividade e a sessão possui limite absoluto de 30 dias.
 
 ### Prisma e primeiro acesso de plataforma
 
@@ -199,9 +201,9 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. B1.4 — implementar JWT, sessões e refresh rotativo;
-2. B1.5 — expor login, refresh e logout com CORS/CSRF;
-3. B1.6–B1.7 — implementar guard, principal autenticado e hardening;
+1. B1.5 — expor login, refresh e logout com cookies, CORS e CSRF;
+2. B1.6 — implementar `AuthenticationGuard` e principal autenticado;
+3. B1.7 — concluir hardening e gate da fase;
 4. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável

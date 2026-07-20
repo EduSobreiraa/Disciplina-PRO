@@ -12,6 +12,12 @@ export interface Environment {
   REQUEST_BODY_LIMIT: string
   RATE_LIMIT_TTL_MS: number
   RATE_LIMIT_MAX: number
+  JWT_ISSUER: string
+  JWT_AUDIENCE: string
+  JWT_ACTIVE_KID: string
+  JWT_PRIVATE_KEY_BASE64?: string
+  JWT_PUBLIC_KEYS_JSON?: string
+  REFRESH_TOKEN_PEPPER: string
 }
 
 function parseInteger(value: unknown, fallback: number, name: string, minimum = 1) {
@@ -48,9 +54,15 @@ export function validateEnvironment(raw: Record<string, unknown>): Environment {
   const localDatabaseUrl = `postgresql://${encodeURIComponent(parseString(raw.POSTGRES_USER, 'disciplina_pro', 'POSTGRES_USER'))}:${encodeURIComponent(parseString(raw.POSTGRES_PASSWORD, 'change_me', 'POSTGRES_PASSWORD'))}@localhost:${parseInteger(raw.POSTGRES_PORT, 5432, 'POSTGRES_PORT')}/${encodeURIComponent(parseString(raw.POSTGRES_DB, 'disciplina_pro', 'POSTGRES_DB'))}`
 
   if (nodeEnvironment === 'production' && !databaseUrl) throw new Error('DATABASE_URL é obrigatória em produção')
+  if (nodeEnvironment === 'production' && !raw.JWT_PRIVATE_KEY_BASE64) throw new Error('JWT_PRIVATE_KEY_BASE64 é obrigatória em produção')
+  if (nodeEnvironment === 'production' && !raw.JWT_PUBLIC_KEYS_JSON) throw new Error('JWT_PUBLIC_KEYS_JSON é obrigatória em produção')
+  if (nodeEnvironment === 'production' && !raw.REFRESH_TOKEN_PEPPER) throw new Error('REFRESH_TOKEN_PEPPER é obrigatória em produção')
 
   const requestBodyLimit = parseString(raw.REQUEST_BODY_LIMIT, '100kb', 'REQUEST_BODY_LIMIT')
   if (!/^\d+(?:b|kb|mb)$/i.test(requestBodyLimit)) throw new Error('REQUEST_BODY_LIMIT deve usar b, kb ou mb')
+
+  const refreshTokenPepper = parseString(raw.REFRESH_TOKEN_PEPPER, 'development-only-refresh-pepper-change-me', 'REFRESH_TOKEN_PEPPER')
+  if (refreshTokenPepper.length < 32) throw new Error('REFRESH_TOKEN_PEPPER deve possuir ao menos 32 caracteres')
 
   return {
     NODE_ENV: nodeEnvironment,
@@ -61,5 +73,11 @@ export function validateEnvironment(raw: Record<string, unknown>): Environment {
     REQUEST_BODY_LIMIT: requestBodyLimit,
     RATE_LIMIT_TTL_MS: parseInteger(raw.RATE_LIMIT_TTL_MS, 60_000, 'RATE_LIMIT_TTL_MS'),
     RATE_LIMIT_MAX: parseInteger(raw.RATE_LIMIT_MAX, 100, 'RATE_LIMIT_MAX'),
+    JWT_ISSUER: parseUrl(raw.JWT_ISSUER, 'http://localhost:3000', 'JWT_ISSUER'),
+    JWT_AUDIENCE: parseString(raw.JWT_AUDIENCE, 'disciplina-pro-api', 'JWT_AUDIENCE'),
+    JWT_ACTIVE_KID: parseString(raw.JWT_ACTIVE_KID, 'local-ephemeral', 'JWT_ACTIVE_KID'),
+    JWT_PRIVATE_KEY_BASE64: raw.JWT_PRIVATE_KEY_BASE64 ? parseString(raw.JWT_PRIVATE_KEY_BASE64, '', 'JWT_PRIVATE_KEY_BASE64') : undefined,
+    JWT_PUBLIC_KEYS_JSON: raw.JWT_PUBLIC_KEYS_JSON ? parseString(raw.JWT_PUBLIC_KEYS_JSON, '', 'JWT_PUBLIC_KEYS_JSON') : undefined,
+    REFRESH_TOKEN_PEPPER: refreshTokenPepper,
   }
 }

@@ -1,6 +1,6 @@
 # Checklist de prontidão para o backend
 
-> Disciplina PRO · Atualizado em 16/07/2026
+> Disciplina PRO · Atualizado em 20/07/2026
 > Objetivo: acompanhar a prontidão do ambiente e as pendências da fundação B0.
 
 ## 1. Ambiente local
@@ -19,7 +19,7 @@
 ## 2. GitHub CLI e MCP
 
 - [ ] Refazer autenticação local: `gh auth login -h github.com`.
-- [x] Confirmar GitHub CLI operacional; usado para acompanhar o CI remoto de B1.1–B1.3.
+- [x] Confirmar GitHub CLI operacional; usado para acompanhar o CI remoto da B1.
 - [x] Garantir acesso do GitHub MCP ao repositório `EduSobreiraa/Disciplina-PRO`.
 - [x] Repetir leitura de commits pelo MCP após ajustar o acesso.
 - [ ] Restringir o token do MCP somente ao repositório do projeto.
@@ -81,7 +81,7 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 - [x] Criar configuração tipada e validada por ambiente.
 - [x] Criar `compose.yaml` com PostgreSQL e health check.
 - [x] Adicionar `@prisma/client`, `@prisma/adapter-pg` e `pg`.
-- [x] Instalar e fixar Prisma CLI 7.8.0 na B1; alerta transitivo moderado documentado e isolado à ferramenta de desenvolvimento.
+- [x] Instalar e fixar Prisma CLI 7.9.0 na B1; atualização encerrou o alerta transitivo moderado da versão anterior.
 - [x] Criar `PrismaModule` com adapter `pg`, conexão única e shutdown limpo.
 - [x] Configurar `ValidationPipe` global.
 - [x] Configurar filtro e contrato padronizado de exceções.
@@ -97,9 +97,9 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 
 - [x] NestJS: `@nestjs/common`, `@nestjs/core`, `@nestjs/platform-express`, `@nestjs/config`.
 - [x] DTOs: `class-validator`, `class-transformer`.
-- [x] Banco: `prisma`, `@prisma/client`, `@prisma/adapter-pg` e `pg` em 7.8.0 quando aplicável.
+- [x] Banco: `prisma`, `@prisma/client` e `@prisma/adapter-pg` alinhados em 7.9.0, além de `pg`.
 - [x] Segurança: `helmet`, `@nestjs/throttler`.
-- [x] Credenciais: `argon2` 0.44.0 com Argon2id; bibliotecas JWT permanecem para B1.4.
+- [x] Segurança de identidade: `argon2` 0.44.0 e `jose` 6.2.3, ambos fixados e auditados.
 - [x] Logging: `nestjs-pino`, `pino`, `pino-pretty` apenas no desenvolvimento.
 - [x] Contratos: `@nestjs/swagger`.
 - [x] Testes: Jest, Supertest e estratégia de integração com PostgreSQL real.
@@ -109,7 +109,7 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 - [x] B1.1 — Primeiro `schema.prisma` validado contra os ADRs 001–010.
 - [x] B1.2 — Migration baseline revisada em banco vazio e `PrismaModule` implementado.
 - [x] B1.3 — Identidade, Argon2id e bootstrap transacional de plataforma implementados.
-- [ ] B1.4 — Implementar JWT, sessões e refresh rotativo no domínio/aplicação.
+- [x] B1.4 — JWT RS256, sessões, refresh rotativo, revogação e reuse detection implementados.
 - [ ] B1.5 — Expor login, refresh e logout com CORS/CSRF.
 - [ ] B1.6 — Implementar `AuthenticationGuard` e `CurrentPrincipal`.
 - [ ] B1.7 — Executar hardening, testes completos e gate de encerramento.
@@ -128,7 +128,7 @@ Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microse
 
 ## 10. Situação de prontidão
 
-**Resultado:** ambiente, B0, B0.5 e B1.1–B1.3 concluídos. Node, npm, Docker, Compose, PostgreSQL, Prisma, Argon2, Git, lockfile único e acesso ao repositório estão operacionais.
+**Resultado:** ambiente, B0, B0.5 e B1.1–B1.4 concluídos. Node, npm, Docker, Compose, PostgreSQL, Prisma, Argon2, `jose`, Git, lockfile único e acesso ao repositório estão operacionais.
 
 Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**:
 
@@ -138,4 +138,4 @@ Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**
 - representação de `SUPER_ADMIN`;
 - IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
-O `PrismaModule`, o primeiro `schema.prisma`, a migration baseline e a fundação de identidade já estão implementados. A próxima etapa é B1.4: núcleo de sessões, JWT e refresh rotativo.
+Persistência, identidade e núcleo de sessões estão implementados até B1.4. A próxima etapa é B1.5: contrato HTTP de login, refresh e logout com cookies, CORS e CSRF.

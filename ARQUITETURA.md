@@ -1,7 +1,7 @@
 # Disciplina PRO — Arquitetura do Produto
 
 > Spark Inteligência Corporativa · Documento vivo  
-> Versão arquitetural: 2.0 · Atualizado em: 16/07/2026
+> Versão arquitetural: 2.0 · Atualizado em: 20/07/2026
 
 ## 1. Visão do produto
 
@@ -466,6 +466,14 @@ Constraints SQL complementam o Prisma com lifecycle coerente, CEO ativo único p
 
 O módulo `identity-access` separa casos de uso, portas e infraestrutura. E-mails possuem forma normalizada única; senhas usam Argon2id com 19 MiB, duas iterações e paralelismo 1. O primeiro `PlatformAccess` é criado por comando operacional único, sob lock transacional e com auditoria de sistema, nunca por endpoint público.
 
+### 15.3 Núcleo de sessões da B1.4
+
+`identity-access` emite access tokens `RS256` de 10 minutos com tipo `at+jwt`, `kid` allowlistado e claims mínimas `iss`, `aud`, `sub`, `sid`, `jti`, `iat` e `exp`. Tenant, role e permissões não entram no token. Chaves anteriores permanecem somente na coleção pública durante a janela de rotação.
+
+Refresh tokens possuem 256 bits aleatórios, são persistidos apenas por HMAC-SHA-256 com pepper externo e rotacionados uma única vez. A rotação trava token e sessão no PostgreSQL; reutilização ou concorrência duplicada revoga toda a família e registra `REFRESH_TOKEN_REUSE_DETECTED`. Sessões duram no máximo 30 dias e cada refresh no máximo 7 dias ou até o limite absoluto.
+
+Logout por sessão e revogação global são idempotentes. Falha de assinatura depois de persistir ou rotacionar revoga a sessão para não deixar credenciais ativas sem resposta válida. O transporte HTTP e a consulta de sessão pelo guard permanecem em B1.5 e B1.6.
+
 ## 16. Rotas essenciais planejadas
 
 ```text
@@ -685,6 +693,7 @@ A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entrega
 | 15/07/2026 | B1 decomposta em sete gates menores, separando schema, migration, credenciais, sessão, transporte, autenticação e hardening. |
 | 16/07/2026 | B1.1–B1.3 concluídas: schema Prisma inicial, baseline SQL, PrismaModule, identidade Argon2id e bootstrap transacional do primeiro SUPER_ADMIN. |
 | 16/07/2026 | Registro central de problemas postergados criado em `docs/PROBLEMAS_POSTERGADOS.md`, com prioridades, mitigação, fase de retomada e gates para dados reais/staging. |
+| 20/07/2026 | B1.4 concluída: JWT RS256 por kid, refresh opaco rotativo, expiração 7/30 dias, revogação e reuse detection transacional. |
 
 ## 21. Versionamento e documentação
 

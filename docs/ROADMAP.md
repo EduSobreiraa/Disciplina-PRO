@@ -1,12 +1,12 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 16/07/2026
+> Spark Inteligência Corporativa · Atualizado em 20/07/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado de partida
 
 - frontend individual F0–F9 concluído e validado em React;
-- fundação B0, decisões B0.5 e B1.1–B1.3 concluídas;
+- fundação B0, decisões B0.5 e B1.1–B1.4 concluídas;
 - PostgreSQL local e ferramentas essenciais operacionais;
 - schema Prisma inicial, migration baseline, identidade e bootstrap de plataforma implementados;
 - áreas empresariais, autenticação real e integração frontend–API ainda pendentes.
@@ -154,6 +154,8 @@ Entregas:
 - rotação de chaves por `kid` e redação integral de segredos em logs.
 
 **Gate:** testes de domínio e integração provam emissão, rotação única, concorrência, reuse detection e revogação imediata.
+
+**Estado:** concluído em 20/07/2026.
 
 #### B1.5 — Contrato HTTP de autenticação
 

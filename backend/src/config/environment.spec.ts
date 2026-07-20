@@ -14,4 +14,11 @@ describe('validateEnvironment', () => {
   it('requires DATABASE_URL in production', () => {
     expect(() => validateEnvironment({ NODE_ENV: 'production' })).toThrow('DATABASE_URL')
   })
+
+  it('requires JWT keys and refresh pepper in production', () => {
+    const base = { NODE_ENV: 'production', DATABASE_URL: 'postgresql://user:pass@localhost:5432/db' }
+    expect(() => validateEnvironment(base)).toThrow('JWT_PRIVATE_KEY_BASE64')
+    expect(() => validateEnvironment({ ...base, JWT_PRIVATE_KEY_BASE64: 'encoded' })).toThrow('JWT_PUBLIC_KEYS_JSON')
+    expect(() => validateEnvironment({ ...base, JWT_PRIVATE_KEY_BASE64: 'encoded', JWT_PUBLIC_KEYS_JSON: '{}' })).toThrow('REFRESH_TOKEN_PEPPER')
+  })
 })

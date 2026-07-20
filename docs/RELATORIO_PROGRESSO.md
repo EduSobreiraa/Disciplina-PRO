@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 16/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1.1–B1.3 concluídos
+> Atualizado em 20/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1.1–B1.4 concluídos
 
 ## 1. Visão geral do produto
 
@@ -19,7 +19,7 @@ Disciplina PRO
     └── Projeto 66 (primeiro programa)
 ```
 
-O frontend individual foi migrado dos protótipos HTML para React. A fundação B0 e as dez decisões da B0.5 foram concluídas; o primeiro schema Prisma e `identity-access` iniciam a B1.
+O frontend individual foi migrado dos protótipos HTML para React. A fundação B0, as dez decisões da B0.5 e os blocos B1.1–B1.4 foram concluídos; identidade, credenciais e o núcleo de sessões já estão implementados.
 
 ## 2. Tecnologias e decisões
 
@@ -349,6 +349,8 @@ A B1 foi dividida em sete gates: contrato do schema, baseline/Prisma, identidade
 
 B1.1–B1.3 foram concluídas em 16/07/2026. O schema inicial cobre identidade, tenant mínimo, acesso de plataforma, sessões, refresh e auditoria; a baseline foi aplicada em banco descartável vazio; `PrismaModule` substituiu a conexão técnica da B0. Identidade usa e-mail canônico, Argon2id e bootstrap único do primeiro `SUPER_ADMIN`, protegido por lock transacional e `AuditEvent` imutável.
 
+B1.4 foi concluída em 20/07/2026 com `jose` 6.2.3: JWT RS256 curto e tipado, rotação de chaves por `kid`, refresh opaco com HMAC, expiração 7/30 dias, logout, revogação global e detecção transacional de replay. Testes PostgreSQL cobrem duas rotações concorrentes e comprovam a revogação da família.
+
 ## 12. Prontidão e pré-requisitos do backend
 
 ### Aprovados
@@ -361,24 +363,24 @@ B1.1–B1.3 foram concluídas em 16/07/2026. O schema inicial cobre identidade, 
 | Cliente SQL | `psql` 18.3; conexão autenticada e consulta SQL aprovadas |
 | Versionamento | Git 2.55.0; leitura pelo GitHub MCP; commit e push operacionais |
 | Workspace | npm workspaces para `frontend` e `backend`, com lockfile único |
-| Backend | NestJS, TypeScript, Prisma 7.8.0 com adapter `pg`, Argon2id e Supertest |
+| Backend | NestJS, TypeScript, Prisma 7.9.0 com adapter `pg`, Argon2id, `jose` e Supertest |
 | Segurança básica | Helmet, CORS, throttling, validação global e redação de headers sensíveis |
 | Observabilidade inicial | logging estruturado, health check e Swagger |
-| Qualidade | lint, typecheck, builds, 29 testes unitários, 3 E2E e 2 integrações aprovados até B1.3 |
-| Dependências | zero vulnerabilidades altas/críticas; três avisos moderados na cadeia de desenvolvimento do Prisma CLI |
+| Qualidade | lint, typecheck, builds, 36 testes unitários, 3 E2E e 3 integrações aprovados no encerramento B1.4 |
+| Dependências | `npm audit --workspaces` sem vulnerabilidades após atualização coordenada para Prisma 7.9.0 |
 
 ### Não bloqueadores no fluxo atual
 
 - Dependabot e CodeQL foram retirados por limitações do plano/repositório privado; a compensação atual é `npm audit` local, devendo ser incorporado ao CI.
 - O GitHub CLI ainda precisa de nova autenticação, mas Git e GitHub MCP já permitem o trabalho necessário.
 - MCP de PostgreSQL, Sentry, provedor de e-mail e hospedagem não são necessários para concluir a B0.
-- Prisma 7.8.0 fixa `@hono/node-server` 1.19.11 via `@prisma/dev`; o advisory moderado afeta `serveStatic`, não usado pelo NestJS nem pelo runtime de produção. O downgrade forçado para Prisma 6 foi rejeitado; atualizar quando a cadeia oficial incorporar a correção.
+- O advisory moderado transitivo de `@hono/node-server` foi encerrado com a atualização coordenada de Prisma CLI, client e adapter para 7.9.0; a auditoria passou sem vulnerabilidades.
 - Riscos, limitações e dependências adiadas passaram a ser governados pelo relatório `docs/PROBLEMAS_POSTERGADOS.md`.
 
 ### Pendências prioritárias
 
-1. implementar B1.4, núcleo de sessão e refresh rotativo;
-2. implementar B1.5–B1.7, transporte HTTP, autenticação e hardening;
+1. implementar B1.5, transporte HTTP seguro de autenticação;
+2. implementar B1.6–B1.7, guard, principal atual e hardening;
 3. confirmar a primeira execução remota do workflow de CI após o push.
 
 Conclusão de prontidão: **a B0 está concluída e não falta instalação essencial para continuar o backend**. A próxima pendência é arquitetural, não de ambiente ou infraestrutura.

@@ -1,6 +1,6 @@
 # Relatório de problemas postergados
 
-> Disciplina PRO · Criado em 16/07/2026 · Revisar a cada encerramento de bloco
+> Disciplina PRO · Criado em 16/07/2026 · Atualizado em 20/07/2026
 
 ## 1. Objetivo
 
@@ -34,10 +34,10 @@ O projeto está adequado para continuar o desenvolvimento local, mas **não est�
 ### PP-001 — Autenticação e autorização ainda incompletas
 
 - **Prioridade/status:** P0 · PLANEJADO
-- **Problema:** o schema e as credenciais existem, mas JWT, refresh, endpoints HTTP, `AuthenticationGuard`, contexto de tenant e autorização por role/escopo ainda não foram implementados.
+- **Problema:** JWT e refresh rotativo foram concluídos na B1.4, mas endpoints HTTP, `AuthenticationGuard`, contexto de tenant e autorização por role/escopo ainda não foram implementados.
 - **Impacto:** nenhuma rota de negócio pode ser considerada protegida; identidade autenticada ainda não equivale a acesso autorizado.
 - **Motivo do adiamento:** execução sequencial da B1; B1.1–B1.3 precisavam estabilizar persistência antes da sessão.
-- **Retomada:** B1.4–B1.6; autorização organizacional completa na B2.
+- **Retomada:** B1.5–B1.6; autorização organizacional completa na B2.
 - **Critério de encerramento:** gates E2E negativos e positivos de sessão, revogação, tenant, role e escopo aprovados.
 
 ### PP-002 — Dados frontend em localStorage
@@ -82,10 +82,10 @@ O projeto está adequado para continuar o desenvolvimento local, mas **não est�
 ### PP-006 — Secrets, chaves JWT e rotação ainda sem infraestrutura
 
 - **Prioridade/status:** P1 · PLANEJADO
-- **Problema:** ADRs definem `RS256`, `kid`, rotação e cookies, mas não existe secret manager, par de chaves por ambiente nem runbook de comprometimento.
+- **Problema:** `RS256`, `kid` e rotação estão implementados, mas não existe secret manager, par de chaves persistentes por ambiente nem runbook de comprometimento.
 - **Impacto:** sessão segura não pode operar fora do desenvolvimento.
-- **Motivo do adiamento:** implementação começa em B1.4 e materialização operacional depende de staging.
-- **Retomada:** B1.4 para contrato; B10 para operação.
+- **Motivo do adiamento:** o contrato de B1.4 usa chaves efêmeras fora de produção; materialização operacional depende de staging.
+- **Retomada:** B10 para operação.
 - **Critério de encerramento:** chaves fora do Git, rotação ensaiada, acesso restrito, revogação e recuperação documentadas.
 
 ### PP-007 — Backup, restauração e rollback não ensaiados
@@ -138,13 +138,10 @@ O projeto está adequado para continuar o desenvolvimento local, mas **não est�
 
 ### PP-012 — Advisory moderado transitivo do Prisma CLI
 
-- **Prioridade/status:** P2 · MITIGADO
-- **Problema:** Prisma CLI 7.8.0 traz `@prisma/dev` → `@hono/node-server` 1.19.11, afetado pelo advisory `GHSA-92pp-h63x-v22m` em `serveStatic`.
-- **Impacto:** risco limitado à ferramenta de desenvolvimento; o NestJS e o runtime do produto não usam esse servidor estático.
-- **Mitigação atual:** versões fixadas, CI bloqueia vulnerabilidades altas/críticas e scripts de instalação são allowlistados; telemetria `@scarf/scarf` foi negada.
-- **Motivo do adiamento:** o npm oferece apenas downgrade forçado para Prisma 6; override da dependência exata não foi aplicado de forma confiável.
-- **Retomada:** assim que uma versão estável do Prisma incorporar a dependência corrigida.
-- **Critério de encerramento:** `npm audit --workspaces` sem o advisory, mantendo Prisma 7 compatível e todos os gates aprovados.
+- **Prioridade/status:** P2 · ENCERRADO EM 20/07/2026
+- **Problema original:** Prisma CLI 7.8.0 trazia `@prisma/dev` → `@hono/node-server` 1.19.11, afetado pelo advisory `GHSA-92pp-h63x-v22m` em `serveStatic`.
+- **Resolução:** Prisma CLI, client e adapter foram atualizados em conjunto para 7.9.0, mantendo versões exatas e a allowlist explícita de scripts de instalação.
+- **Evidência de encerramento:** `npm audit --workspaces` retornou zero vulnerabilidades e os gates do B1.4 permaneceram aprovados.
 
 ### PP-013 — Verificação GPG ignorada pela action do Sonar
 
