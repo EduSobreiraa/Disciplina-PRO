@@ -1,8 +1,10 @@
 import { Controller, Get } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { HealthService } from './health.service.js'
+import { Public } from '../modules/identity-access/http/public.decorator.js'
 
 @ApiTags('health')
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(private readonly healthService: HealthService) {}

@@ -111,7 +111,7 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 - [x] B1.3 — Identidade, Argon2id e bootstrap transacional de plataforma implementados.
 - [x] B1.4 — JWT RS256, sessões, refresh rotativo, revogação e reuse detection implementados.
 - [x] B1.5 — Login, refresh e logout expostos com CORS estrito, cookies e CSRF ligado à sessão.
-- [ ] B1.6 — Implementar `AuthenticationGuard` e `CurrentPrincipal`.
+- [x] B1.6 — `AuthenticationGuard`, `CurrentPrincipal`, rotas públicas explícitas e boundary de plataforma implementados.
 - [ ] B1.7 — Executar hardening, testes completos e gate de encerramento.
 
 Cada sub-bloco deve fechar seu próprio gate antes do seguinte. A autorização por role e escopo, `TenantContextGuard` completo e operações organizacionais permanecem na B2.
@@ -138,4 +138,4 @@ Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**
 - representação de `SUPER_ADMIN`;
 - IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
-Persistência, identidade, sessões e transporte HTTP estão implementados até B1.5. A próxima etapa é B1.6: `AuthenticationGuard` e principal atual.
+Persistência, identidade, sessões, transporte HTTP e autenticação atual estão implementados até B1.6. A próxima etapa é B1.7: hardening e gate de encerramento.

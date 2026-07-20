@@ -34,10 +34,10 @@ O projeto está adequado para continuar o desenvolvimento local, mas **não est�
 ### PP-001 — Autenticação e autorização ainda incompletas
 
 - **Prioridade/status:** P0 · PLANEJADO
-- **Problema:** sessões e endpoints HTTP foram concluídos até B1.5, mas `AuthenticationGuard`, contexto de tenant e autorização por role/escopo ainda não foram implementados.
+- **Problema:** autenticação e revalidação atual de usuário/sessão foram concluídas até B1.6, mas contexto de tenant e autorização por role/escopo ainda não foram implementados.
 - **Impacto:** nenhuma rota de negócio pode ser considerada protegida; identidade autenticada ainda não equivale a acesso autorizado.
-- **Motivo do adiamento:** execução sequencial; o transporte precisava estabilizar antes do principal autenticado.
-- **Retomada:** B1.6; autorização organizacional completa na B2.
+- **Motivo do adiamento:** tenant, role e escopo pertencem ao domínio organizacional, não ao JWT nem ao núcleo de identidade.
+- **Retomada:** B2.
 - **Critério de encerramento:** gates E2E negativos e positivos de sessão, revogação, tenant, role e escopo aprovados.
 
 ### PP-002 — Dados frontend em localStorage

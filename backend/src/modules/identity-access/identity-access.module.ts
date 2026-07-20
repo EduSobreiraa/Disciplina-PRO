@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { BootstrapSuperAdminUseCase } from './application/bootstrap-super-admin.use-case.js'
 import { AccessTokenService } from './application/access-token.js'
+import { AuthenticatedPrincipalRepository, PlatformAccessBoundary } from './application/authenticated-principal.repository.js'
 import { Clock, SystemClock } from './application/clock.js'
 import { CreateUserUseCase } from './application/create-user.use-case.js'
 import { CreateSessionUseCase } from './application/create-session.use-case.js'
@@ -20,7 +21,9 @@ import { OpaqueRefreshTokenService } from './infrastructure/opaque-refresh-token
 import { HmacCsrfTokenService } from './infrastructure/hmac-csrf-token.service.js'
 import { PrismaIdentityRepository } from './infrastructure/prisma-identity.repository.js'
 import { PrismaSessionRepository } from './infrastructure/prisma-session.repository.js'
+import { PrismaAuthenticatedPrincipalRepository, PrismaPlatformAccessBoundary } from './infrastructure/prisma-authenticated-principal.repository.js'
 import { AuthController } from './http/auth.controller.js'
+import { AuthenticationGuard } from './http/authentication.guard.js'
 
 @Module({
   controllers: [AuthController],
@@ -33,8 +36,11 @@ import { AuthController } from './http/auth.controller.js'
     RevokeAllSessionsUseCase,
     LoginUseCase,
     ResolveRefreshSessionUseCase,
+    AuthenticationGuard,
     { provide: IdentityRepository, useClass: PrismaIdentityRepository },
     { provide: SessionRepository, useClass: PrismaSessionRepository },
+    { provide: AuthenticatedPrincipalRepository, useClass: PrismaAuthenticatedPrincipalRepository },
+    { provide: PlatformAccessBoundary, useClass: PrismaPlatformAccessBoundary },
     { provide: PasswordHasher, useClass: Argon2PasswordHasher },
     { provide: AccessTokenService, useClass: JoseAccessTokenService },
     { provide: RefreshTokenService, useClass: OpaqueRefreshTokenService },
@@ -50,6 +56,8 @@ import { AuthController } from './http/auth.controller.js'
     RevokeAllSessionsUseCase,
     AccessTokenService,
     PasswordHasher,
+    AuthenticationGuard,
+    PlatformAccessBoundary,
   ],
 })
 export class IdentityAccessModule {}

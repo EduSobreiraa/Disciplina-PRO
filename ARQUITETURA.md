@@ -482,6 +482,12 @@ O access token é devolvido somente no corpo. Em produção, refresh e CSRF usam
 
 O token CSRF usa HMAC com uma chave derivada do pepper por separação de contexto, contém nonce aleatório e fica ligado ao `AuthSession.id`. Cookie e header são comparados antes da rotação/revogação, e o logger redige ambos. O frontend deve aplicar refresh single-flight: uma única rotação em andamento é compartilhada por todas as requisições que aguardam novo access token.
 
+### 15.5 Principal autenticado da B1.6
+
+Rotas HTTP são privadas por padrão; `@Public()` é uma exceção explícita usada somente em health e autenticação. `AuthenticationGuard` exige bearer estrito, valida assinatura e claims e consulta PostgreSQL para confirmar a associação usuário–sessão, usuário ativo, sessão não revogada e limite absoluto vigente.
+
+`CurrentPrincipal` contém apenas `userId`, `sessionId` e `tokenId`. Não contém tenant, role, permissões ou `PlatformAccess`. `X-Tenant-Id` possui decorator próprio que valida UUID, mas continua sendo entrada não confiável até o `TenantContextGuard` da B2. A consulta de `PlatformAccess` também usa boundary separado e não altera o significado do principal.
+
 ## 16. Rotas essenciais planejadas
 
 ```text
@@ -703,6 +709,7 @@ A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entrega
 | 16/07/2026 | Registro central de problemas postergados criado em `docs/PROBLEMAS_POSTERGADOS.md`, com prioridades, mitigação, fase de retomada e gates para dados reais/staging. |
 | 20/07/2026 | B1.4 concluída: JWT RS256 por kid, refresh opaco rotativo, expiração 7/30 dias, revogação e reuse detection transacional. |
 | 20/07/2026 | B1.5 concluída: contrato HTTP de login/refresh/logout, origem exata, cookies por ambiente, CSRF ligado à sessão e refresh single-flight documentado. |
+| 20/07/2026 | B1.6 concluída: autenticação privada por padrão, principal mínimo, revalidação atual de usuário/sessão e boundaries separados para tenant e plataforma. |
 
 ## 21. Versionamento e documentação
 

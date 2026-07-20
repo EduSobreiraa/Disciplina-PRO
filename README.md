@@ -21,7 +21,7 @@ Já estão disponíveis:
 - separação local entre dados objetivos e conteúdo privado;
 - repositories locais preparados para futura substituição pela API.
 
-O backend NestJS concluiu B0, as dez decisões arquiteturais da B0.5 e os blocos B1.1–B1.5. Schema, identidade, credenciais, sessões e transporte HTTP seguro estão validados; o guard de autenticação será implementado na B1.6.
+O backend NestJS concluiu B0, as dez decisões arquiteturais da B0.5 e os blocos B1.1–B1.6. Schema, identidade, credenciais, sessões, transporte HTTP e autenticação atual estão validados; B1.7 fará o hardening final da fase.
 
 ## Arquitetura planejada
 
@@ -110,6 +110,8 @@ Em desenvolvimento e testes, chaves RSA efêmeras são geradas por processo. Pro
 Login, refresh e logout usam `POST /api/auth/*` e exigem `Origin` exatamente igual a `FRONTEND_URL`. Em produção, o refresh fica em `__Host-dp_refresh` (`HttpOnly`) e o CSRF em `__Host-dp_csrf`; ambos usam `Secure`, `SameSite=Lax` e `Path=/`. Desenvolvimento usa os nomes sem `__Host-`, pois HTTP local não satisfaz a exigência `Secure` desse prefixo.
 
 O frontend mantém o access token somente em memória e coordena refresh com uma única Promise compartilhada. Requisições concorrentes aguardam essa Promise e não enviam simultaneamente o mesmo refresh token, pois replay revoga a sessão inteira.
+
+Rotas são protegidas por padrão. Somente controllers marcados explicitamente como públicos dispensam bearer token. O guard valida o JWT e consulta o estado atual do usuário e da sessão; `X-Tenant-Id` é apenas uma seleção não confiável até os guards organizacionais da B2.
 
 ### Prisma e primeiro acesso de plataforma
 
@@ -205,9 +207,8 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. B1.6 — implementar `AuthenticationGuard` e principal autenticado;
-2. B1.7 — concluir hardening e gate da fase;
-3. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
+1. B1.7 — concluir hardening e gate da fase;
+2. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável
 

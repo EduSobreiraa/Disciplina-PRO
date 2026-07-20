@@ -11,6 +11,7 @@ import { PrismaModule } from './database/prisma.module.js'
 import { HealthController } from './health/health.controller.js'
 import { HealthService } from './health/health.service.js'
 import { IdentityAccessModule } from './modules/identity-access/identity-access.module.js'
+import { AuthenticationGuard } from './modules/identity-access/http/authentication.guard.js'
 
 @Module({
   imports: [
@@ -33,6 +34,10 @@ import { IdentityAccessModule } from './modules/identity-access/identity-access.
     }),
   ],
   controllers: [HealthController],
-  providers: [HealthService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    HealthService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useExisting: AuthenticationGuard },
+  ],
 })
 export class AppModule {}

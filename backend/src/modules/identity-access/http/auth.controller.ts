@@ -12,6 +12,7 @@ import { RotateSessionUseCase } from '../application/rotate-session.use-case.js'
 import { InvalidCredentialsError } from '../domain/identity.errors.js'
 import { InvalidRefreshTokenError, RefreshTokenReuseError } from '../domain/session.errors.js'
 import { LoginDto } from './login.dto.js'
+import { Public } from './public.decorator.js'
 
 const PRODUCTION_REFRESH_COOKIE = '__Host-dp_refresh'
 const PRODUCTION_CSRF_COOKIE = '__Host-dp_csrf'
@@ -29,6 +30,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @Public()
   @HttpCode(200)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({ summary: 'Cria uma sessão' })
@@ -46,6 +48,7 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @Public()
   @HttpCode(200)
   @ApiOperation({ summary: 'Rotaciona o refresh token uma única vez' })
   async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
@@ -71,6 +74,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @Public()
   @HttpCode(204)
   @ApiOperation({ summary: 'Revoga a sessão atual' })
   @ApiResponse({ status: 204 })

@@ -188,6 +188,8 @@ Entregas:
 
 **Gate:** rotas protegidas rejeitam tokens inválidos, sessões revogadas e usuários desabilitados; nenhuma autorização confia somente em claims.
 
+**Estado:** concluído em 20/07/2026.
+
 #### B1.7 — Hardening e encerramento
 
 **Objetivo:** provar que persistência e sessão estão prontas para organizações.
