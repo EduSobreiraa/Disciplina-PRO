@@ -3,6 +3,7 @@ import { BootstrapSuperAdminUseCase } from './application/bootstrap-super-admin.
 import { AccessTokenService } from './application/access-token.js'
 import { AuthenticatedPrincipalRepository, PlatformAccessBoundary } from './application/authenticated-principal.repository.js'
 import { Clock, SystemClock } from './application/clock.js'
+import { CleanupSessionsUseCase } from './application/cleanup-sessions.use-case.js'
 import { CreateUserUseCase } from './application/create-user.use-case.js'
 import { CreateSessionUseCase } from './application/create-session.use-case.js'
 import { IdentityRepository } from './application/identity.repository.js'
@@ -36,6 +37,7 @@ import { AuthenticationGuard } from './http/authentication.guard.js'
     RevokeAllSessionsUseCase,
     LoginUseCase,
     ResolveRefreshSessionUseCase,
+    CleanupSessionsUseCase,
     AuthenticationGuard,
     { provide: IdentityRepository, useClass: PrismaIdentityRepository },
     { provide: SessionRepository, useClass: PrismaSessionRepository },
@@ -54,6 +56,7 @@ import { AuthenticationGuard } from './http/authentication.guard.js'
     RotateSessionUseCase,
     RevokeSessionUseCase,
     RevokeAllSessionsUseCase,
+    CleanupSessionsUseCase,
     AccessTokenService,
     PasswordHasher,
     AuthenticationGuard,

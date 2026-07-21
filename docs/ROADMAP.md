@@ -6,7 +6,7 @@
 ## 1. Estado de partida
 
 - frontend individual F0–F9 concluído e validado em React;
-- fundação B0, decisões B0.5 e B1.1–B1.4 concluídas;
+- fundação B0, decisões B0.5 e fase B1 concluídas;
 - PostgreSQL local e ferramentas essenciais operacionais;
 - schema Prisma inicial, migration baseline, identidade e bootstrap de plataforma implementados;
 - áreas empresariais, autenticação real e integração frontend–API ainda pendentes.
@@ -205,6 +205,8 @@ Entregas:
 **Gate:** sessão pode ser criada, renovada e revogada sem expor segredos; migrations funcionam em banco vazio; CI e Quality Gate são aprovados.
 
 **Gate de saída:** sessão pode ser criada, renovada e revogada sem expor segredos; migrations funcionam em banco vazio.
+
+**Estado:** concluído em 20/07/2026. A fase B1 está encerrada.
 
 ### B2 — Organizações e isolamento multi-tenant
 

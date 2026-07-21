@@ -21,7 +21,7 @@ Já estão disponíveis:
 - separação local entre dados objetivos e conteúdo privado;
 - repositories locais preparados para futura substituição pela API.
 
-O backend NestJS concluiu B0, as dez decisões arquiteturais da B0.5 e os blocos B1.1–B1.6. Schema, identidade, credenciais, sessões, transporte HTTP e autenticação atual estão validados; B1.7 fará o hardening final da fase.
+O backend NestJS concluiu B0, as dez decisões arquiteturais da B0.5 e toda a fase B1. Schema, identidade, credenciais, sessões, transporte HTTP, autenticação atual e hardening estão validados; B2 implementará organizações e isolamento multi-tenant.
 
 ## Arquitetura planejada
 
@@ -132,6 +132,8 @@ unset SUPER_ADMIN_PASSWORD
 
 A senha deve ter entre 15 e 128 caracteres. Não coloque credenciais no repositório, em `.env.example` ou diretamente na linha do comando.
 
+Chaves, rotação, migrations, cookies, limpeza de sessões e verificação pré-deploy estão no [runbook de Identity Access](docs/OPERACAO_IDENTITY_ACCESS.md).
+
 ## Comandos de qualidade
 
 Na raiz do repositório:
@@ -207,7 +209,7 @@ Projeto 66:
 
 ## Próximas etapas
 
-1. B1.7 — concluir hardening e gate da fase;
+1. B2 — implementar organizações e isolamento multi-tenant;
 2. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 ## Responsável

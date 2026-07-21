@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 20/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1.1–B1.6 concluídos
+> Atualizado em 20/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1 concluídos
 
 ## 1. Visão geral do produto
 
@@ -19,7 +19,7 @@ Disciplina PRO
     └── Projeto 66 (primeiro programa)
 ```
 
-O frontend individual foi migrado dos protótipos HTML para React. A fundação B0, as dez decisões da B0.5 e os blocos B1.1–B1.4 foram concluídos; identidade, credenciais e o núcleo de sessões já estão implementados.
+O frontend individual foi migrado dos protótipos HTML para React. A fundação B0, as dez decisões da B0.5 e toda a B1 foram concluídas; persistência e Identity Access estão prontos para receber organizações na B2.
 
 ## 2. Tecnologias e decisões
 
@@ -355,6 +355,8 @@ B1.5 expôs login, refresh e logout com DTOs e OpenAPI, origem exata, CORS expl�
 
 B1.6 tornou autenticação obrigatória por padrão. O guard valida bearer/JWT e reconsulta usuário e sessão em cada requisição; logout, revogação, expiração absoluta e desabilitação possuem efeito imediato. O principal é mínimo, enquanto `X-Tenant-Id` e `PlatformAccess` permanecem em boundaries separados para não antecipar autorização.
 
+B1.7 encerrou a fase com limpeza transacional e idempotente de sessões, retenção de 90 dias, runbook operacional, pisos de cobertura e pinning por SHA da action Sonar. Banco vazio, concorrência, falhas de sessão, expiração, replay, revogação e ausência de segredos foram novamente validados.
+
 ## 12. Prontidão e pré-requisitos do backend
 
 ### Aprovados
@@ -370,7 +372,7 @@ B1.6 tornou autenticação obrigatória por padrão. O guard valida bearer/JWT e
 | Backend | NestJS, TypeScript, Prisma 7.9.0 com adapter `pg`, Argon2id, `jose` e Supertest |
 | Segurança básica | Helmet, CORS, throttling, validação global e redação de headers sensíveis |
 | Observabilidade inicial | logging estruturado, health check e Swagger |
-| Qualidade | lint, typecheck, builds, 37 testes unitários, 3 E2E e 12 integrações aprovados até B1.6 |
+| Qualidade | lint, typecheck, builds, 37 testes unitários, 3 E2E e 13 integrações aprovados no encerramento da B1 |
 | Dependências | `npm audit --workspaces` sem vulnerabilidades após atualização coordenada para Prisma 7.9.0 |
 
 ### Não bloqueadores no fluxo atual
@@ -383,7 +385,7 @@ B1.6 tornou autenticação obrigatória por padrão. O guard valida bearer/JWT e
 
 ### Pendências prioritárias
 
-1. implementar B1.7, hardening e gate de encerramento;
+1. iniciar B2, organizações e isolamento multi-tenant;
 3. confirmar a primeira execução remota do workflow de CI após o push.
 
 Conclusão de prontidão: **a B0 está concluída e não falta instalação essencial para continuar o backend**. A próxima pendência é arquitetural, não de ambiente ou infraestrutura.

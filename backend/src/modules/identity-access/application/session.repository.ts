@@ -15,4 +15,5 @@ export abstract class SessionRepository {
   abstract findSessionIdByRefreshTokenHash(tokenHash: string): Promise<string | null>
   abstract revokeSession(input: { sessionId: string; reason: string; now: Date }): Promise<void>
   abstract revokeAllForUser(input: { userId: string; reason: string; now: Date }): Promise<void>
+  abstract cleanup(input: { now: Date; purgeBefore: Date }): Promise<{ expiredSessionsRevoked: number; sessionsPurged: number }>
 }

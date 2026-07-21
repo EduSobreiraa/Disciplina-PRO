@@ -488,6 +488,12 @@ Rotas HTTP são privadas por padrão; `@Public()` é uma exceção explícita us
 
 `CurrentPrincipal` contém apenas `userId`, `sessionId` e `tokenId`. Não contém tenant, role, permissões ou `PlatformAccess`. `X-Tenant-Id` possui decorator próprio que valida UUID, mas continua sendo entrada não confiável até o `TenantContextGuard` da B2. A consulta de `PlatformAccess` também usa boundary separado e não altera o significado do principal.
 
+### 15.6 Hardening e retenção da B1.7
+
+O comando operacional `sessions:cleanup` revoga sessões que ultrapassaram o limite absoluto e marca seus refresh tokens como revogados. Famílias previamente revogadas só são eliminadas após 90 dias; os vínculos de rotação são removidos dentro da mesma transação e `AuditEvent` permanece preservado. Execuções repetidas não alteram o resultado.
+
+O CI impõe pisos iniciais de cobertura. No backend: 30% statements, 20% branches, 25% functions e 30% lines. No frontend: 19%, 60%, 40% e 19%, respectivamente. Esses valores são baselines de não regressão, não metas finais. A action do SonarQube Cloud é fixada por SHA revisado. O runbook `docs/OPERACAO_IDENTITY_ACCESS.md` consolida chaves, rotação, migrations, cookies, limpeza e gate pré-deploy.
+
 ## 16. Rotas essenciais planejadas
 
 ```text
@@ -710,6 +716,7 @@ A B0.5 está aprovada. Seu primeiro schema e migration são as próximas entrega
 | 20/07/2026 | B1.4 concluída: JWT RS256 por kid, refresh opaco rotativo, expiração 7/30 dias, revogação e reuse detection transacional. |
 | 20/07/2026 | B1.5 concluída: contrato HTTP de login/refresh/logout, origem exata, cookies por ambiente, CSRF ligado à sessão e refresh single-flight documentado. |
 | 20/07/2026 | B1.6 concluída: autenticação privada por padrão, principal mínimo, revalidação atual de usuário/sessão e boundaries separados para tenant e plataforma. |
+| 20/07/2026 | B1.7 e fase B1 concluídas: retenção/limpeza idempotente, pisos de cobertura, action Sonar fixada por SHA, runbook operacional e gate integral. |
 
 ## 21. Versionamento e documentação
 

@@ -132,6 +132,47 @@ export class PrismaSessionRepository extends SessionRepository {
     })
   }
 
+  cleanup(input: { now: Date; purgeBefore: Date }) {
+    return this.prisma.$transaction(async (transaction) => {
+      const expiring = await transaction.authSession.findMany({
+        where: { revokedAt: null, absoluteExpiresAt: { lte: input.now } },
+        select: { id: true },
+      })
+      const expiringIds = expiring.map(({ id }) => id)
+      const expired = await transaction.authSession.updateMany({
+        where: { id: { in: expiringIds }, revokedAt: null },
+        data: { revokedAt: input.now, revocationReason: 'SESSION_EXPIRED' },
+      })
+      if (expired.count) {
+        await transaction.refreshToken.updateMany({
+          where: { sessionId: { in: expiringIds }, revokedAt: null },
+          data: { revokedAt: input.now },
+        })
+      }
+      const purgeable = await transaction.authSession.findMany({
+        where: { revokedAt: { lte: input.purgeBefore } },
+        select: { id: true },
+      })
+      const ids = purgeable.map(({ id }) => id)
+      if (ids.length) {
+        await transaction.refreshToken.updateMany({ where: { sessionId: { in: ids } }, data: { replacedByTokenId: null } })
+        await transaction.refreshToken.deleteMany({ where: { sessionId: { in: ids } } })
+        await transaction.authSession.deleteMany({ where: { id: { in: ids } } })
+      }
+      if (expired.count || ids.length) {
+        await transaction.auditEvent.create({
+          data: {
+            actorType: 'SYSTEM',
+            entityType: 'AuthSession',
+            action: 'SESSION_CLEANUP_COMPLETED',
+            metadata: { expiredSessionsRevoked: expired.count, sessionsPurged: ids.length },
+          },
+        })
+      }
+      return { expiredSessionsRevoked: expired.count, sessionsPurged: ids.length }
+    })
+  }
+
   private async revokeLockedSession(
     transaction: Prisma.TransactionClient,
     session: LockedRefreshToken,

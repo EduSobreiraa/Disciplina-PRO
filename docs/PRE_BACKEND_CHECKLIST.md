@@ -112,7 +112,7 @@ Gate aprovado: as dez decisões foram fechadas nos ADRs 001–010. O primeiro `s
 - [x] B1.4 — JWT RS256, sessões, refresh rotativo, revogação e reuse detection implementados.
 - [x] B1.5 — Login, refresh e logout expostos com CORS estrito, cookies e CSRF ligado à sessão.
 - [x] B1.6 — `AuthenticationGuard`, `CurrentPrincipal`, rotas públicas explícitas e boundary de plataforma implementados.
-- [ ] B1.7 — Executar hardening, testes completos e gate de encerramento.
+- [x] B1.7 — Hardening, retenção de sessões, cobertura mínima, documentação operacional e gate completo aprovados.
 
 Cada sub-bloco deve fechar seu próprio gate antes do seguinte. A autorização por role e escopo, `TenantContextGuard` completo e operações organizacionais permanecem na B2.
 
@@ -128,7 +128,7 @@ Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microse
 
 ## 10. Situação de prontidão
 
-**Resultado:** ambiente, B0, B0.5 e B1.1–B1.4 concluídos. Node, npm, Docker, Compose, PostgreSQL, Prisma, Argon2, `jose`, Git, lockfile único e acesso ao repositório estão operacionais.
+**Resultado:** ambiente, B0, B0.5 e B1 concluídos. Node, npm, Docker, Compose, PostgreSQL, Prisma, Argon2, `jose`, Git, lockfile único e acesso ao repositório estão operacionais.
 
 Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**:
 
@@ -138,4 +138,4 @@ Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**
 - representação de `SUPER_ADMIN`;
 - IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
-Persistência, identidade, sessões, transporte HTTP e autenticação atual estão implementados até B1.6. A próxima etapa é B1.7: hardening e gate de encerramento.
+Persistência e Identity Access estão encerrados até B1.7. A próxima etapa de produto é B2: organizações e isolamento multi-tenant.

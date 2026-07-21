@@ -11,6 +11,7 @@ Status utilizados:
 - **ABERTO:** problema conhecido sem mitigação suficiente;
 - **MITIGADO:** risco permanece, mas existe controle temporário verificável;
 - **PLANEJADO:** ausência esperada, com fase e gate já definidos;
+- **ENCERRADO:** critério objetivo atendido, com resolução e evidência preservadas;
 - **FORA DO MVP:** não deve consumir esforço do roadmap atual.
 
 Prioridades:
@@ -21,13 +22,13 @@ Prioridades:
 
 ## 2. Resumo executivo
 
-O projeto está adequado para continuar o desenvolvimento local, mas **não está pronto para armazenar dados reais de empresas ou participantes**. Os maiores bloqueios são sessão/autorização ainda incompletas, persistência frontend em `localStorage`, política legal de retenção indefinida e ausência do ambiente operacional de staging.
+O projeto está adequado para continuar o desenvolvimento local, mas **não está pronto para armazenar dados reais de empresas ou participantes**. Os maiores bloqueios são autorização multi-tenant ainda incompleta, persistência frontend em `localStorage`, política legal de retenção indefinida e ausência do ambiente operacional de staging.
 
 | Prioridade | Abertos/planejados | Mitigados |
 |---|---:|---:|
 | P0 | 3 | 0 |
-| P1 | 7 | 1 |
-| P2 | 2 | 2 |
+| P1 | 7 | 0 |
+| P2 | 1 | 1 |
 
 ## 3. Bloqueios para dados ou usuários reais
 
@@ -126,13 +127,10 @@ O projeto está adequado para continuar o desenvolvimento local, mas **não est�
 
 ### PP-011 — Quality Gate ainda é baseline progressiva
 
-- **Prioridade/status:** P1 · MITIGADO
-- **Problema:** CI e SonarQube Cloud estão aprovados, mas cobertura mínima ainda não bloqueia retroativamente todo o código existente.
-- **Impacto:** partes legadas podem continuar com cobertura inferior ao desejado.
-- **Mitigação atual:** testes obrigatórios, análise de código novo e gates funcionais por bloco.
-- **Motivo do adiamento:** elevar o limiar de uma vez criaria um bloqueio sem reduzir risco de forma incremental.
-- **Retomada:** B1.7 e revisões posteriores por módulo.
-- **Critério de encerramento:** métricas mínimas explícitas e sustentáveis para código novo e fluxos críticos.
+- **Prioridade/status:** P1 · ENCERRADO EM 20/07/2026
+- **Problema original:** CI e SonarQube Cloud estavam aprovados, mas nenhuma cobertura mínima bloqueava regressões globais.
+- **Resolução:** o backend passou a impor pisos de 30% statements, 20% branches, 25% functions e 30% lines; o frontend, 19%, 60%, 40% e 19%, respectivamente. Análise de código novo e gates funcionais permanecem obrigatórios.
+- **Evidência de encerramento:** `test:coverage` supera os pisos dos dois workspaces e o CI bloqueia regressões abaixo deles. Os limites serão elevados progressivamente por módulo.
 
 ## 5. Dependências e cadeia de suprimentos
 
@@ -145,12 +143,10 @@ O projeto está adequado para continuar o desenvolvimento local, mas **não est�
 
 ### PP-013 — Verificação GPG ignorada pela action do Sonar
 
-- **Prioridade/status:** P2 · ABERTO
-- **Problema:** o GitHub Actions registra a anotação “Skipping GPG signature verification” durante o scan do SonarQube Cloud.
-- **Impacto:** redução de uma camada de verificação da cadeia de suprimentos da ferramenta de análise; o workflow permanece fixado por versão major, não por SHA.
-- **Motivo do adiamento:** não bloqueou o Quality Gate e exige avaliar suporte oficial/estratégia de pinning.
-- **Retomada:** B1.7 ou manutenção de CI anterior.
-- **Critério de encerramento:** action fixada por SHA revisado e/ou verificação suportada sem warning, com política de atualização documentada.
+- **Prioridade/status:** P2 · ENCERRADO EM 20/07/2026
+- **Problema original:** o scanner emitia aviso de verificação GPG ignorada e o workflow referenciava apenas a tag major mutável.
+- **Resolução:** `SonarSource/sonarqube-scan-action` foi fixada ao commit oficial `c7ee0f9d...` resolvido da tag v7 e atualizações futuras exigem revisão deliberada.
+- **Evidência de encerramento:** workflow versionado por SHA e Quality Gate obrigatório. A anotação do scanner pode permanecer como limitação da distribuição oficial, sem permitir troca silenciosa da action.
 
 ### PP-014 — Dependabot e CodeQL indisponíveis no fluxo atual
 
