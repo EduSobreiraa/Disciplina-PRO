@@ -2,12 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { TIMER_SECONDS, TOTAL_CYCLES, ritualSections } from '../data/ritual-content'
 import { dailyRitualLocalRepository, getLocalDateKey } from '../repositories/daily-ritual.local.repository'
 import { getRitualProgress } from '../services/ritual-progress'
-import { useGamification } from '../../gamification/gamification-context'
 
 const emptyDay = () => ({ checks: {}, timer: { completedCycles: 0, remainingSeconds: TIMER_SECONDS, runningUntil: null } })
 
 export function useDailyRitual() {
-  const { setReward } = useGamification()
   const dateKey = getLocalDateKey()
   const [state, setState] = useState(() => dailyRitualLocalRepository.load())
   const [clock, setClock] = useState(0)
@@ -29,19 +27,14 @@ export function useDailyRitual() {
     const interval = window.setInterval(() => {
       const now = Date.now()
       if (now < timer.runningUntil) { setClock(now); return }
-      setReward('FOCUS_CYCLE', `focus:${dateKey}:${timer.completedCycles + 1}`, true)
       updateDay((current) => ({ ...current, timer: { completedCycles: Math.min(TOTAL_CYCLES, timer.completedCycles + 1), remainingSeconds: timer.completedCycles + 1 >= TOTAL_CYCLES ? 0 : TIMER_SECONDS, runningUntil: null } }))
     }, 250)
     return () => window.clearInterval(interval)
-  }, [dateKey, running, setReward, timer.completedCycles, timer.runningUntil, updateDay])
+  }, [running, timer.completedCycles, timer.runningUntil, updateDay])
 
   function toggleCheck(sectionKey, index) {
     const nextActive = !day.checks[sectionKey]?.[index]
-    const section = ritualSections.find((item) => item.key === sectionKey)
     const nextSectionChecks = { ...day.checks[sectionKey], [index]: nextActive }
-    const sectionComplete = section.items.every((_, itemIndex) => nextSectionChecks[itemIndex])
-    setReward('RITUAL_STEP', `ritual:${dateKey}:${sectionKey}:${index}`, nextActive)
-    setReward('RITUAL_SECTION', `ritual-section:${dateKey}:${sectionKey}`, sectionComplete)
     updateDay((current) => ({ ...current, checks: { ...current.checks, [sectionKey]: nextSectionChecks } }))
   }
 
@@ -54,7 +47,6 @@ export function useDailyRitual() {
   }
 
   function resetTimer() {
-    for (let cycle = 1; cycle <= timer.completedCycles; cycle += 1) setReward('FOCUS_CYCLE', `focus:${dateKey}:${cycle}`, false)
     updateDay((current) => ({ ...current, timer: emptyDay().timer }))
     setClock(Date.now())
   }

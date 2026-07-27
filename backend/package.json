@@ -16,6 +16,9 @@
     "prisma:migrate:status": "prisma migrate status",
     "platform:bootstrap": "node --loader ts-node/esm src/cli/bootstrap-super-admin.ts",
     "sessions:cleanup": "node --loader ts-node/esm src/cli/cleanup-sessions.ts",
+    "programs:materialize:projeto66": "node --loader ts-node/esm src/cli/materialize-projeto66.ts",
+    "events:process": "node --loader ts-node/esm src/cli/process-internal-events.ts",
+    "events:reprocess": "node --loader ts-node/esm src/cli/reprocess-internal-event.ts",
     "build": "nest build",
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
@@ -25,7 +28,8 @@
     "test:coverage": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --runInBand --coverage --coverageReporters=lcov --coverageReporters=text-summary",
     "test:watch": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --watch",
     "test:e2e": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --config test/jest-e2e.json --runInBand",
-    "test:integration": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --config test/jest-integration.json --runInBand"
+    "test:integration": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --config test/jest-integration.json --runInBand",
+    "test:mailpit": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --config test/jest-mailpit.json --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -42,6 +46,7 @@
     "helmet": "^8.0.0",
     "jose": "6.2.3",
     "nestjs-pino": "^4.0.0",
+    "nodemailer": "9.0.3",
     "pg": "^8.0.0",
     "pino": "^10.0.0",
     "reflect-metadata": "^0.2.0",
@@ -55,6 +60,7 @@
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^24.0.0",
+    "@types/nodemailer": "8.0.1",
     "@types/pg": "^8.0.0",
     "@types/supertest": "^6.0.0",
     "dotenv": "17.4.2",

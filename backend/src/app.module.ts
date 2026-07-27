@@ -12,12 +12,29 @@ import { HealthController } from './health/health.controller.js'
 import { HealthService } from './health/health.service.js'
 import { IdentityAccessModule } from './modules/identity-access/identity-access.module.js'
 import { AuthenticationGuard } from './modules/identity-access/http/authentication.guard.js'
+import { OrganizationsModule } from './modules/organizations/organizations.module.js'
+import { TenantContextGuard } from './modules/organizations/http/tenant-context.guard.js'
+import { PlatformAccessGuard } from './modules/organizations/http/platform-access.guard.js'
+import { PermissionGuard } from './modules/organizations/http/permission.guard.js'
+import { InvitationsModule } from './modules/invitations/invitations.module.js'
+import { ProgramsModule } from './modules/programs/programs.module.js'
+import { ExecutionModule } from './modules/execution/execution.module.js'
+import { EventsModule } from './modules/events/events.module.js'
+import { GamificationModule } from './modules/gamification/gamification.module.js'
+import { AuditModule } from './modules/audit/audit.module.js'
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: resolve(dirname(fileURLToPath(import.meta.url)), '../../.env'), validate: validateEnvironment }),
     PrismaModule,
     IdentityAccessModule,
+    OrganizationsModule,
+    InvitationsModule,
+    ProgramsModule,
+    EventsModule,
+    GamificationModule,
+    AuditModule,
+    ExecutionModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<Environment, true>) => [{ ttl: config.get('RATE_LIMIT_TTL_MS', { infer: true }), limit: config.get('RATE_LIMIT_MAX', { infer: true }) }],
@@ -38,6 +55,9 @@ import { AuthenticationGuard } from './modules/identity-access/http/authenticati
     HealthService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useExisting: AuthenticationGuard },
+    { provide: APP_GUARD, useExisting: TenantContextGuard },
+    { provide: APP_GUARD, useExisting: PlatformAccessGuard },
+    { provide: APP_GUARD, useExisting: PermissionGuard },
   ],
 })
 export class AppModule {}

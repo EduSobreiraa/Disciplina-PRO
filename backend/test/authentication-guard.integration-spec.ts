@@ -8,7 +8,7 @@ import type { CurrentPrincipal } from '../src/modules/identity-access/applicatio
 import { CreateUserUseCase } from '../src/modules/identity-access/application/create-user.use-case.js'
 import { RevokeSessionUseCase } from '../src/modules/identity-access/application/revoke-session.use-case.js'
 import { CurrentPrincipalParam } from '../src/modules/identity-access/http/current-principal.decorator.js'
-import { RequestedTenantId } from '../src/modules/identity-access/http/requested-tenant-id.decorator.js'
+import { RequestedTenantId } from '../src/modules/organizations/http/requested-tenant-id.decorator.js'
 
 const ORIGIN = 'http://localhost:5173'
 

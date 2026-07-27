@@ -1,5 +1,7 @@
 # Inventário e Plano de Migração dos Protótipos
 
+> Registro histórico da migração funcional F0–F9, concluída em 14/07/2026. Referências a repositories locais descrevem os gates daquela data; o estado atual de integração está em [`RELATORIO_PROGRESSO.md`](RELATORIO_PROGRESSO.md).
+
 > Disciplina PRO · Documento operacional  
 > Criado em: 12/07/2026 · Estado: migração funcional F0–F9 concluída em 14/07/2026
 
@@ -376,7 +378,7 @@ Conclusão em 14/07/2026:
 - testes unitários de estatísticas, rankings e backup;
 - validação Playwright em 375×812, incluindo persistência após reload e console sem erros.
 
-Integrações com gamificação e API permanecem nas fases próprias e não bloqueiam a conclusão visual/funcional da migração local.
+As integrações com API permanecem nas fases próprias e não bloqueiam a conclusão visual/funcional da migração local. A gamificação foi integrada à API na B6.5.
 
 Auditoria transversal concluída em 14/07/2026:
 
@@ -429,9 +431,9 @@ Implementado em 14/07/2026:
 - testes das chaves de período e sequência perfeita;
 - validação Playwright nas quatro larguras.
 
-## 8. Próximo incremento de implementação
+## 8. Estado posterior à migração
 
-A migração funcional planejada dos protótipos está concluída. O próximo incremento será a fundação do backend modular NestJS e o início da substituição gradual dos repositories locais por contratos HTTP reais. O panorama de transição está consolidado em `docs/RELATORIO_PROGRESSO.md`.
+A migração funcional planejada dos protótipos está concluída. Desde então, o backend avançou até B6.4 e a B6.5 integrou a gamificação ao frontend. Sessão, ciclo, ferramentas privadas do Projeto 66 e gamificação usam HTTP; tracker e ritual continuam locais. A próxima entrega do roadmap é B7; o panorama atual está consolidado em [`RELATORIO_PROGRESSO.md`](RELATORIO_PROGRESSO.md).
 
 ## 9. Matriz de validação
 

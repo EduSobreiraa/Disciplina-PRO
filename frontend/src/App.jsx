@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AppLayout } from './app/layouts/AppLayout'
 import { DashboardPage } from './modules/dashboard/DashboardPage'
 import { DisciplineTrackerPage } from './modules/discipline-tracker/pages/DisciplineTrackerPage'
@@ -18,12 +18,21 @@ import { Projeto66MeditationPage } from './modules/projeto66/pages/Projeto66Medi
 import { Projeto66NewSelfPage } from './modules/projeto66/pages/Projeto66NewSelfPage'
 import { Projeto66TodayPage } from './modules/projeto66/pages/Projeto66TodayPage'
 import './App.css'
+import { useAppContext } from './app/providers/app-context'
+
+function RequireSession({ children }) {
+  const session = useAppContext()
+  const location = useLocation()
+  if (session.status === 'loading') return <main className="login-page"><p>Restaurando sessão…</p></main>
+  if (!session.authenticated || !session.tenant) return <Navigate to="/login" state={{ from: location.pathname }} replace />
+  return children
+}
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/app" element={<AppLayout />}>
+      <Route path="/app" element={<RequireSession><AppLayout /></RequireSession>}>
         <Route index element={<DashboardPage />} />
         <Route path="programas" element={<ProgramsPage />} />
         <Route path="programas/projeto66" element={<Projeto66Layout />}>

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { BootstrapSuperAdminUseCase } from './application/bootstrap-super-admin.use-case.js'
 import { AccessTokenService } from './application/access-token.js'
-import { AuthenticatedPrincipalRepository, PlatformAccessBoundary } from './application/authenticated-principal.repository.js'
+import { AuthenticatedPrincipalRepository } from './application/authenticated-principal.repository.js'
 import { Clock, SystemClock } from './application/clock.js'
 import { CleanupSessionsUseCase } from './application/cleanup-sessions.use-case.js'
 import { CreateUserUseCase } from './application/create-user.use-case.js'
@@ -22,7 +22,7 @@ import { OpaqueRefreshTokenService } from './infrastructure/opaque-refresh-token
 import { HmacCsrfTokenService } from './infrastructure/hmac-csrf-token.service.js'
 import { PrismaIdentityRepository } from './infrastructure/prisma-identity.repository.js'
 import { PrismaSessionRepository } from './infrastructure/prisma-session.repository.js'
-import { PrismaAuthenticatedPrincipalRepository, PrismaPlatformAccessBoundary } from './infrastructure/prisma-authenticated-principal.repository.js'
+import { PrismaAuthenticatedPrincipalRepository } from './infrastructure/prisma-authenticated-principal.repository.js'
 import { AuthController } from './http/auth.controller.js'
 import { AuthenticationGuard } from './http/authentication.guard.js'
 
@@ -42,7 +42,6 @@ import { AuthenticationGuard } from './http/authentication.guard.js'
     { provide: IdentityRepository, useClass: PrismaIdentityRepository },
     { provide: SessionRepository, useClass: PrismaSessionRepository },
     { provide: AuthenticatedPrincipalRepository, useClass: PrismaAuthenticatedPrincipalRepository },
-    { provide: PlatformAccessBoundary, useClass: PrismaPlatformAccessBoundary },
     { provide: PasswordHasher, useClass: Argon2PasswordHasher },
     { provide: AccessTokenService, useClass: JoseAccessTokenService },
     { provide: RefreshTokenService, useClass: OpaqueRefreshTokenService },
@@ -60,7 +59,6 @@ import { AuthenticationGuard } from './http/authentication.guard.js'
     AccessTokenService,
     PasswordHasher,
     AuthenticationGuard,
-    PlatformAccessBoundary,
   ],
 })
 export class IdentityAccessModule {}

@@ -16,6 +16,12 @@ describe('Identity access integration', () => {
 
     const bootstrap = moduleRef.get(BootstrapSuperAdminUseCase)
     const prisma = moduleRef.get(PrismaService)
+    // O bootstrap exige uma instalação ainda não inicializada. Outras suítes podem
+    // criar acessos administrativos no mesmo banco, independentemente da ordem do Jest.
+    await prisma.platformAccess.updateMany({
+      where: { status: 'ACTIVE' },
+      data: { status: 'SUSPENDED', suspendedAt: new Date() },
+    })
     const result = await bootstrap.execute({ email: ' Admin@Disciplina.test ', password: 'uma frase de bootstrap segura' })
 
     const user = await prisma.user.findUniqueOrThrow({ where: { id: result.userId } })

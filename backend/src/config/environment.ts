@@ -18,6 +18,12 @@ export interface Environment {
   JWT_PRIVATE_KEY_BASE64?: string
   JWT_PUBLIC_KEYS_JSON?: string
   REFRESH_TOKEN_PEPPER: string
+  INVITATION_TOKEN_PEPPER: string
+  INVITATION_ACCEPTANCE_URL: string
+  SMTP_HOST: string
+  SMTP_PORT: number
+  SMTP_SECURE: boolean
+  SMTP_FROM: string
 }
 
 function parseInteger(value: unknown, fallback: number, name: string, minimum = 1) {
@@ -38,6 +44,13 @@ function parseChoice<T extends string>(value: unknown, fallback: T, choices: rea
   return parsed
 }
 
+function parseBoolean(value: unknown, fallback: boolean, name: string) {
+  const parsed = value ?? fallback
+  if (parsed === true || parsed === 'true') return true
+  if (parsed === false || parsed === 'false') return false
+  throw new Error(`${name} deve ser true ou false`)
+}
+
 function parseUrl(value: unknown, fallback: string, name: string) {
   const parsed = parseString(value, fallback, name)
   try {
@@ -45,6 +58,27 @@ function parseUrl(value: unknown, fallback: string, name: string) {
   } catch {
     throw new Error(`${name} deve ser uma URL válida`)
   }
+  return parsed
+}
+
+function parseWebUrl(value: unknown, fallback: string, name: string, requireHttps: boolean) {
+  const parsed = parseUrl(value, fallback, name)
+  const url = new URL(parsed)
+  if (!['http:', 'https:'].includes(url.protocol)) throw new Error(`${name} deve usar HTTP(S)`)
+  if (requireHttps && url.protocol !== 'https:') throw new Error(`${name} deve usar HTTPS em produção`)
+  return parsed
+}
+
+function parseWebOrigin(value: unknown, fallback: string, name: string, requireHttps: boolean) {
+  const parsed = parseWebUrl(value, fallback, name, requireHttps)
+  if (new URL(parsed).origin !== parsed) throw new Error(`${name} deve ser uma origem exata, sem caminho, query, fragmento ou barra final`)
+  return parsed
+}
+
+function parseDatabaseUrl(value: unknown, fallback: string) {
+  const parsed = parseUrl(value, fallback, 'DATABASE_URL')
+  const url = new URL(parsed)
+  if (!['postgres:', 'postgresql:'].includes(url.protocol)) throw new Error('DATABASE_URL deve usar o protocolo postgresql:// ou postgres://')
   return parsed
 }
 
@@ -57,27 +91,37 @@ export function validateEnvironment(raw: Record<string, unknown>): Environment {
   if (nodeEnvironment === 'production' && !raw.JWT_PRIVATE_KEY_BASE64) throw new Error('JWT_PRIVATE_KEY_BASE64 é obrigatória em produção')
   if (nodeEnvironment === 'production' && !raw.JWT_PUBLIC_KEYS_JSON) throw new Error('JWT_PUBLIC_KEYS_JSON é obrigatória em produção')
   if (nodeEnvironment === 'production' && !raw.REFRESH_TOKEN_PEPPER) throw new Error('REFRESH_TOKEN_PEPPER é obrigatória em produção')
+  if (nodeEnvironment === 'production' && !raw.INVITATION_TOKEN_PEPPER) throw new Error('INVITATION_TOKEN_PEPPER é obrigatória em produção')
 
   const requestBodyLimit = parseString(raw.REQUEST_BODY_LIMIT, '100kb', 'REQUEST_BODY_LIMIT')
   if (!/^\d+(?:b|kb|mb)$/i.test(requestBodyLimit)) throw new Error('REQUEST_BODY_LIMIT deve usar b, kb ou mb')
 
   const refreshTokenPepper = parseString(raw.REFRESH_TOKEN_PEPPER, 'development-only-refresh-pepper-change-me', 'REFRESH_TOKEN_PEPPER')
   if (refreshTokenPepper.length < 32) throw new Error('REFRESH_TOKEN_PEPPER deve possuir ao menos 32 caracteres')
+  const invitationTokenPepper = parseString(raw.INVITATION_TOKEN_PEPPER, 'development-only-invitation-pepper-change-me', 'INVITATION_TOKEN_PEPPER')
+  if (invitationTokenPepper.length < 32) throw new Error('INVITATION_TOKEN_PEPPER deve possuir ao menos 32 caracteres')
+  if (invitationTokenPepper === refreshTokenPepper) throw new Error('INVITATION_TOKEN_PEPPER deve ser diferente de REFRESH_TOKEN_PEPPER')
 
   return {
     NODE_ENV: nodeEnvironment,
     PORT: parseInteger(raw.PORT, 3000, 'PORT'),
-    FRONTEND_URL: parseUrl(raw.FRONTEND_URL, 'http://localhost:5173', 'FRONTEND_URL'),
-    DATABASE_URL: parseUrl(databaseUrl, localDatabaseUrl, 'DATABASE_URL'),
+    FRONTEND_URL: parseWebOrigin(raw.FRONTEND_URL, 'http://localhost:5173', 'FRONTEND_URL', nodeEnvironment === 'production'),
+    DATABASE_URL: parseDatabaseUrl(databaseUrl, localDatabaseUrl),
     LOG_LEVEL: parseChoice(raw.LOG_LEVEL, 'info', LOG_LEVELS, 'LOG_LEVEL'),
     REQUEST_BODY_LIMIT: requestBodyLimit,
     RATE_LIMIT_TTL_MS: parseInteger(raw.RATE_LIMIT_TTL_MS, 60_000, 'RATE_LIMIT_TTL_MS'),
     RATE_LIMIT_MAX: parseInteger(raw.RATE_LIMIT_MAX, 100, 'RATE_LIMIT_MAX'),
-    JWT_ISSUER: parseUrl(raw.JWT_ISSUER, 'http://localhost:3000', 'JWT_ISSUER'),
+    JWT_ISSUER: parseWebUrl(raw.JWT_ISSUER, 'http://localhost:3000', 'JWT_ISSUER', nodeEnvironment === 'production'),
     JWT_AUDIENCE: parseString(raw.JWT_AUDIENCE, 'disciplina-pro-api', 'JWT_AUDIENCE'),
     JWT_ACTIVE_KID: parseString(raw.JWT_ACTIVE_KID, 'local-ephemeral', 'JWT_ACTIVE_KID'),
     JWT_PRIVATE_KEY_BASE64: raw.JWT_PRIVATE_KEY_BASE64 ? parseString(raw.JWT_PRIVATE_KEY_BASE64, '', 'JWT_PRIVATE_KEY_BASE64') : undefined,
     JWT_PUBLIC_KEYS_JSON: raw.JWT_PUBLIC_KEYS_JSON ? parseString(raw.JWT_PUBLIC_KEYS_JSON, '', 'JWT_PUBLIC_KEYS_JSON') : undefined,
     REFRESH_TOKEN_PEPPER: refreshTokenPepper,
+    INVITATION_TOKEN_PEPPER: invitationTokenPepper,
+    INVITATION_ACCEPTANCE_URL: parseWebUrl(raw.INVITATION_ACCEPTANCE_URL, 'http://localhost:5173/convites/aceitar', 'INVITATION_ACCEPTANCE_URL', nodeEnvironment === 'production'),
+    SMTP_HOST: parseString(raw.SMTP_HOST, 'localhost', 'SMTP_HOST'),
+    SMTP_PORT: parseInteger(raw.SMTP_PORT, 1025, 'SMTP_PORT'),
+    SMTP_SECURE: parseBoolean(raw.SMTP_SECURE, false, 'SMTP_SECURE'),
+    SMTP_FROM: parseString(raw.SMTP_FROM, 'Disciplina PRO <no-reply@disciplina.local>', 'SMTP_FROM'),
   }
 }

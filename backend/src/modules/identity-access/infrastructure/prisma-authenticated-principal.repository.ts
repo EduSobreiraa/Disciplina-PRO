@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../database/prisma.service.js'
-import { AuthenticatedPrincipalRepository, PlatformAccessBoundary } from '../application/authenticated-principal.repository.js'
+import { AuthenticatedPrincipalRepository } from '../application/authenticated-principal.repository.js'
 
 @Injectable()
 export class PrismaAuthenticatedPrincipalRepository extends AuthenticatedPrincipalRepository {
@@ -18,13 +18,5 @@ export class PrismaAuthenticatedPrincipalRepository extends AuthenticatedPrincip
       select: { id: true },
     })
     return session !== null
-  }
-}
-
-@Injectable()
-export class PrismaPlatformAccessBoundary extends PlatformAccessBoundary {
-  constructor(private readonly prisma: PrismaService) { super() }
-  async hasActiveAccess(userId: string) {
-    return (await this.prisma.platformAccess.count({ where: { userId, status: 'ACTIVE' } })) > 0
   }
 }

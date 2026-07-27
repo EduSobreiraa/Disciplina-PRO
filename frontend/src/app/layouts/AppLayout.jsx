@@ -31,7 +31,7 @@ export function AppLayout() {
             <span className="xp-medal">{gamification.level.medal}</span>
             <div><small>Nível {gamification.level.level}</small><strong>{gamification.level.name} · <em>{gamification.xp} XP</em></strong><span className="xp-track"><i style={{ width: `${gamification.progress}%` }} /></span></div>
           </div>
-          <div className="war-identity"><div><strong>{user.name}</strong><small>{membership.role} · {tenant.name}</small></div><span className="war-avatar">EP</span></div>
+          <div className="war-identity"><div><strong>{user.email}</strong><small>{membership.role} · {tenant.name}</small></div><span className="war-avatar">{user.email.slice(0, 2).toUpperCase()}</span></div>
         </div>
       </header>
       <nav className="war-nav" aria-label="Navegação principal">

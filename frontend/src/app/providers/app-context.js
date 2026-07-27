@@ -2,7 +2,8 @@ import { createContext, useContext } from 'react'
 
 export const AppContext = createContext(null)
 
-// Contexto temporário; será alimentado pela sessão autenticada quando a API existir.
 export function useAppContext() {
-  return useContext(AppContext)
+  const context = useContext(AppContext)
+  if (!context) throw new Error('AppProvider não configurado')
+  return context
 }

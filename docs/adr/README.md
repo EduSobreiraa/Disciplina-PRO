@@ -14,3 +14,8 @@ Os ADRs registram decisões que alteram contratos, schema, segurança ou operaç
 | [008](008-access-token-jwt.md) | JWT curto identifica usuário e sessão, não autorização | Aceita |
 | [009](009-refresh-token-rotativo.md) | Refresh token opaco, rotativo e com reuse detection | Aceita |
 | [010](010-transporte-cors-csrf.md) | Sessão híbrida, CORS estrito e CSRF assinado | Aceita |
+| [011](011-contexto-organizacional-times-permissoes.md) | Contexto de tenant, times e autorização por role mais escopo | Aceita |
+| [012](012-convites-entrada-nominal.md) | Convites, entrada nominal, token de uso único e entrega por e-mail | Aceita |
+| [013](013-catalogo-habilitacao-disponibilidade.md) | Catálogo global, habilitação por tenant e disponibilidade idempotente | Aceita |
+| [014](014-execucao-ciclos-fatos-privacidade.md) | Execução, ciclos, fatos diários e privacidade | Aceita |
+| [015](015-eventos-internos-gamificacao-auditoria.md) | Eventos internos duráveis, gamificação e auditoria | Aceita |

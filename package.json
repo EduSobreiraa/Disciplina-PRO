@@ -13,6 +13,7 @@
   "scripts": {
     "dev:frontend": "npm run dev --workspace frontend",
     "dev:backend": "npm run start:dev --workspace backend",
+    "docs:check": "node scripts/check-docs.mjs",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
@@ -31,5 +32,9 @@
     "argon2@0.44.0": true,
     "prisma@7.9.0": true,
     "@scarf/scarf": false
+  },
+  "overrides": {
+    "fast-uri": "3.1.4",
+    "postcss": "8.5.23"
   }
 }

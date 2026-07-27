@@ -1,0 +1,17 @@
+export class InvalidTenantDataError extends Error {}
+export class TenantSlugUnavailableError extends Error {}
+export class TenantNotFoundError extends Error {}
+export class InvalidTenantTransitionError extends Error {}
+export class TenantActiveCeoRequiredError extends Error {}
+export class PlatformActorInactiveError extends Error {}
+export class InvalidTeamDataError extends Error {}
+export class TeamNameUnavailableError extends Error {}
+export class TeamNotFoundError extends Error {}
+export class InvalidTeamTransitionError extends Error {}
+export class TenantActorInactiveError extends Error {}
+export class MembershipNotFoundError extends Error {}
+export class InvalidMembershipTransitionError extends Error {}
+export class ResourceScopeDeniedError extends Error {}
+export class TeamMembershipNotFoundError extends Error {}
+export class InvalidTeamMembershipAssignmentError extends Error {}
+export class InvalidCeoReplacementError extends Error {}

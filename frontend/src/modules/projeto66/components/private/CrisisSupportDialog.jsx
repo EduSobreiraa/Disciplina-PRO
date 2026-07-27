@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { projeto66PrivateLocalRepository } from '../../repositories/projeto66-private.local.repository'
+import { useProjeto66Cycle } from '../../hooks/useProjeto66Cycle'
+import { PROJETO66_ACTIVITY_KEYS } from '../../data/projeto66-contract'
 
 const phrases = ['Você não é sua reação automática.', 'O velho eu quer reagir. O novo eu escolhe.', 'Respire. Cada segundo é uma vitória.', 'Você está quebrando o padrão agora.']
 
 export function CrisisSupportDialog({ open, onClose }) {
+  const execution = useProjeto66Cycle()
   const [breaths, setBreaths] = useState(0)
   if (!open) return null
-  function finish(outcome) {
-    projeto66PrivateLocalRepository.saveCrisis({ outcome, breaths, occurredAt: new Date().toISOString() })
+  async function finish(outcome) {
+    await execution.savePrivateResponse(PROJETO66_ACTIVITY_KEYS.crisisSupport, { outcome, breaths, occurredAt: new Date().toISOString() })
     setBreaths(0)
     onClose()
   }

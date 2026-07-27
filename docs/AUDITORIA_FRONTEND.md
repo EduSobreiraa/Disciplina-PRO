@@ -1,5 +1,7 @@
 # Auditoria do frontend — 14/07/2026
 
+> Registro histórico do gate visual F0–F9 em 14/07/2026. Não representa uma nova execução em 26/07/2026 nem uma suíte Playwright versionada. O estado atual está em [`RELATORIO_PROGRESSO.md`](RELATORIO_PROGRESSO.md).
+
 ## Escopo
 
 Auditoria funcional, responsiva, visual e técnica do frontend React atual. Foram verificadas as 12 rotas implementadas do Disciplina PRO e do Projeto 66 em `320×568`, `375×812`, `768×1024` e `1440×900`.
@@ -41,7 +43,7 @@ O registro objetivo do Projeto 66 e o conteúdo íntimo continuam em repositorie
 - `localStorage` é apenas adapter temporário e não oferece proteção apropriada para produção;
 - a cobertura automatizada atual protege cálculos puros, mas ainda não possui suíte E2E versionada;
 - auditoria com leitor de tela real e dispositivos físicos deve ocorrer antes de produção;
-- rituais, timer 30/30, gamificação e integrações de backend pertencem às próximas fases.
+- na fotografia anterior às extensões F7–F9, rituais, timer 30/30 e gamificação ainda pertenciam às fases seguintes; a integração backend permaneceu posterior.
 
 ## Critério para as próximas entregas
 

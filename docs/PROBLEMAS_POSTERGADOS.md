@@ -1,6 +1,6 @@
 # Relatório de problemas postergados
 
-> Disciplina PRO · Criado em 16/07/2026 · Atualizado em 20/07/2026
+> Disciplina PRO · Criado em 16/07/2026 · Atualizado em 26/07/2026
 
 ## 1. Objetivo
 
@@ -22,54 +22,52 @@ Prioridades:
 
 ## 2. Resumo executivo
 
-O projeto está adequado para continuar o desenvolvimento local, mas **não está pronto para armazenar dados reais de empresas ou participantes**. Os maiores bloqueios são autorização multi-tenant ainda incompleta, persistência frontend em `localStorage`, política legal de retenção indefinida e ausência do ambiente operacional de staging.
+O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 provaram autenticação, isolamento, entrada nominal, catálogo, execução, consequências e integração da gamificação. O sistema **ainda não está pronto para armazenar dados reais de empresas ou participantes**: tracker e ritual continuam em `localStorage`, não há política legal de retenção aprovada nem ambiente operacional de staging.
 
-| Prioridade | Abertos/planejados | Mitigados |
-|---|---:|---:|
-| P0 | 3 | 0 |
-| P1 | 7 | 0 |
-| P2 | 1 | 1 |
+| Prioridade | Abertos/planejados | Mitigados | Encerrados |
+|---|---:|---:|---:|
+| P0 | 1 | 0 | 2 |
+| P1 | 8 | 0 | 2 |
+| P2 | 0 | 2 | 2 |
 
 ## 3. Bloqueios para dados ou usuários reais
 
-### PP-001 — Autenticação e autorização ainda incompletas
+### PP-001 — Autenticação e autorização ainda incompletas — ENCERRADO
 
-- **Prioridade/status:** P0 · PLANEJADO
-- **Problema:** autenticação e revalidação atual de usuário/sessão foram concluídas até B1.6, mas contexto de tenant e autorização por role/escopo ainda não foram implementados.
-- **Impacto:** nenhuma rota de negócio pode ser considerada protegida; identidade autenticada ainda não equivale a acesso autorizado.
-- **Motivo do adiamento:** tenant, role e escopo pertencem ao domínio organizacional, não ao JWT nem ao núcleo de identidade.
-- **Retomada:** B2.
+- **Prioridade/status:** P0 · ENCERRADO em 23/07/2026
+- **Resolução:** autenticação privada por padrão, revalidação de sessão, contextos atuais de tenant/plataforma, permissions e escopo de recurso foram implementados até B2.3.
+- **Evidência:** a matriz E2E B2.4 cobre bearer ausente, logout com revogação do access token já emitido, header inválido, ausência de membership, roles, escopo nominal e mudanças de estado com efeito imediato.
 - **Critério de encerramento:** gates E2E negativos e positivos de sessão, revogação, tenant, role e escopo aprovados.
 
-### PP-002 — Dados frontend em localStorage
+### PP-002 — Persistência frontend local remanescente
 
 - **Prioridade/status:** P0 · ABERTO
-- **Problema:** progresso, gamificação e conteúdo íntimo permanecem em repositories locais e `localStorage`.
-- **Impacto:** não há proteção adequada contra acesso pelo navegador, perda de dispositivo, XSS, adulteração ou ausência de backup; conteúdo privado não pode ser tratado como dado de produção.
-- **Mitigação atual:** separação física entre chaves objetivas e privadas e proibição documental de uso real.
+- **Problema:** a B5.5 removeu repositories locais do Projeto 66 e a B6.5 removeu o ledger local de gamificação, mas tracker e ritual ainda usam `localStorage`.
+- **Impacto:** fatos de tracker e ritual podem ser adulterados, perdidos ou divergir entre dispositivos; não podem ser tratados como dados de produção.
+- **Mitigação atual:** execução, conteúdo privado do Projeto 66 e gamificação já possuem fonte de verdade server-side; a proibição documental de uso real permanece enquanto repositories locais de negócio existirem.
 - **Motivo do adiamento:** adapters HTTP dependem dos módulos backend estabilizados.
-- **Retomada:** B8, progressivamente após B5–B7.
+- **Retomada:** a parcela de gamificação foi concluída na B6.5; B8 integra tracker/ritual e confirma que nenhum repository local de negócio permanece.
 - **Critério de encerramento:** repositories HTTP substituem persistência local; nenhum dado real sensível permanece no browser como fonte de verdade.
 
-### PP-003 — Isolamento multi-tenant ainda não provado
+### PP-003 — Isolamento multi-tenant ainda não provado — ENCERRADO
 
-- **Prioridade/status:** P0 · PLANEJADO
-- **Problema:** existem modelos `Tenant` e `TenantMembership`, mas `TenantContextGuard`, `PermissionGuard`, times e testes de acesso cruzado ainda não existem.
-- **Impacto:** risco de acesso entre empresas se features organizacionais forem expostas antecipadamente.
-- **Motivo do adiamento:** pertence à B2 e depende do principal autenticado da B1.6.
-- **Retomada:** B2.
+- **Prioridade/status:** P0 · ENCERRADO em 23/07/2026
+- **Resolução:** constraints compostas, guards, repositories com `tenantId`, casos de uso com ownership/escopo e erros não enumeráveis foram implementados em B2.1–B2.3.
+- **Evidência:** integração PostgreSQL prova constraints e concorrência; a matriz E2E B2.4 usa dois tenants e três times e rejeita seleção sem membership, recurso estrangeiro, Manager fora do time e bypass por `SUPER_ADMIN`.
 - **Critério de encerramento:** testes negativos provam isolamento entre tenants e escopo de Manager/CEO em repository, caso de uso e HTTP.
 
 ## 4. Problemas que bloqueiam staging ou release
 
-### PP-004 — Retenção, exclusão e base legal sem prazos aprovados
+### PP-004 — Retenção, exclusão e atendimento ao titular parcialmente definidos
 
 - **Prioridade/status:** P1 · ABERTO
-- **Problema:** lifecycle técnico está definido, mas prazos de retenção, anonimização, expurgo, atendimento ao titular e requisitos legais não foram aprovados.
+- **Decisões aprovadas em 26/07/2026:** não há classificação global de agente de tratamento; controlador, operador ou controladoria conjunta serão definidos por operação e contrato. Tenant encerrado terá retenção operacional por até 60 dias e, depois, exclusão, anonimização ou retenção legal. `AuditEvent` terá retenção de 1 ano, salvo obrigação legal ou contratual diferente. Quando juridicamente permitido, dados pessoais do participante serão anonimizados, preservando apenas o necessário para auditoria, obrigações legais, estatísticas e integridade histórica. O canal oficial do titular é [privacidade@sparkinteligencia.com.br](mailto:privacidade@sparkinteligencia.com.br).
+- **Atendimento ao titular:** registrar confirmação da solicitação; fornecer declaração completa em até 15 dias quando aplicável pela legislação; tratar as demais solicitações conforme política interna da Spark e requisitos legais. SLA interno diverso será meta operacional, não prazo legal.
+- **Problema restante:** faltam implementar e testar os jobs/mecanismos; completar a matriz por operação e categoria; formalizar contratos e documentos jurídicos; e obter validação jurídica das bases, exceções, compartilhamentos e procedimento final.
 - **Impacto:** risco de retenção excessiva ou remoção indevida de dados pessoais, privados e de auditoria.
-- **Motivo do adiamento:** exige decisão jurídica e operacional, não apenas implementação.
-- **Retomada:** antes de staging, no máximo em B10.
-- **Critério de encerramento:** matriz por categoria de dado, base/finalidade, prazo, responsável, fluxo de exclusão e jobs testados/documentados.
+- **Responsabilidades:** a Spark define e aprova políticas, administra o canal e responde ao titular; o Desenvolvedor implementa mecanismos e jobs; a validação jurídica futura confirma bases, exceções, contratos, classificação por operação e conformidade final.
+- **Retomada:** B10.2, após o contrato operacional B10.0 e antes de qualquer ensaio de staging.
+- **Critério de encerramento:** matriz por operação/categoria com finalidade, base, papel contratual, prazo e destino aprovada pela Spark e validada juridicamente; contratos e documentos jurídicos atualizados; fluxos de confirmação, acesso, correção, exportação, anonimização ou exclusão e jobs automatizados testados/documentados.
 
 ### PP-005 — Aplicação e migrations usam o mesmo papel de banco
 
@@ -161,12 +159,28 @@ O projeto está adequado para continuar o desenvolvimento local, mas **não est�
 
 ### PP-015 — E-mail transacional ainda não selecionado
 
-- **Prioridade/status:** P2 · PLANEJADO
+- **Prioridade/status:** P2 · PARCIALMENTE MITIGADO EM 25/07/2026
 - **Problema:** convites precisarão de Mailpit em desenvolvimento e de provedor transacional antes de staging.
 - **Impacto:** o fluxo de entrada de membros não poderá ser validado ponta a ponta por e-mail.
-- **Motivo do adiamento:** convites pertencem à B3.
-- **Retomada:** Mailpit na B3; provedor antes de staging.
+- **Mitigação entregue:** Mailpit `v1.30.5`, adapter Nodemailer e gate SMTP real encerram a dependência local da B3.
+- **Retomada:** selecionar provedor, autenticação SMTP, retry automático e tratamento de bounce antes de staging.
 - **Critério de encerramento:** envio, expiração, retry, bounce e não exposição de token cobertos por testes/observabilidade.
+
+### PP-016 — Advisories publicados após o baseline B1
+
+- **Prioridade/status:** P1 · ABERTO EM 25/07/2026
+- **Problema:** as consultas de 25 e 26/07/2026 registram 29 achados (28 altos e 1 moderado) no Prisma CLI 7.9.0 (`@prisma/dev` → `find-my-way`/`valibot`), React Router 7.18.1 e ferramentas Jest/Nest CLI. O Prisma ainda fixa transitivos vulneráveis e o `npm audit` sugere downgrade para 7.8.0; o advisory do React Router afeta RSC, modo não usado por esta SPA.
+- **Impacto:** `npm audit --workspaces --audit-level=high` não está verde, embora os achados do Prisma/Jest sejam de tooling e o vetor RSC não esteja habilitado.
+- **Mitigação imediata:** `fast-uri` 3.1.4 e `postcss` 8.5.23 foram fixados por overrides compatíveis; Mailpit foi fixado em versão com correções de segurança. Nenhum serviço expõe `@prisma/dev`, Jest ou Nest CLI em runtime.
+- **Retomada:** atualizar React Router com teste de regressão e coordenar Prisma/Jest assim que versões compatíveis corrigidas estiverem disponíveis; não aceitar downgrade automático ou override incompatível.
+- **Critério de encerramento:** auditoria volta a zero sem reduzir versões de segurança ou quebrar os gates.
+
+### PP-017 — Allowlist CORS não inclui PUT — ENCERRADO
+
+- **Prioridade/status:** P1 · ENCERRADO em 26/07/2026
+- **Resolução:** `configureApp` passou a anunciar `PUT` sem ampliar origens ou headers permitidos.
+- **Evidência:** `backend/src/http/configure-app.ts` contém a allowlist reconciliada; `backend/test/health.e2e-spec.ts` executa `OPTIONS` sobre uma rota real de registro diário, exige a origem exata e comprova `PUT` em `Access-Control-Allow-Methods`.
+- **Critério de encerramento:** allowlist e contrato de transporte reconciliados, com teste de preflight para método `PUT`.
 
 ## 7. Itens fora do MVP — não são dívida atual
 
@@ -189,3 +203,79 @@ Esses itens só devem virar problemas ativos após decisão explícita de produt
 4. Nenhum uso com dados reais é autorizado enquanto houver P0 aberto.
 5. Nenhum staging público ou release é autorizado enquanto houver P1 sem aceitação explícita e mitigação revisada.
 6. Itens resolvidos permanecem no histórico em seção própria numa revisão futura, com commit e evidências.
+
+### 8.1 Matriz obrigatória de responsabilidade de todos os PP
+
+Esta matriz integra cada registro `PP-*`. “Aprova” identifica quem deve aceitar a evidência de encerramento; nenhum item é encerrado apenas por documentação.
+
+| PP | Grupo | Quem decide | Quem implementa | Quem aprova | Evidência de encerramento ou pendência restante |
+|---|---|---|---|---|---|
+| PP-001 | Desenvolvedor | arquitetura aprovada | Desenvolvedor | gate técnico; Spark para uso real | encerrado: matriz E2E de autenticação/autorização |
+| PP-002 | Desenvolvedor | arquitetura/roadmap aprovados | Desenvolvedor | gate técnico; Spark para uso real | adapters HTTP e ausência de repository local de negócio |
+| PP-003 | Desenvolvedor | arquitetura aprovada | Desenvolvedor | gate técnico; Spark para uso real | encerrado: constraints e matriz E2E multi-tenant |
+| PP-004 | Spark + Jurídico + Desenvolvedor | Spark define políticas; Jurídico valida enquadramento | Desenvolvedor implementa jobs e fluxos; Spark opera atendimento | Spark e validação jurídica, além dos gates técnicos | matriz e contratos validados; jobs e direitos do titular testados |
+| PP-005 | Desenvolvedor + Spark | Spark escolhe ambiente/provedor e aceita risco; desenho técnico segue arquitetura | Desenvolvedor | Spark no gate de staging | roles distintas e teste de privilégio mínimo |
+| PP-006 | Desenvolvedor + Spark | Spark escolhe/contrata secret manager e aprova política operacional | Desenvolvedor | Spark no gate de staging | secret manager e ensaio de rotação/comprometimento |
+| PP-007 | Spark + Desenvolvedor | Spark define RPO/RTO e aceita risco | Desenvolvedor implementa e ensaia | Spark | política aprovada, backups verificados e restore/rollback ensaiados |
+| PP-008 | Spark + Desenvolvedor | Spark define cobertura operacional, responsáveis e provedor | Desenvolvedor implementa instrumentação/runbook | Spark | alertas e resposta a incidente testados sem dados sensíveis |
+| PP-009 | Desenvolvedor | roadmap aprovado | Desenvolvedor | gate técnico | suíte Playwright versionada no CI e staging |
+| PP-010 | Spark + Desenvolvedor | Spark define critério de aceite e disponibiliza validação humana/dispositivos | Desenvolvedor corrige barreiras técnicas | Spark, com validação humana | teclado, leitor de tela e dispositivos físicos aprovados |
+| PP-011 | Desenvolvedor | governança técnica aprovada | Desenvolvedor | gate técnico | encerrado: pisos de cobertura no CI |
+| PP-012 | Desenvolvedor | governança de dependências aprovada | Desenvolvedor | gate técnico | encerrado: atualização compatível e auditoria limpa |
+| PP-013 | Desenvolvedor | governança de CI aprovada | Desenvolvedor | gate técnico | encerrado: action fixada por SHA |
+| PP-014 | Desenvolvedor + Spark | Spark decide plano/serviço e aceita risco residual | Desenvolvedor configura automação | Spark no gate de release | CodeQL/Dependabot ou equivalente validado |
+| PP-015 | Spark + Jurídico + Desenvolvedor | Spark seleciona/contrata provedor e define SLA; Jurídico valida contrato/tratamento | Desenvolvedor integra retry, bounce e observabilidade | Spark e validação jurídica contratual | provedor contratado; envio, retry, bounce e privacidade testados |
+| PP-016 | Desenvolvedor + Spark | Desenvolvedor propõe atualização segura; Spark aceita eventual risco empresarial residual | Desenvolvedor | gate técnico e Spark no release | auditoria sem achados no nível configurado |
+| PP-017 | Desenvolvedor | contrato técnico aprovado | Desenvolvedor | gate técnico | encerrado: preflight real e allowlist reconciliada |
+
+Classificação consolidada:
+
+- **exclusivamente solucionáveis pelo Desenvolvedor:** PP-001, PP-002, PP-003, PP-009, PP-011, PP-012, PP-013 e PP-017;
+- **exigem decisão ou aprovação da Spark:** PP-004, PP-005, PP-006, PP-007, PP-008, PP-010, PP-014, PP-015 e PP-016;
+- **exigem validação jurídica:** PP-004 e PP-015. Outros PP deverão ser reclassificados se surgir impacto jurídico documentado, sem presunção pelo Desenvolvedor.
+
+## 9. Revisões preventivas
+
+### 21/07/2026 — Auditoria do backend após B1
+
+- os itens `PP-001` a `PP-015` foram confrontados com o backend, os ADRs e os gates versionados;
+- nenhum bloqueio planejado foi encerrado sem satisfazer seu critério objetivo;
+- a validação de ambiente foi corrigida para rejeitar origens com caminho, query, fragmento, barra final ou esquema não HTTP(S), exigir HTTPS em produção e restringir `DATABASE_URL` ao PostgreSQL;
+- a correção fecha uma inconsistência da B1 com o ADR 010 e não cria problema postergado, pois foi tratada imediatamente com testes automatizados.
+
+### 25/07/2026 — Revisão de encerramento da B3
+
+- `PP-015` permanece parcialmente mitigado: o ciclo local foi provado com Mailpit, mas provedor, retry e bounce continuam obrigatórios antes de staging;
+- `PP-016` foi reconfirmado pela auditoria remota com 29 achados e permanece P1; nenhuma sugestão de downgrade ou override incompatível foi aplicada;
+- a matriz E2E da B3.5 comprovou primeiro CEO, identidades nova/existente, concorrência, expiração, revogação, rotação e escopo de Manager;
+- nenhum problema funcional novo foi encontrado no backend de convites; o encerramento da B3 não altera o bloqueio de staging imposto pelo P1.
+
+### 25/07/2026 — Revisão após B4 e início da B5
+
+- o resumo executivo foi reconciliado com os status individuais: 1 P0 aberto, 8 P1 abertos/planejados, 1 P1 encerrado, 2 P2 mitigados e 2 P2 encerrados;
+- `PP-002` começa a ser reduzido na B5.5, mas só encerra quando B8 remover `localStorage` como fonte de verdade para dados reais;
+- B4 provou catálogo, disponibilidade e isolamento; B5.0 separou fatos objetivos de respostas privadas e B5.1 iniciou sua persistência estrutural;
+- B5.2 congelou versão e timezone no início transacional, manteve leitura restrita à membership proprietária e evitou copiar o motivo de abandono para auditoria;
+- B5.3 integrou bloqueios administrativos às transações organizacionais e comprovou que reativação não retoma ciclos implicitamente;
+- B5.4 implementou fatos objetivos no backend e isolou respostas privadas em repository, controller e DTOs exclusivos, sem payload em auditoria; B5.5.0–B5.5.4 removeu todas as fontes locais do módulo Projeto 66 e a B6.5 removeu o ledger local de gamificação, mas `PP-002` continua aberto enquanto ritual e tracker ainda possuírem repositories locais;
+
+### 26/07/2026 — Auditoria documental e de gates
+
+- as seis migrations foram aplicadas em banco vazio; 98 testes unitários backend, 7 frontend, 63 integrações, 19 E2E backend e 1 teste SMTP foram aprovados;
+- `PP-016` foi reconfirmado com 29 achados (28 altos e 1 moderado), sem aplicar downgrade ou correção forçada;
+- `PP-017` registra a divergência entre as rotas `PUT` e a allowlist CORS; nenhuma funcionalidade foi alterada durante a auditoria documental;
+- não existe suíte Playwright frontend versionada, staging validado ou evidência de produção.
+- nenhum item P0 ou P1 foi reclassificado sem atender ao critério objetivo; uso real e staging continuam bloqueados.
+
+### 26/07/2026 — Encerramento da B6.1
+
+- `PP-017` foi encerrado após reconciliação da allowlist CORS e aprovação do preflight automatizado para `PUT`;
+- a fundação persistente de eventos foi aplicada como sétima migration em banco vazio, sem implementar antecipadamente dispatcher, XP ou consultas de auditoria;
+- 22 suítes/64 testes de integração e 5 suítes/20 testes E2E foram aprovados.
+
+### 26/07/2026 — Decisão de governança do PP-004
+
+- políticas de tenant, `AuditEvent`, anonimização de participante e atendimento ao titular foram aprovadas pela Spark;
+- o PP-004 permanece aberto porque jobs, matriz definitiva, instrumentos contratuais e validação jurídica ainda não existem;
+- todos os PP foram classificados por decisão, implementação, aprovação e evidência;
+- responsabilidades empresariais, comerciais e jurídicas deixaram de ser implicitamente atribuídas ao Desenvolvedor.

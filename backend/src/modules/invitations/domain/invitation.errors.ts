@@ -1,0 +1,10 @@
+export class InvalidInvitationDataError extends Error {}
+export class InvitationAlreadyPendingError extends Error {}
+export class MembershipAlreadyExistsError extends Error {}
+export class InvitationNotFoundError extends Error {}
+export class InvitationNotPendingError extends Error {}
+export class InvitationResourceScopeDeniedError extends Error {}
+export class InvitationActorInactiveError extends Error {}
+export class FirstCeoInvitationUnavailableError extends Error {}
+export class InvitationInvalidError extends Error {}
+export class ExistingAccountAuthenticationRequiredError extends Error {}

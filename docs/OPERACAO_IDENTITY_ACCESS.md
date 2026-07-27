@@ -2,6 +2,8 @@
 
 > Escopo: encerramento da B1 · nenhuma destas instruções autoriza uso com dados reais antes dos bloqueios P0/P1 registrados.
 
+Este runbook cobre Identity Access e gates locais, não um procedimento completo de deploy. Backup, restauração, papéis de banco, secret manager, observabilidade e release permanecem em `PROBLEMAS_POSTERGADOS.md`.
+
 ## 1. Configuração por ambiente
 
 Desenvolvimento e testes geram um par RSA efêmero a cada processo. Reiniciar a API invalida access tokens locais, comportamento deliberado que não pode ser usado em produção.
@@ -14,8 +16,9 @@ Produção exige HTTPS e as variáveis:
 - `JWT_PRIVATE_KEY_BASE64` com PKCS#8 codificado em base64;
 - `JWT_PUBLIC_KEYS_JSON`, mapa `kid → SPKI em base64`;
 - `REFRESH_TOKEN_PEPPER`, secreto aleatório com pelo menos 32 caracteres.
+- `INVITATION_TOKEN_PEPPER`, secreto aleatório distinto, também com pelo menos 32 caracteres.
 
-Chave privada e pepper não entram no Git, em logs, imagens, tickets ou exemplos. O processo falha ao iniciar produção se o material obrigatório estiver ausente ou se o par ativo não corresponder.
+Chave privada e peppers não entram no Git, em logs, imagens ou tickets. O processo falha ao iniciar produção se o material obrigatório estiver ausente, se os peppers forem iguais ou se o par ativo não corresponder.
 
 ## 2. Rotação de chave JWT
 
@@ -57,7 +60,20 @@ npm run sessions:cleanup --workspace backend
 
 O comando revoga sessões vencidas e elimina famílias revogadas há pelo menos 90 dias. É idempotente, não remove auditoria e não imprime tokens ou hashes. A agenda gerenciada será definida junto da hospedagem.
 
-## 5. Verificação antes de deploy
+## 5. Entrega local de convites
+
+Desenvolvimento usa Mailpit, sem credenciais reais:
+
+```bash
+docker compose up -d mailpit
+npm run test:mailpit --workspace backend
+```
+
+Variáveis relevantes: `INVITATION_ACCEPTANCE_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE` e `SMTP_FROM`. A URL não contém o token; o adapter acrescenta `#token=...` somente em memória. A UI local fica em `http://localhost:8025`.
+
+Produção/staging não podem usar Mailpit nem os defaults locais. A seleção do provedor, credenciais, retry e bounce permanece no PP-015.
+
+## 6. Verificação antes de deploy
 
 ```bash
 npm ci
@@ -71,4 +87,4 @@ npm run build
 npm audit --workspaces --audit-level=high
 ```
 
-Executar migrations e integrações em banco vazio descartável. O deploy não prossegue se o CI ou o Quality Gate falhar.
+Executar migrations e integrações em banco vazio descartável. O deploy não prossegue se o CI ou o Quality Gate falhar. Em 26/07/2026, o gate local de dependências permanece reprovado pelo PP-016; portanto esta lista não comprova prontidão de deploy.

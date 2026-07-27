@@ -18,7 +18,7 @@ export function configureApp(app: INestApplication) {
   app.enableCors({
     origin: config.get('FRONTEND_URL', { infer: true }),
     credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Authorization', 'Content-Type', 'X-Tenant-Id', 'X-CSRF-Token', 'X-Request-Id'],
   })
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

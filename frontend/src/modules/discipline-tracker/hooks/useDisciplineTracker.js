@@ -1,10 +1,8 @@
 import { useMemo, useState } from 'react'
 import { disciplineTrackerLocalRepository } from '../repositories/discipline-tracker.local.repository'
 import { calculateTrackerStats, getMarkKey } from '../services/tracker-stats'
-import { useGamification } from '../../gamification/gamification-context'
 
 export function useDisciplineTracker(year, month) {
-  const gamification = useGamification()
   const [state, setState] = useState(() => disciplineTrackerLocalRepository.load())
   const stats = useMemo(() => calculateTrackerStats(state, year, month), [state, year, month])
   function commit(next) { disciplineTrackerLocalRepository.save(next); setState(next) }
@@ -16,7 +14,6 @@ export function useDisciplineTracker(year, month) {
     const justifications = { ...state.justifications }
     if (nextStatus === 0) { delete marks[key]; delete justifications[key] } else marks[key] = nextStatus
     commit({ ...state, marks, justifications })
-    gamification.setReward('TRACKER_GREEN', `tracker:${key}`, nextStatus === 1)
     return { key, status: nextStatus }
   }
   function saveJustification(key, text) { commit({ ...state, justifications: { ...state.justifications, [key]: text.trim() } }) }

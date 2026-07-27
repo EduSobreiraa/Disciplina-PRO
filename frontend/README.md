@@ -7,8 +7,9 @@ Consulte o [README principal](../README.md) para visão do produto, arquitetura,
 ## Desenvolvimento
 
 ```bash
-npm install
-npm run dev
+cd ..
+npm ci
+npm run dev:frontend
 ```
 
 ## Validação
@@ -20,3 +21,5 @@ npm run build
 ```
 
 Os protótipos HTML presentes neste diretório são referências funcionais e visuais. A aplicação ativa está em `src/`.
+
+Sessão, Projeto 66 e gamificação usam a API. Tracker e ritual ainda possuem repositories locais; consulte o [relatório de progresso](../docs/RELATORIO_PROGRESSO.md).

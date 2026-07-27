@@ -11,7 +11,11 @@ async function bootstrap() {
 
   configureApp(app)
 
-  const openApi = new DocumentBuilder().setTitle('Disciplina PRO API').setVersion('0.1.0').build()
+  const openApi = new DocumentBuilder()
+    .setTitle('Disciplina PRO API')
+    .setVersion('0.1.0')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
+    .build()
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, openApi))
 
   await app.listen(config.get('PORT', { infer: true }))

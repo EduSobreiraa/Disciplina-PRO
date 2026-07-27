@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useGamification } from '../gamification/gamification-context'
 
 export function DashboardPage() {
+  const gamification = useGamification()
   return (
     <>
       <section className="page-heading">
@@ -11,7 +13,7 @@ export function DashboardPage() {
       <section className="metric-grid" aria-label="Resumo">
         <article className="metric-card red"><span>Programas ativos</span><strong>0</strong><small>1 programa disponível</small></article>
         <article className="metric-card green"><span>Disciplina geral</span><strong>—</strong><small>Comece sua primeira jornada</small></article>
-        <article className="metric-card gold"><span>XP acumulado</span><strong>0</strong><small>Nível 1 · Recruta</small></article>
+        <article className="metric-card gold"><span>XP acumulado</span><strong>{gamification.xp}</strong><small>Nível {gamification.level.level} · {gamification.level.name}</small></article>
         <article className="metric-card ember"><span>Sequência atual</span><strong>0 <b>dias</b></strong><small>Sua próxima decisão conta</small></article>
       </section>
       <section className="featured-program">

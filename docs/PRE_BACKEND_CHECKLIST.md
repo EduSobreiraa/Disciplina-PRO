@@ -2,6 +2,7 @@
 
 > Disciplina PRO · Atualizado em 20/07/2026
 > Objetivo: acompanhar a prontidão do ambiente e as pendências da fundação B0.
+> Registro histórico encerrado na B1; não representa o estado atual das fases. Consulte [`ROADMAP.md`](ROADMAP.md) e [`RELATORIO_PROGRESSO.md`](RELATORIO_PROGRESSO.md).
 
 ## 1. Ambiente local
 
@@ -118,7 +119,7 @@ Cada sub-bloco deve fechar seu próprio gate antes do seguinte. A autorização 
 
 ## 9. Serviços externos — não bloquear B0
 
-- [ ] Adicionar Mailpit em desenvolvimento quando B3 (convites) começar.
+- [x] Adicionar Mailpit em desenvolvimento para os convites da B3.
 - [ ] Escolher provedor transacional de e-mail somente antes de staging.
 - [ ] Escolher hospedagem após autenticação, migrations e health check estarem estáveis.
 - [ ] Configurar Sentry/observabilidade antes do primeiro staging público.
@@ -138,4 +139,4 @@ Decisões da **B0.5 concluídas e liberadas para o primeiro schema de domínio**
 - representação de `SUPER_ADMIN`;
 - IDs, timezone, soft delete, JWT, refresh token e CORS/CSRF.
 
-Persistência e Identity Access estão encerrados até B1.7. A próxima etapa de produto é B2: organizações e isolamento multi-tenant.
+Persistência e Identity Access foram encerrados até B1.7. A indicação histórica seguinte era B2, concluída posteriormente; a próxima etapa atual está no roadmap.

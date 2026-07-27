@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 20/07/2026 · Estado: frontend F0–F9 e backend B0, B0.5 e B1 concluídos
+> Atualizado em 26/07/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B5 concluídos; B6.0–B6.5 concluídas
 
 ## 1. Visão geral do produto
 
@@ -19,7 +19,9 @@ Disciplina PRO
     └── Projeto 66 (primeiro programa)
 ```
 
-O frontend individual foi migrado dos protótipos HTML para React. A fundação B0, as dez decisões da B0.5 e toda a B1 foram concluídas; persistência e Identity Access estão prontos para receber organizações na B2.
+O frontend individual foi migrado dos protótipos HTML para React. A fundação B0, as dez decisões da B0.5 e toda a B1 foram concluídas. A B2 fechou contrato e isolamento multi-tenant, a B3 encerrou o ciclo nominal de entrada e a B4 entregou catálogo e disponibilidade. A B5 encerrou lifecycle, bloqueios, fatos objetivos, respostas privadas, integração HTTP, sessão frontend, definição editorial e jornada E2E de 66 dias.
+
+A B6.0 fechou no ADR 015 o contrato de eventos duráveis e a B6.1 materializou a fundação append-only. A B6.2 integrou os produtores objetivos e o processamento `at-least-once`; a B6.3 adicionou a gamificação server-side. A B6.4 centralizou o contrato de auditoria derivada e expôs leituras pessoal, por time e por tenant sem `metadata` bruta. A B6.5 removeu o ledger de XP do browser, integrou a projeção à API e consolidou a jornada E2E. Respostas privadas continuam sem eventos.
 
 ## 2. Tecnologias e decisões
 
@@ -29,19 +31,19 @@ O frontend individual foi migrado dos protótipos HTML para React. A fundação 
 | Build | Vite 8 |
 | Qualidade | ESLint 10, `node:test`, Jest, Playwright e SonarQube Cloud |
 | Estilos | CSS por módulo, tokens e media queries mobile-first |
-| Persistência atual | repositories sobre `localStorage`, temporários |
-| Backend | NestJS 11 + TypeScript 5.9, fundação B0 concluída |
+| Persistência atual | híbrida: sessão, Projeto 66 e gamificação via API; tracker e ritual em `localStorage` |
+| Backend | NestJS 11 + TypeScript 5.9, B0–B5 e B6.0–B6.4 implementados; B6.5 integrada no frontend |
 | ORM/banco | Prisma 7 + adapter `pg` + PostgreSQL 18 |
 | Arquitetura backend | monolito modular em camadas |
 | Multi-tenancy | banco compartilhado com isolamento obrigatório por `tenantId` |
-| Comunicação futura | API REST e eventos internos do monolito |
+| Comunicação | API REST e eventos internos duráveis com publicação/processamento implementados |
 
 Decisões estruturais relevantes:
 
 - Projeto 66 não é o núcleo da plataforma; é um programa global habilitado por tenant.
 - Role empresarial pertence a `TenantMembership`, não a `User`.
 - Autorização combina role e escopo do recurso.
-- Controllers futuros adaptam HTTP; não acessam Prisma nem acumulam regras.
+- Controllers adaptam HTTP; não acessam Prisma nem acumulam regras.
 - Conteúdo íntimo não aparece em reporting, auditoria ou metadata.
 - Fatos são persistidos; percentuais, streaks, níveis e métricas são derivados.
 - Gamificação utiliza transações de XP, não apenas um saldo mutável.
@@ -188,9 +190,9 @@ Projeto 66:
 
 ## 6. Persistência e privacidade atuais
 
-O frontend utiliza chaves locais separadas para tracker, ritual, ciclo do Projeto 66, conteúdo privado e gamificação. Componentes não acessam `localStorage` diretamente.
+O frontend utiliza chaves locais separadas somente para tracker e ritual. O ciclo objetivo, as ferramentas privadas do Projeto 66 e a gamificação usam repositories HTTP; a sessão usa access token em memória e refresh por cookie. Componentes não acessam `localStorage` diretamente.
 
-Essa separação oferece um bom limite arquitetural, mas não constitui segurança de produção. `localStorage` é legível pelo navegador e será substituído por APIs autenticadas. O backend deverá garantir a privacidade nos modelos, casos de uso, DTOs e queries, independentemente do que a interface exiba.
+Os adapters locais restantes não constituem persistência de produção. `localStorage` é legível pelo navegador e continuará sendo substituído por APIs autenticadas. O backend já separa respostas privadas dos fatos objetivos do Projeto 66, mas retenção, operação de produção e os módulos locais restantes continuam pendentes.
 
 ## 7. Procedimento de criação
 
@@ -246,7 +248,7 @@ npm run build
 
 ### Testes funcionais no navegador
 
-Playwright é utilizado para:
+Playwright foi utilizado de forma assistida no gate histórico F0–F9 para:
 
 - navegar pelas rotas;
 - executar ações reais;
@@ -256,6 +258,8 @@ Playwright é utilizado para:
 - medir overflow horizontal;
 - identificar controles menores que 44 px;
 - capturar telas para inspeção visual.
+
+Não há `playwright.config` nem specs frontend versionadas no repositório. Portanto essas verificações visuais não são reproduzidas pelo CI atual; a pendência está registrada no PP-009.
 
 Matriz responsiva adotada:
 
@@ -282,7 +286,7 @@ Além do health check, a suíte cobre configuração de ambiente, readiness do P
 
 O workspace gera relatórios LCOV separados em `frontend/coverage/lcov.info` e `backend/coverage/lcov.info`. O GitHub Actions envia esses relatórios ao SonarQube Cloud por análise CI-based, mantendo a análise automática desativada para evitar resultados duplicados.
 
-Baseline de 15/07/2026:
+Baseline histórica de 15/07/2026:
 
 | Camada | Statements/linhas aproximados |
 |---|---:|
@@ -290,6 +294,13 @@ Baseline de 15/07/2026:
 | Backend | 33,33% |
 
 Esses números expõem a dívida real de testes e não serão elevados por exclusões artificiais. O primeiro Quality Gate deve incidir sobre código novo; a cobertura total será ampliada progressivamente conforme os módulos migrarem para a API.
+
+Medição local de 26/07/2026:
+
+| Camada | Statements | Branches | Functions | Lines |
+|---|---:|---:|---:|---:|
+| Frontend | 26,36% | 66,79% | 48,64% | 26,36% |
+| Backend | 32,41% | 31,26% | 36,30% | 34,12% |
 
 ### Critério de aceite
 
@@ -311,85 +322,63 @@ Uma feature visual é encerrada somente após fluxo funcional, persistência, re
 
 ## 10. Estado real e limitações
 
-Concluído: experiência individual local dos protótipos, modularizada e responsiva.
+Implementado e validado localmente:
 
-Ainda não concluído:
+- frontend React F0–F9, com autenticação, contexto organizacional e Projeto 66 parcialmente integrados à API;
+- nove migrations cobrindo identidade, organizações, convites, catálogo, execução, eventos internos, gamificação e idempotência de auditoria derivada;
+- módulos backend `identity-access`, `organizations`, `invitations`, `programs` e `execution`;
+- autorização por sessão atual, tenant, role e escopo;
+- conteúdo privado do Projeto 66 em tabela, repository, DTOs e rotas próprios;
+- definição editorial e materialização idempotente do Projeto 66.
 
-- autenticação e autorização reais;
-- tenants, memberships, times e convites;
-- módulos de negócio e schema Prisma;
-- integração persistente entre API e PostgreSQL;
-- gestão empresarial e Super Admin;
-- relatórios por time/tenant e auditoria real;
-- sincronização entre dispositivos;
-- proteção server-side de dados privados;
-- validação final com leitores de tela e dispositivos físicos.
+Ainda não implementado ou não validado:
 
-Os dados e recompensas atuais são locais e simulam contratos futuros. Não devem ser tratados como produção.
+- B7: reporting e consultas gerenciais;
+- B8: retirada dos repositories locais de tracker e ritual, além de E2E frontend versionado;
+- catálogo visual do frontend ainda alimentado por `programs.mock.js`, embora catálogo e ofertas reais existam no backend;
+- B9: interfaces administrativas completas;
+- B10: infraestrutura, backup/restauração, observabilidade, chaves gerenciadas, acessibilidade assistiva e release;
+- validação em staging ou produção.
 
-## 11. Próxima etapa: backend
+O `PP-017` foi encerrado na B6.1: controllers e CORS concordam sobre `PUT`, e o preflight cross-origin é exercitado automaticamente sem relaxar a origem permitida.
 
-A recomendação é iniciar o backend antes das telas administrativas. Ordem proposta:
+## 11. Evidência de validação atual
 
-1. escrever o primeiro `schema.prisma` conforme os ADRs 001–010, gerar a primeira migration e iniciar `identity-access`;
-2. implementar login, refresh rotativo, logout e guards de autenticação/contexto;
-3. implementar `organizations` e isolamento multi-tenant;
-4. implementar `invitations`;
-5. implementar catálogo `programs` e habilitação por tenant;
-6. implementar `execution` e Projeto 66 por contrato genérico;
-7. implementar eventos, `gamification`, `audit` e `reporting`;
-8. trocar progressivamente os repositories locais por adapters HTTP;
-9. concluir administração, hardening, staging e release do MVP.
+Gate local executado em 26/07/2026:
 
-A B0.5 é um gate: banco e autenticação dependem de decisões explícitas de domínio e segurança. O plano completo, seus entregáveis e critérios de saída estão em `docs/ROADMAP.md`.
-
-A B0.5 está concluída com dez decisões aprovadas nos ADRs 001–010. O bloco final definiu JWT curto sem autorização embarcada, refresh token opaco e rotativo com detecção de reutilização e transporte híbrido protegido por CORS estrito e CSRF assinado. O primeiro schema e `identity-access` estão liberados para a B1.
-
-A B1 foi dividida em sete gates: contrato do schema, baseline/Prisma, identidade e credenciais, núcleo de sessões, contrato HTTP, guard/principal atual e hardening. Essa ordem mantém autenticação separada da autorização organizacional, que começa somente na B2.
-
-B1.1–B1.3 foram concluídas em 16/07/2026. O schema inicial cobre identidade, tenant mínimo, acesso de plataforma, sessões, refresh e auditoria; a baseline foi aplicada em banco descartável vazio; `PrismaModule` substituiu a conexão técnica da B0. Identidade usa e-mail canônico, Argon2id e bootstrap único do primeiro `SUPER_ADMIN`, protegido por lock transacional e `AuditEvent` imutável.
-
-B1.4 foi concluída em 20/07/2026 com `jose` 6.2.3: JWT RS256 curto e tipado, rotação de chaves por `kid`, refresh opaco com HMAC, expiração 7/30 dias, logout, revogação global e detecção transacional de replay. Testes PostgreSQL cobrem duas rotações concorrentes e comprovam a revogação da família.
-
-B1.5 expôs login, refresh e logout com DTOs e OpenAPI, origem exata, CORS explícito, throttling de login, cookies seguros por ambiente e CSRF assinado ligado à sessão. Credenciais inválidas não enumeram usuários; cookies, bearer e CSRF são redigidos dos logs. O contrato frontend exige access token em memória e refresh single-flight.
-
-B1.6 tornou autenticação obrigatória por padrão. O guard valida bearer/JWT e reconsulta usuário e sessão em cada requisição; logout, revogação, expiração absoluta e desabilitação possuem efeito imediato. O principal é mínimo, enquanto `X-Tenant-Id` e `PlatformAccess` permanecem em boundaries separados para não antecipar autorização.
-
-B1.7 encerrou a fase com limpeza transacional e idempotente de sessões, retenção de 90 dias, runbook operacional, pisos de cobertura e pinning por SHA da action Sonar. Banco vazio, concorrência, falhas de sessão, expiração, replay, revogação e ausência de segredos foram novamente validados.
-
-## 12. Prontidão e pré-requisitos do backend
-
-### Aprovados
-
-| Pré-requisito | Estado verificado |
+| Verificação | Resultado |
 |---|---|
-| Runtime | Node.js 24.18.0 LTS e npm 11.16.0 |
-| Containers | Docker 29.6.0 e Docker Compose 5.3 |
-| Banco local | PostgreSQL 18.4 em container saudável |
-| Cliente SQL | `psql` 18.3; conexão autenticada e consulta SQL aprovadas |
-| Versionamento | Git 2.55.0; leitura pelo GitHub MCP; commit e push operacionais |
-| Workspace | npm workspaces para `frontend` e `backend`, com lockfile único |
-| Backend | NestJS, TypeScript, Prisma 7.9.0 com adapter `pg`, Argon2id, `jose` e Supertest |
-| Segurança básica | Helmet, CORS, throttling, validação global e redação de headers sensíveis |
-| Observabilidade inicial | logging estruturado, health check e Swagger |
-| Qualidade | lint, typecheck, builds, 37 testes unitários, 3 E2E e 13 integrações aprovados no encerramento da B1 |
-| Dependências | `npm audit --workspaces` sem vulnerabilidades após atualização coordenada para Prisma 7.9.0 |
+| Runtime/dependências | Node 24.18.0, npm 11.16.0 e `npm ls --workspaces --depth=0` aprovados |
+| Prisma | schema válido; nove migrations aplicadas em banco vazio descartável |
+| Frontend unitário | 7 testes aprovados |
+| Backend unitário | 31 suítes, 101 testes aprovados |
+| Integração PostgreSQL | 25 suítes, 74 testes aprovados |
+| E2E backend/Supertest | 5 suítes, 20 testes aprovados |
+| SMTP local/Mailpit | 1 suíte, 1 teste aprovado |
+| Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
+| Dependências | gate reprovado: 29 advisories, registrados em PP-016 |
 
-### Não bloqueadores no fluxo atual
+O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estático versionado. A presença de boundaries organizacionais no documento gerado é coberta por teste, mas não há teste automático comparando todas as rotas narrativas com todo o OpenAPI.
 
-- Dependabot e CodeQL foram retirados por limitações do plano/repositório privado; a compensação atual é `npm audit` local, devendo ser incorporado ao CI.
-- O GitHub CLI ainda precisa de nova autenticação, mas Git e GitHub MCP já permitem o trabalho necessário.
-- MCP de PostgreSQL, Sentry, provedor de e-mail e hospedagem não são necessários para concluir a B0.
-- O advisory moderado transitivo de `@hono/node-server` foi encerrado com a atualização coordenada de Prisma CLI, client e adapter para 7.9.0; a auditoria passou sem vulnerabilidades.
-- Riscos, limitações e dependências adiadas passaram a ser governados pelo relatório `docs/PROBLEMAS_POSTERGADOS.md`.
+## 12. Próxima etapa e bloqueios
 
-### Pendências prioritárias
+A última fase funcional comprovadamente concluída é a B6.5. A próxima implementação é **B7 — reporting e privacidade**.
 
-1. iniciar B2, organizações e isolamento multi-tenant;
-3. confirmar a primeira execução remota do workflow de CI após o push.
+O desenvolvimento local pode continuar. Dados reais, staging público e produção continuam bloqueados pelos itens P0/P1 do relatório de problemas postergados. Em particular:
 
-Conclusão de prontidão: **a B0 está concluída e não falta instalação essencial para continuar o backend**. A próxima pendência é arquitetural, não de ambiente ou infraestrutura.
+- PP-002: tracker e ritual ainda possuem persistência local; a parcela de gamificação foi encerrada na B6.5;
+- PP-004: políticas centrais aprovadas pela Spark, com implementação, matriz definitiva, contratos e validação jurídica ainda pendentes;
+- PP-005–PP-010: decisões empresariais aplicáveis, implementação e ensaios operacionais ainda pendentes;
+- PP-016: auditoria de dependências não está verde;
 
-## 13. Conclusão
+O PP-017 está encerrado e não integra os bloqueios remanescentes.
 
-O frontend individual deixou de ser um conjunto de protótipos HTML e passou a ser uma aplicação React modular, testável, responsiva e preparada para integração. A F9 encerra a migração funcional planejada dos protótipos. O próximo ganho estrutural vem do backend multi-tenant, que substituirá simulações locais e permitirá iniciar as áreas B2B de gestão, relatórios e auditoria.
+## 13. Auditoria de governança — 26/07/2026
+
+A documentação passou a separar responsabilidades do Desenvolvedor, da Direção da Spark e de validação jurídica futura em [`../GOVERNANCA.md`](../GOVERNANCA.md). Todos os PP possuem classificação, decisor, implementador, aprovador e evidência de encerramento no relatório canônico.
+
+Para o PP-004, foram registradas as políticas aprovadas de retenção do tenant por até 60 dias, `AuditEvent` por 1 ano, anonimização de participante quando juridicamente permitida, atendimento ao titular e canal oficial. O item não foi encerrado: faltam implementação, matriz definitiva por operação, instrumentos jurídicos e validação jurídica.
+
+## 14. Conclusão
+
+O repositório possui frontend React funcional e backend multi-tenant implementado até a execução B5, com eventos, gamificação server-side, consultas de auditoria e integração frontend concluídos até B6.5 e validados localmente. Isso não equivale a produto completo nem a prontidão de produção. B7 é a próxima entrega real; B8–B10 e os riscos explicitamente postergados permanecem futuros.

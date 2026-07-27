@@ -32,4 +32,16 @@ describe('Health endpoint', () => {
     const response = await request(app.getHttpServer() as Parameters<typeof request>[0]).post('/api/missing').send({ content: 'x'.repeat(110_000) }).expect(413)
     expect(response.headers['x-request-id']).toEqual(expect.any(String))
   })
+
+  it('allows PUT in an exact-origin CORS preflight', async () => {
+    const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .options('/api/enrollments/00000000-0000-0000-0000-000000000000/daily-record')
+      .set('Origin', 'http://localhost:5173')
+      .set('Access-Control-Request-Method', 'PUT')
+      .set('Access-Control-Request-Headers', 'authorization,content-type,x-tenant-id')
+      .expect(204)
+
+    expect(response.headers['access-control-allow-origin']).toBe('http://localhost:5173')
+    expect(response.headers['access-control-allow-methods']).toContain('PUT')
+  })
 })

@@ -1,3 +1,5 @@
+import { PROJETO66_ACTIVITY_KEYS } from './projeto66-contract'
+
 export const projeto66Phases = [
   {
     id: 1, name: 'Quebra do Programa', range: 'Dias 1–22', color: '#ff6b00',
@@ -42,16 +44,16 @@ export const defaultChecklist = {
 export const projeto66Pillars = [
   { key: 'discipline', emoji: '🎯', name: 'Disciplina', color: '#ff6b00' },
   { key: 'focus', emoji: '🔬', name: 'Foco', color: '#bf5af2' },
-  { key: 'selfControl', emoji: '💪', name: 'Domínio Próprio', color: '#30d158' },
+  { key: 'self-control', emoji: '💪', name: 'Domínio Próprio', color: '#30d158' },
   { key: 'execution', emoji: '⚡', name: 'Execução', color: '#ff9500' },
-  { key: 'emotionalControl', emoji: '🧘', name: 'Controle Emocional', color: '#ffd60a' },
-  { key: 'vitalEnergy', emoji: '🌟', name: 'Energia Vital', color: '#ff3b30' },
+  { key: 'emotional-control', emoji: '🧘', name: 'Controle Emocional', color: '#ffd60a' },
+  { key: 'vital-energy', emoji: '🌟', name: 'Energia Vital', color: '#ff3b30' },
 ]
 
 export const projeto66Missions = [
-  { key: 'result', emoji: '🎯', name: 'Resultado', description: 'Fazer 10 contatos comerciais' },
-  { key: 'health', emoji: '💪', name: 'Saúde', description: 'Caminhar 30 minutos' },
-  { key: 'organization', emoji: '🧹', name: 'Organização', description: 'Organizar mesa ou agenda' },
+  { key: PROJETO66_ACTIVITY_KEYS.missions.result, emoji: '🎯', name: 'Resultado', description: 'Fazer 10 contatos comerciais' },
+  { key: PROJETO66_ACTIVITY_KEYS.missions.health, emoji: '💪', name: 'Saúde', description: 'Caminhar 30 minutos' },
+  { key: PROJETO66_ACTIVITY_KEYS.missions.organization, emoji: '🧹', name: 'Organização', description: 'Organizar mesa ou agenda' },
 ]
 
 export const emotionOptions = [

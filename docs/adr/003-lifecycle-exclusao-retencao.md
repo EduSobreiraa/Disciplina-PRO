@@ -22,8 +22,8 @@ Não existe soft delete universal. Cada agregado expressa seu lifecycle no domí
 | `Enrollment` | lifecycle `AVAILABLE`, `ACTIVE`, `PAUSED`, `COMPLETED`, `ABANDONED` |
 | fatos de execução | não são apagados silenciosamente; correção/revogação precisa ser explícita e auditável |
 | `XpTransaction` | append-only; correções usam transação compensatória |
-| `AuditEvent` | imutável e sem soft delete |
-| conteúdo privado | exclusão pelo titular deve remover ou anonimizar o conteúdo conforme política específica anterior a `execution` |
+| `AuditEvent` | imutável e sem soft delete durante sua vigência; retenção de 1 ano, salvo obrigação legal ou contratual diferente |
+| conteúdo privado e dados pessoais de participante | quando juridicamente permitido, anonimizar e preservar apenas o necessário para auditoria, obrigações legais, estatísticas e integridade histórica |
 | dados efêmeros de sessão | hard delete permitido após revogação e janela de retenção definida no ADR de refresh token |
 
 ## Regras de query
@@ -55,12 +55,20 @@ Não será exposto um endpoint CRUD genérico de exclusão. Operações HTTP com
 
 ## Retenção
 
-Os períodos numéricos de retenção serão definidos antes de staging, pois dependem de requisitos legais e operacionais ainda não aprovados. Até lá:
+Em 26/07/2026, a Spark aprovou para o PP-004:
+
+- retenção operacional do tenant por até 60 dias após o encerramento da conta;
+- após esse período, exclusão, anonimização ou retenção legal conforme a política aprovada;
+- retenção de `AuditEvent` por 1 ano, salvo obrigação legal ou contratual diferente;
+- execução da retenção de tenant por job automatizado;
+- anonimização dos dados pessoais do participante, quando juridicamente permitida, preservando somente o necessário para auditoria, obrigações legais, estatísticas e integridade histórica.
+
+A política pertence à Spark; jobs e mecanismos pertencem ao desenvolvimento. Hipóteses legais, bases, exceções e reflexos contratuais permanecem sujeitos à validação jurídica indicada em [`../../GOVERNANCA.md`](../../GOVERNANCA.md). Até a implementação e validação:
 
 - auditoria e fatos de negócio não são expurgados automaticamente;
 - metadata nunca recebe conteúdo íntimo;
 - conteúdo privado não é copiado para reporting, logs ou auditoria;
-- qualquer job futuro de expurgo deve ser idempotente, observável e testado.
+- qualquer job futuro de expurgo deve ser idempotente, observável, auditado e testado.
 
 ## Consequências
 
@@ -68,7 +76,12 @@ Os períodos numéricos de retenção serão definidos antes de staging, pois de
 - evita-se um filtro global frágil de `deletedAt IS NULL`;
 - repositories terão métodos explícitos para visão atual e histórica;
 - algumas migrations precisarão de SQL deliberado para índices parciais;
-- política legal de retenção continua como gate anterior a staging, sem bloquear o primeiro schema estrutural.
+- implementação das políticas aprovadas e validação jurídica final continuam como gate anterior a staging, sem bloquear o primeiro schema estrutural.
+
+## Histórico da decisão
+
+- **15/07/2026:** estratégia de lifecycle aceita; prazos numéricos permaneceram postergados.
+- **26/07/2026:** a decisão de governança do PP-004 aprovou os prazos e destinos acima; não alterou a arquitetura de lifecycle nem concluiu os mecanismos ou artefatos jurídicos pendentes.
 
 ## Referências
 
