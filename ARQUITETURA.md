@@ -568,19 +568,7 @@ Boundaries implementados:
 - convites: `/api/invitations/*`;
 - catálogo empresarial: `/api/programs`;
 - execução: `/api/enrollments/*`, incluindo fatos objetivos e respostas privadas.
-
-As rotas abaixo ainda são planejamento de B6/B7 e não existem no backend:
-
-```text
-GET /api/reports/me
-GET /api/reports/teams/:teamId
-GET /api/reports/tenant
-GET /api/reports/inactive-members
-
-GET /api/audit/me
-GET /api/audit/teams/:teamId
-GET /api/audit/tenant
-```
+- reporting objetivo: `/api/reports/me`, `/api/reports/teams/:teamId`, `/api/reports/tenant` e `/api/reports/inactive-members`.
 
 Controllers implementam métodos `PUT`, e a allowlist CORS os anuncia em preflight sem ampliar origens ou headers permitidos. A reconciliação foi comprovada por teste E2E na B6.1 e encerrou o PP-017.
 
@@ -700,7 +688,7 @@ O backend seguirá gates dependentes, detalhados em `docs/ROADMAP.md`:
 7. **B8–B9 — Produto integrado:** adapters HTTP e áreas administrativas;
 8. **B10 — Operação:** staging, hardening e release do MVP.
 
-B0–B5 e B6.0–B6.5 estão concluídas. A próxima entrega é B7; B8–B10 permanecem planejadas.
+B0–B7 estão concluídas. A próxima entrega é B8; B9–B10 permanecem planejadas.
 
 ## 20. Histórico de decisões
 
@@ -773,6 +761,7 @@ B0–B5 e B6.0–B6.5 estão concluídas. A próxima entrega é B7; B8–B10 per
 | 26/07/2026 | B6.3 concluída: ledger e conquistas server-side são imutáveis, idempotentes, derivados de fatos objetivos e isolados por tenant/membership. |
 | 26/07/2026 | B6.4 concluída: auditoria derivada idempotente e leituras pessoal, time e tenant com projeção segura e escopo revalidado. |
 | 26/07/2026 | Governança do PP-004 aprovada: responsabilidades técnicas, empresariais e jurídicas foram separadas; retenção de tenant e auditoria, anonimização e atendimento ao titular foram registrados sem alterar a arquitetura de lifecycle. |
+| 03/08/2026 | ADR 016 aprovou fornecedores e parâmetros operacionais iniciais do MVP, incluindo Railway, Cloudflare R2, Resend, OpenTelemetry para instrumentação, Sentry para exceções/performance, BetterStack para disponibilidade/alertas, RPO/RTO e sequência staging–produção; validações e escolhas explicitamente pendentes permaneceram abertas. |
 
 ## 21. Versionamento e documentação
 

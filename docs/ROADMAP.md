@@ -1,6 +1,6 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 26/07/2026
+> Spark Inteligência Corporativa · Atualizado em 03/08/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado atual verificado
@@ -11,7 +11,8 @@
 - nove migrations reproduzidas em banco PostgreSQL vazio;
 - autenticação real e integração HTTP do Projeto 66 implementadas;
 - tracker e ritual ainda usam repositories locais; a gamificação consome a projeção da API;
-- B7 é a próxima entrega; B8–B10 permanecem planejadas.
+- B7.1–B7.4 concluídas: reporting pessoal, por time e tenant com contratos e prova HTTP de privacidade;
+- B8 é a próxima entrega; B9–B10 permanecem planejadas.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
 
@@ -595,6 +596,40 @@ Entregas:
 
 **Gate de saída:** relatórios são derivados de fatos e os testes provam que conteúdo privado não atravessa a fronteira de gestão.
 
+#### B7.1 — Relatório pessoal objetivo
+
+**Objetivo:** expor à membership atual suas contagens de ciclos, atividades concluídas e registros diários, agrupadas pela versão executada.
+
+**Gate:** a consulta revalida ator e tenant, deriva somente fatos objetivos e não seleciona nem serializa respostas privadas.
+
+**Estado:** concluído em 03/08/2026. `GET /api/reports/me` usa permission própria e repository de reporting separado. Banco vazio aprovou a nova prova de isolamento, membership inativa e ausência de conteúdo privado; a regressão completa soma 26 suítes/76 testes de integração e 32 suítes/102 testes unitários.
+
+#### B7.2 — Relatório por time
+
+**Objetivo:** agregar adesão objetiva dos membros de um time, com escopo nominal do Manager e leitura global de times pelo CEO.
+
+**Gate:** Manager não enumera nem consulta time fora de seu vínculo ativo; conteúdo privado permanece inacessível.
+
+**Estado:** concluído em 03/08/2026. `GET /api/reports/teams/:teamId` usa permission própria, retorna somente membros e vínculos ativos e agrega fatos objetivos por membership. Manager é limitado ao vínculo gerencial ativo, CEO lê qualquer time do tenant e ambos recebem `404` não enumerável para escopo ausente ou estrangeiro. Banco vazio aprovou 27 suítes/78 testes de integração e 33 suítes/104 testes unitários.
+
+#### B7.3 — Relatório do tenant e membros inativos
+
+**Objetivo:** oferecer ao CEO agregações do tenant e sinalização objetiva de inatividade, sem inferências sobre conteúdo pessoal.
+
+**Gate:** somente CEO consulta o tenant completo; critérios de inatividade são explícitos e reproduzíveis.
+
+**Estado:** concluído em 03/08/2026. `GET /api/reports/tenant` agrega memberships ativas e fatos objetivos por programa/versão. `GET /api/reports/inactive-members?inactiveSince=<ISO-8601>` exige corte explícito e lista apenas memberships ativas, já existentes no corte, com enrollment e sem conclusão ou registro diário desde então. Administradores sem enrollment não geram falso positivo. Respostas privadas e tenant estrangeiro permanecem fora das consultas. Banco vazio aprovou 28 suítes/80 testes de integração e 33 suítes/104 testes unitários.
+
+#### B7.4 — Contrato e prova consolidada de privacidade
+
+**Objetivo:** consolidar DTOs, OpenAPI e matriz HTTP pessoal/time/tenant com testes negativos de autorização, tenant e payload privado.
+
+**Gate:** todas as respostas usam allowlist objetiva e a suíte prova que `PrivateActivityResponse.payload` e metadata livre não atravessam reporting.
+
+**Estado:** concluído em 03/08/2026. DTOs explícitos documentam todos os campos e formatos das quatro respostas no OpenAPI. A matriz HTTP prova autenticação, permissões USER/Manager/CEO, time não gerenciado, tenant estrangeiro, corte ausente/inválido e respostas positivas. Schemas e corpos foram verificados contra `payload`, `metadata` e `PrivateActivityResponse`. Banco vazio aprovou 28 suítes/82 testes de integração, 33 suítes/104 testes unitários e a regressão E2E integral.
+
+**Estado da fase B7:** concluída em 03/08/2026. Reporting permanece uma fronteira de leitura separada, deriva somente fatos objetivos e não depende de tabelas, DTOs ou metadata de conteúdo privado.
+
 ### B8 — Integração do frontend
 
 **Objetivo:** substituir persistência simulada pela API sem desmontar os módulos React.
@@ -648,7 +683,7 @@ Problemas incorporados:
 - `PP-004`: implementar as políticas aprovadas, completar a matriz por operação e obter validação jurídica/contratual;
 - `PP-005`: separar roles de migration e runtime e provar privilégio mínimo;
 - `PP-006`: operar chaves e peppers em secret manager e ensaiar rotação/comprometimento;
-- `PP-007`: definir RPO/RTO e ensaiar backup, restauração e rollback/forward-fix;
+- `PP-007`: implementar RPO/RTO aprovados e ensaiar backup, restauração e rollback;
 - `PP-008`: implantar alertas, agregação de erros e runbook de incidente sem dados sensíveis;
 - `PP-010`: validar teclado, leitor de tela e dispositivos físicos;
 - `PP-014`: restaurar CodeQL/Dependabot ou automação equivalente validada;
@@ -665,6 +700,8 @@ Problemas incorporados:
 **Entregas:** desenho de staging/produção, responsáveis, classificação dos dados, escolha preliminar de hospedagem, secret manager, observabilidade e e-mail.
 
 **Gate:** nenhuma etapa seguinte depende de provedor, responsável ou política ainda indefinidos.
+
+**Decisões parciais aprovadas em 03/08/2026:** Railway para hospedagem e PostgreSQL em `us-east`; Cloudflare R2 para cópia externa de backups; Railway Environment Variables para segredos no MVP; OpenTelemetry para instrumentação; Sentry para exceções, stack traces e performance; BetterStack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais; Resend para e-mail; RPO de 1 hora, RTO de 4 horas, retenção de backup de 90 dias; dois ambientes, com staging antes de produção. Região, retenção e contratos ainda dependem de validação jurídica. Domínio, responsáveis, orçamento e critérios de abertura permanecem pendentes. Fonte: [ADR 016](adr/016-EscolhasDev.md).
 
 #### B10.1 — Infraestrutura, banco e secrets
 

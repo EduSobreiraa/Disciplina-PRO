@@ -22,7 +22,7 @@ Já estão disponíveis:
 - ciclo e ferramentas privadas do Projeto 66 integrados à API;
 - repositories locais ainda usados pelo tracker e ritual; a gamificação consome a projeção da API.
 
-O backend NestJS concluiu B0, as decisões B0.5, B1–B5 e B6.0–B6.4; a B6.5 integrou sua projeção de gamificação ao frontend e consolidou a prova E2E. Identity Access, organizações, convites, catálogo, execução, eventos internos, gamificação e consultas de auditoria possuem implementação e testes locais. A próxima etapa é B7; reporting ainda não está implementado.
+O backend NestJS concluiu B0, as decisões B0.5 e B1–B7. Identity Access, organizações, convites, catálogo, execução, eventos internos, gamificação, auditoria e reporting objetivo possuem implementação e testes locais. A próxima etapa é B8, com a integração frontend remanescente.
 
 Esse estado foi validado localmente em 26/07/2026. Não constitui validação de staging ou produção; bloqueios vigentes estão em [Problemas postergados](docs/PROBLEMAS_POSTERGADOS.md).
 
@@ -45,6 +45,8 @@ Documentos principais:
 - [Auditoria do frontend](docs/AUDITORIA_FRONTEND.md)
 - [Problemas postergados](docs/PROBLEMAS_POSTERGADOS.md)
 - [Relatório técnico de progresso](docs/RELATORIO_PROGRESSO.md)
+- [Relatório executivo de decisões para o CEO](docs/RELATORIO_EXECUTIVO_CEO.md)
+- [Checklist direto de definições pendentes](docs/CHECKLIST_DEFINICOES_PENDENTES.md)
 - [Checklist de prontidão do backend](docs/PRE_BACKEND_CHECKLIST.md)
 - [Runbook de Identity Access](docs/OPERACAO_IDENTITY_ACCESS.md)
 - [Roadmap do restante do projeto](docs/ROADMAP.md)
@@ -260,7 +262,7 @@ O frontend consome a API exclusivamente pelo caminho relativo `/api`. No desenvo
 
 ## Próximas etapas
 
-1. B7 — implementar reporting e consultas gerenciais com privacidade;
+1. B8 — substituir os repositories locais remanescentes e consolidar o E2E frontend;
 2. avançar pelo [roadmap do MVP](docs/ROADMAP.md).
 
 Para materializar idempotentemente a definição oficial do Projeto 66:

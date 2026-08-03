@@ -122,7 +122,7 @@ Cada sub-bloco deve fechar seu próprio gate antes do seguinte. A autorização 
 - [x] Adicionar Mailpit em desenvolvimento para os convites da B3.
 - [ ] Escolher provedor transacional de e-mail somente antes de staging.
 - [ ] Escolher hospedagem após autenticação, migrations e health check estarem estáveis.
-- [ ] Configurar Sentry/observabilidade antes do primeiro staging público.
+- [ ] Configurar OpenTelemetry, Sentry e BetterStack, com suas responsabilidades separadas, antes do primeiro staging público.
 - [ ] Definir backup, restauração e retenção antes de produção.
 
 Não adicionar agora: Redis, RabbitMQ, Kafka, Kubernetes, Elasticsearch, microserviços, billing ou IA.

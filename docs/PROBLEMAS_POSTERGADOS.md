@@ -1,6 +1,6 @@
 # Relatório de problemas postergados
 
-> Disciplina PRO · Criado em 16/07/2026 · Atualizado em 26/07/2026
+> Disciplina PRO · Criado em 16/07/2026 · Atualizado em 03/08/2026
 
 ## 1. Objetivo
 
@@ -22,7 +22,7 @@ Prioridades:
 
 ## 2. Resumo executivo
 
-O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 provaram autenticação, isolamento, entrada nominal, catálogo, execução, consequências e integração da gamificação. O sistema **ainda não está pronto para armazenar dados reais de empresas ou participantes**: tracker e ritual continuam em `localStorage`, não há política legal de retenção aprovada nem ambiente operacional de staging.
+O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 provaram autenticação, isolamento, entrada nominal, catálogo, execução, consequências e integração da gamificação. O sistema **ainda não está pronto para armazenar dados reais de empresas ou participantes**: tracker e ritual continuam em `localStorage`; as políticas centrais do PP-004 foram aprovadas, mas ainda dependem de formalização, validação jurídica e implementação; e não há ambiente operacional de staging.
 
 | Prioridade | Abertos/planejados | Mitigados | Encerrados |
 |---|---:|---:|---:|
@@ -86,6 +86,7 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Motivo do adiamento:** o contrato de B1.4 usa chaves efêmeras fora de produção; materialização operacional depende de staging.
 - **Retomada:** B10 para operação.
 - **Critério de encerramento:** chaves fora do Git, rotação ensaiada, acesso restrito, revogação e recuperação documentadas.
+- **Decisão operacional de 03/08/2026:** Railway Environment Variables será usado no MVP; Doppler poderá ser reavaliado futuramente. A escolha não encerra o PP: integração, responsáveis, rotação e ensaio de comprometimento continuam pendentes.
 
 ### PP-007 — Backup, restauração e rollback não ensaiados
 
@@ -95,15 +96,17 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Motivo do adiamento:** requer infraestrutura de staging e provedor definidos.
 - **Retomada:** B10.
 - **Critério de encerramento:** RPO/RTO definidos, backup verificado, restauração e rollback/forward-fix ensaiados.
+- **Decisões operacionais de 03/08/2026:** RPO de 1 hora, RTO de 4 horas, backups retidos por 90 dias, cópia externa no Cloudflare R2 e rollback automático. A retenção depende de validação jurídica; configuração, monitoramento e ensaios continuam pendentes.
 
-### PP-008 — Observabilidade de produção ausente
+### PP-008 — Observabilidade de produção definida, ainda não implantada
 
 - **Prioridade/status:** P1 · PLANEJADO
-- **Problema:** há logs estruturados, request ID e health checks, porém não existem agregação de erros, alertas, Sentry/staging ou procedimento de incidente.
+- **Problema:** os serviços e suas responsabilidades foram definidos, mas ainda não estão contratados, configurados e testados em staging; também faltam responsáveis e runbook de incidente.
 - **Impacto:** falhas e ataques podem não ser detectados ou diagnosticados em tempo adequado.
 - **Motivo do adiamento:** serviço externo não é necessário para desenvolvimento local.
 - **Retomada:** B10, antes de staging público.
 - **Critério de encerramento:** alertas testados, redação de dados sensíveis confirmada e runbook com responsáveis.
+- **Decisões operacionais de 03/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry cobre exceções, stack traces e performance; BetterStack cobre uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Cobertura: segunda a sábado, 8h–20h; reconhecimento de alerta em até 30 minutos. Permanecem pendentes contratação, implementação, configuração, testes, responsáveis, canal final, início da resposta e runbook ensaiado.
 
 ### PP-009 — E2E frontend versionado insuficiente
 
@@ -157,13 +160,14 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 
 ## 6. Dependências externas adiadas
 
-### PP-015 — E-mail transacional ainda não selecionado
+### PP-015 — E-mail transacional selecionado, ainda não integrado
 
 - **Prioridade/status:** P2 · PARCIALMENTE MITIGADO EM 25/07/2026
-- **Problema:** convites precisarão de Mailpit em desenvolvimento e de provedor transacional antes de staging.
+- **Problema:** Resend foi selecionado para e-mail real, mas domínio, contrato, integração, observabilidade e operação ainda não estão concluídos.
 - **Impacto:** o fluxo de entrada de membros não poderá ser validado ponta a ponta por e-mail.
 - **Mitigação entregue:** Mailpit `v1.30.5`, adapter Nodemailer e gate SMTP real encerram a dependência local da B3.
-- **Retomada:** selecionar provedor, autenticação SMTP, retry automático e tratamento de bounce antes de staging.
+- **Decisões operacionais de 03/08/2026:** Resend; remetente `no-reply@<domínio>`; um reenvio após 30 minutos; persistindo a falha, notificar o administrador do tenant. O domínio permanece indefinido e o contrato depende de validação jurídica.
+- **Retomada:** registrar domínio, validar o fornecedor, integrar envio, retry e bounce antes de staging com e-mail real.
 - **Critério de encerramento:** envio, expiração, retry, bounce e não exposição de token cobertos por testes/observabilidade.
 
 ### PP-016 — Advisories publicados após o baseline B1
@@ -217,7 +221,7 @@ Esta matriz integra cada registro `PP-*`. “Aprova” identifica quem deve acei
 | PP-005 | Desenvolvedor + Spark | Spark escolhe ambiente/provedor e aceita risco; desenho técnico segue arquitetura | Desenvolvedor | Spark no gate de staging | roles distintas e teste de privilégio mínimo |
 | PP-006 | Desenvolvedor + Spark | Spark escolhe/contrata secret manager e aprova política operacional | Desenvolvedor | Spark no gate de staging | secret manager e ensaio de rotação/comprometimento |
 | PP-007 | Spark + Desenvolvedor | Spark define RPO/RTO e aceita risco | Desenvolvedor implementa e ensaia | Spark | política aprovada, backups verificados e restore/rollback ensaiados |
-| PP-008 | Spark + Desenvolvedor | Spark define cobertura operacional, responsáveis e provedor | Desenvolvedor implementa instrumentação/runbook | Spark | alertas e resposta a incidente testados sem dados sensíveis |
+| PP-008 | Spark + Desenvolvedor | Spark aprovou BetterStack/Sentry e define cobertura e responsáveis | Desenvolvedor implementa instrumentação, monitoramento e runbook | Spark | serviços contratados; alertas e resposta a incidente testados sem dados sensíveis |
 | PP-009 | Desenvolvedor | roadmap aprovado | Desenvolvedor | gate técnico | suíte Playwright versionada no CI e staging |
 | PP-010 | Spark + Desenvolvedor | Spark define critério de aceite e disponibiliza validação humana/dispositivos | Desenvolvedor corrige barreiras técnicas | Spark, com validação humana | teclado, leitor de tela e dispositivos físicos aprovados |
 | PP-011 | Desenvolvedor | governança técnica aprovada | Desenvolvedor | gate técnico | encerrado: pisos de cobertura no CI |

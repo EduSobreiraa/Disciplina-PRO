@@ -77,3 +77,5 @@ Permanecem pendentes e não podem ser apresentados como aprovados ou concluídos
 |---|---|
 | 26/07/2026 | Separadas as responsabilidades do Desenvolvedor, da Direção da Spark e de validação jurídica futura. |
 | 26/07/2026 | Aprovadas as políticas do PP-004 para classificação por operação, cancelamento de tenant, `AuditEvent`, exclusão de participante, atendimento ao titular e canal oficial. |
+| 03/08/2026 | O proprietário do projeto aprovou no ADR 016 fornecedores e parâmetros operacionais do MVP; validações jurídicas, escolhas explicitamente abertas e evidências de implementação continuam pendentes. |
+| 03/08/2026 | BetterStack definido para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais; Sentry mantido para exceções, stack traces e performance; OpenTelemetry mantido como instrumentação. |

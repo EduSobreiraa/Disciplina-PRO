@@ -22,6 +22,7 @@ import { ExecutionModule } from './modules/execution/execution.module.js'
 import { EventsModule } from './modules/events/events.module.js'
 import { GamificationModule } from './modules/gamification/gamification.module.js'
 import { AuditModule } from './modules/audit/audit.module.js'
+import { ReportingModule } from './modules/reporting/reporting.module.js'
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AuditModule } from './modules/audit/audit.module.js'
     EventsModule,
     GamificationModule,
     AuditModule,
+    ReportingModule,
     ExecutionModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],

@@ -14,9 +14,9 @@ const page: AuditPage = { items: [], page: 2, limit: 25, total: 0 }
 
 describe('Audit query use cases', () => {
   it('delegates personal, team and tenant scopes without changing pagination or context', async () => {
-    const findMine = jest.fn().mockResolvedValue(page)
-    const findTeam = jest.fn().mockResolvedValue(page)
-    const findTenant = jest.fn().mockResolvedValue(page)
+    const findMine = jest.fn<AuditQueryRepository['findMine']>().mockResolvedValue(page)
+    const findTeam = jest.fn<AuditQueryRepository['findTeam']>().mockResolvedValue(page)
+    const findTenant = jest.fn<AuditQueryRepository['findTenant']>().mockResolvedValue(page)
     const repository = {
       findMine,
       findTeam,

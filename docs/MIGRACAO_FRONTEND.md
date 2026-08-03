@@ -433,7 +433,7 @@ Implementado em 14/07/2026:
 
 ## 8. Estado posterior à migração
 
-A migração funcional planejada dos protótipos está concluída. Desde então, o backend avançou até B6.4 e a B6.5 integrou a gamificação ao frontend. Sessão, ciclo, ferramentas privadas do Projeto 66 e gamificação usam HTTP; tracker e ritual continuam locais. A próxima entrega do roadmap é B7; o panorama atual está consolidado em [`RELATORIO_PROGRESSO.md`](RELATORIO_PROGRESSO.md).
+A migração funcional planejada dos protótipos está concluída. Desde então, o backend avançou até B7 e a B6.5 integrou a gamificação ao frontend. Sessão, ciclo, ferramentas privadas do Projeto 66 e gamificação usam HTTP; tracker e ritual continuam locais. A próxima entrega do roadmap é B8; o panorama atual está consolidado em [`RELATORIO_PROGRESSO.md`](RELATORIO_PROGRESSO.md).
 
 ## 9. Matriz de validação
 

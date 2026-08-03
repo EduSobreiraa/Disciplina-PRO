@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 26/07/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B5 concluídos; B6.0–B6.5 concluídas
+> Atualizado em 03/08/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B7 concluídos
 
 ## 1. Visão geral do produto
 
@@ -22,6 +22,14 @@ Disciplina PRO
 O frontend individual foi migrado dos protótipos HTML para React. A fundação B0, as dez decisões da B0.5 e toda a B1 foram concluídas. A B2 fechou contrato e isolamento multi-tenant, a B3 encerrou o ciclo nominal de entrada e a B4 entregou catálogo e disponibilidade. A B5 encerrou lifecycle, bloqueios, fatos objetivos, respostas privadas, integração HTTP, sessão frontend, definição editorial e jornada E2E de 66 dias.
 
 A B6.0 fechou no ADR 015 o contrato de eventos duráveis e a B6.1 materializou a fundação append-only. A B6.2 integrou os produtores objetivos e o processamento `at-least-once`; a B6.3 adicionou a gamificação server-side. A B6.4 centralizou o contrato de auditoria derivada e expôs leituras pessoal, por time e por tenant sem `metadata` bruta. A B6.5 removeu o ledger de XP do browser, integrou a projeção à API e consolidou a jornada E2E. Respostas privadas continuam sem eventos.
+
+A B7.1 iniciou o módulo `reporting` com a projeção pessoal objetiva em `GET /api/reports/me`. O repository consulta somente enrollments, versões, conclusões e registros diários, revalida a membership corrente e não seleciona respostas privadas.
+
+A B7.2 adicionou `GET /api/reports/teams/:teamId` com agregações nominais objetivas. Manager consulta apenas time sob vínculo gerencial ativo; CEO consulta qualquer time do tenant. Escopos ausente, não gerenciado ou estrangeiro recebem a mesma resposta não enumerável.
+
+A B7.3 adicionou agregações exclusivas do CEO para o tenant e membros inativos. O corte de inatividade é entrada ISO-8601 obrigatória, não uma política temporal inventada no código; exige membership ativa já existente, enrollment e ausência de fatos objetivos desde o corte.
+
+A B7.4 explicitou todos os contratos de resposta no OpenAPI e consolidou a matriz HTTP de autenticação, autorização, tenant, validação e privacidade. Os schemas e corpos públicos não contêm payload privado nem metadata livre; a fase B7 está concluída.
 
 ## 2. Tecnologias e decisões
 
@@ -333,7 +341,6 @@ Implementado e validado localmente:
 
 Ainda não implementado ou não validado:
 
-- B7: reporting e consultas gerenciais;
 - B8: retirada dos repositories locais de tracker e ritual, além de E2E frontend versionado;
 - catálogo visual do frontend ainda alimentado por `programs.mock.js`, embora catálogo e ofertas reais existam no backend;
 - B9: interfaces administrativas completas;
@@ -344,15 +351,15 @@ O `PP-017` foi encerrado na B6.1: controllers e CORS concordam sobre `PUT`, e o 
 
 ## 11. Evidência de validação atual
 
-Gate local executado em 26/07/2026:
+Gate local executado em 03/08/2026:
 
 | Verificação | Resultado |
 |---|---|
 | Runtime/dependências | Node 24.18.0, npm 11.16.0 e `npm ls --workspaces --depth=0` aprovados |
 | Prisma | schema válido; nove migrations aplicadas em banco vazio descartável |
 | Frontend unitário | 7 testes aprovados |
-| Backend unitário | 31 suítes, 101 testes aprovados |
-| Integração PostgreSQL | 25 suítes, 74 testes aprovados |
+| Backend unitário | 33 suítes, 104 testes aprovados |
+| Integração PostgreSQL | 28 suítes, 82 testes aprovados |
 | E2E backend/Supertest | 5 suítes, 20 testes aprovados |
 | SMTP local/Mailpit | 1 suíte, 1 teste aprovado |
 | Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
@@ -362,13 +369,13 @@ O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estát
 
 ## 12. Próxima etapa e bloqueios
 
-A última fase funcional comprovadamente concluída é a B6.5. A próxima implementação é **B7 — reporting e privacidade**.
+A última fase funcional comprovadamente concluída é a B7. A próxima implementação é **B8 — integração do frontend**.
 
 O desenvolvimento local pode continuar. Dados reais, staging público e produção continuam bloqueados pelos itens P0/P1 do relatório de problemas postergados. Em particular:
 
 - PP-002: tracker e ritual ainda possuem persistência local; a parcela de gamificação foi encerrada na B6.5;
 - PP-004: políticas centrais aprovadas pela Spark, com implementação, matriz definitiva, contratos e validação jurídica ainda pendentes;
-- PP-005–PP-010: decisões empresariais aplicáveis, implementação e ensaios operacionais ainda pendentes;
+- PP-005–PP-010: ADR 016 fechou fornecedores e parâmetros parciais de PP-006–PP-008, incluindo BetterStack para uptime e alertas; acessos, responsáveis, contratação, implementação, validação jurídica e ensaios continuam pendentes;
 - PP-016: auditoria de dependências não está verde;
 
 O PP-017 está encerrado e não integra os bloqueios remanescentes.
@@ -381,4 +388,4 @@ Para o PP-004, foram registradas as políticas aprovadas de retenção do tenant
 
 ## 14. Conclusão
 
-O repositório possui frontend React funcional e backend multi-tenant implementado até a execução B5, com eventos, gamificação server-side, consultas de auditoria e integração frontend concluídos até B6.5 e validados localmente. Isso não equivale a produto completo nem a prontidão de produção. B7 é a próxima entrega real; B8–B10 e os riscos explicitamente postergados permanecem futuros.
+O repositório possui frontend React funcional e backend multi-tenant implementado até B7, incluindo eventos, gamificação, auditoria e reporting objetivo com contratos e matriz HTTP de privacidade. Isso não equivale a produto completo nem a prontidão de produção. B8 é a próxima entrega real; B9–B10 e os riscos explicitamente postergados permanecem futuros.

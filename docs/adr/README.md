@@ -19,3 +19,4 @@ Os ADRs registram decisões que alteram contratos, schema, segurança ou operaç
 | [013](013-catalogo-habilitacao-disponibilidade.md) | Catálogo global, habilitação por tenant e disponibilidade idempotente | Aceita |
 | [014](014-execucao-ciclos-fatos-privacidade.md) | Execução, ciclos, fatos diários e privacidade | Aceita |
 | [015](015-eventos-internos-gamificacao-auditoria.md) | Eventos internos duráveis, gamificação e auditoria | Aceita |
+| [016](016-EscolhasDev.md) | Fornecedores e parâmetros operacionais do MVP | Aceita |
