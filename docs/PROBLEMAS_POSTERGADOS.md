@@ -172,11 +172,11 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 
 ### PP-016 — Advisories publicados após o baseline B1
 
-- **Prioridade/status:** P1 · ABERTO EM 25/07/2026
-- **Problema:** as consultas de 25 e 26/07/2026 registram 29 achados (28 altos e 1 moderado) no Prisma CLI 7.9.0 (`@prisma/dev` → `find-my-way`/`valibot`), React Router 7.18.1 e ferramentas Jest/Nest CLI. O Prisma ainda fixa transitivos vulneráveis e o `npm audit` sugere downgrade para 7.8.0; o advisory do React Router afeta RSC, modo não usado por esta SPA.
-- **Impacto:** `npm audit --workspaces --audit-level=high` não está verde, embora os achados do Prisma/Jest sejam de tooling e o vetor RSC não esteja habilitado.
-- **Mitigação imediata:** `fast-uri` 3.1.4 e `postcss` 8.5.23 foram fixados por overrides compatíveis; Mailpit foi fixado em versão com correções de segurança. Nenhum serviço expõe `@prisma/dev`, Jest ou Nest CLI em runtime.
-- **Retomada:** atualizar React Router com teste de regressão e coordenar Prisma/Jest assim que versões compatíveis corrigidas estiverem disponíveis; não aceitar downgrade automático ou override incompatível.
+- **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 03/08/2026
+- **Problema:** a auditoria bruta atual registra duas ocorrências altas (`react-router` e `react-router-dom`) do mesmo `GHSA-qwww-vcr4-c8h2`. O advisory afeta o modo RSC, não habilitado por esta SPA Vite/`BrowserRouter`; o npm propõe um downgrade incompatível como correção automática.
+- **Impacto:** `npm audit --workspaces --audit-level=high` permanece não zero, embora o vetor RSC não exista na aplicação atual.
+- **Mitigação imediata:** Prisma 7.9.1 eliminou os achados de `@prisma/dev`, `find-my-way` e `valibot`; versões corrigidas de `brace-expansion` eliminaram os achados de Jest/Nest CLI. `fast-uri` 3.1.4 e `postcss` 8.5.23 permanecem fixados por overrides compatíveis. O gate versionado aceita exclusivamente o GHSA conhecido nos dois pacotes afetados, confirma a ausência de RSC e reprova qualquer advisory alto novo.
+- **Retomada:** atualizar React Router para uma versão corrigida compatível, com teste de regressão, assim que disponível; não aceitar downgrade automático ou override incompatível.
 - **Critério de encerramento:** auditoria volta a zero sem reduzir versões de segurança ou quebrar os gates.
 
 ### PP-017 — Allowlist CORS não inclui PUT — ENCERRADO
@@ -270,6 +270,12 @@ Classificação consolidada:
 - `PP-017` registra a divergência entre as rotas `PUT` e a allowlist CORS; nenhuma funcionalidade foi alterada durante a auditoria documental;
 - não existe suíte Playwright frontend versionada, staging validado ou evidência de produção.
 - nenhum item P0 ou P1 foi reclassificado sem atender ao critério objetivo; uso real e staging continuam bloqueados.
+
+### 03/08/2026 — Mitigação compatível do PP-016
+
+- Prisma, `brace-expansion` e seus transitivos vulneráveis foram atualizados sem `--force`; a auditoria bruta caiu para duas ocorrências altas do mesmo advisory RSC não aplicável à SPA atual;
+- o gate `audit:dependencies` registra a exceção pelo identificador exato, limitada a `react-router` e `react-router-dom`, e continua reprovando qualquer vulnerabilidade alta nova;
+- instalação limpa, nove migrations em banco vazio, 82 testes de integração e 20 E2E foram aprovados após a atualização; o PP-016 permanece aberto até a auditoria bruta zerar.
 
 ### 26/07/2026 — Encerramento da B6.1
 

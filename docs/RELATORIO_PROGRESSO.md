@@ -363,7 +363,7 @@ Gate local executado em 03/08/2026:
 | E2E backend/Supertest | 5 suítes, 20 testes aprovados |
 | SMTP local/Mailpit | 1 suíte, 1 teste aprovado |
 | Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
-| Dependências | gate reprovado: 29 advisories, registrados em PP-016 |
+| Dependências | gate controlado aprovado; auditoria bruta mantém 2 ocorrências altas do mesmo advisory RSC aceito estritamente no PP-016 |
 
 O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estático versionado. A presença de boundaries organizacionais no documento gerado é coberta por teste, mas não há teste automático comparando todas as rotas narrativas com todo o OpenAPI.
 
@@ -376,7 +376,7 @@ O desenvolvimento local pode continuar. Dados reais, staging público e produç�
 - PP-002: tracker e ritual ainda possuem persistência local; a parcela de gamificação foi encerrada na B6.5;
 - PP-004: políticas centrais aprovadas pela Spark, com implementação, matriz definitiva, contratos e validação jurídica ainda pendentes;
 - PP-005–PP-010: ADR 016 fechou fornecedores e parâmetros parciais de PP-006–PP-008, incluindo BetterStack para uptime e alertas; acessos, responsáveis, contratação, implementação, validação jurídica e ensaios continuam pendentes;
-- PP-016: auditoria de dependências não está verde;
+- PP-016: mitigado para duas ocorrências do mesmo advisory exclusivo de RSC; o gate controlado está verde, mas a auditoria bruta ainda não zerou;
 
 O PP-017 está encerrado e não integra os bloqueios remanescentes.
 

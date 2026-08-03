@@ -51,7 +51,7 @@ jobs:
       - run: npm run test:e2e
       - run: npm run test:integration
       - run: npm run build
-      - run: npm audit --workspaces --audit-level=high
+      - run: npm run audit:dependencies
       - name: SonarQube Cloud scan
         # Tag v7 resolved and reviewed on 20/07/2026; Renovate/maintenance must update this SHA deliberately.
         uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2
