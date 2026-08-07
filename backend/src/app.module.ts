@@ -23,6 +23,9 @@ import { EventsModule } from './modules/events/events.module.js'
 import { GamificationModule } from './modules/gamification/gamification.module.js'
 import { AuditModule } from './modules/audit/audit.module.js'
 import { ReportingModule } from './modules/reporting/reporting.module.js'
+import { TrackerModule } from './modules/tracker/tracker.module.js'
+import { RitualModule } from './modules/ritual/ritual.module.js'
+import { MissionsModule } from './modules/missions/missions.module.js'
 
 @Module({
   imports: [
@@ -36,6 +39,9 @@ import { ReportingModule } from './modules/reporting/reporting.module.js'
     GamificationModule,
     AuditModule,
     ReportingModule,
+    TrackerModule,
+    RitualModule,
+    MissionsModule,
     ExecutionModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],

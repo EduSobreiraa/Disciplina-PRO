@@ -25,6 +25,7 @@ import { GetSessionContextUseCase } from './application/get-session-context.use-
 import { SessionContextRepository } from './application/session-context.repository.js'
 import { SessionContextController } from './http/session-context.controller.js'
 import { PrismaSessionContextRepository } from './infrastructure/prisma-session-context.repository.js'
+import { ListPlatformTenantsUseCase } from './application/list-platform-tenants.use-case.js'
 
 @Module({
   imports: [ProgramsModule, ExecutionModule],
@@ -40,6 +41,7 @@ import { PrismaSessionContextRepository } from './infrastructure/prisma-session-
     { provide: CeoReplacementRepository, useExisting: MembershipAdministrationRepository },
     { provide: SessionContextRepository, useClass: PrismaSessionContextRepository },
     CreateTenantUseCase,
+    ListPlatformTenantsUseCase,
     SuspendTenantUseCase,
     ReactivateTenantUseCase,
     CloseTenantUseCase,

@@ -16,6 +16,7 @@ import { Public } from './public.decorator.js'
 
 const PRODUCTION_REFRESH_COOKIE = '__Host-dp_refresh'
 const PRODUCTION_CSRF_COOKIE = '__Host-dp_csrf'
+const LOGIN_RATE_LIMIT = process.env.NODE_ENV === 'test' ? 100 : 10
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -32,7 +33,7 @@ export class AuthController {
   @Post('login')
   @Public()
   @HttpCode(200)
-  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Throttle({ default: { limit: LOGIN_RATE_LIMIT, ttl: 60_000 } })
   @ApiOperation({ summary: 'Cria uma sessão' })
   @ApiResponse({ status: 200, description: 'Access token no corpo e refresh em cookie HttpOnly' })
   async create(@Body() input: LoginDto, @Req() request: Request, @Res({ passthrough: true }) response: Response) {

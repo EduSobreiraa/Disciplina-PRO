@@ -1,0 +1,4 @@
+.mission-state{display:grid;justify-items:start;gap:8px;margin-top:20px;padding:18px;background:var(--carvao);border:1px solid var(--linha);border-radius:6px;color:var(--cinza)}
+.mission-state strong{color:var(--branco)}
+.mission-state.error{border-color:rgba(224,48,48,.5)}
+.mission-state button{min-height:40px;border:1px solid var(--vermelho);border-radius:3px;background:transparent;color:var(--branco);padding:0 12px}

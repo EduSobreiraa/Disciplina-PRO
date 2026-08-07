@@ -22,12 +22,12 @@ Prioridades:
 
 ## 2. Resumo executivo
 
-O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 provaram autenticação, isolamento, entrada nominal, catálogo, execução, consequências e integração da gamificação. O sistema **ainda não está pronto para armazenar dados reais de empresas ou participantes**: tracker e ritual continuam em `localStorage`; as políticas centrais do PP-004 foram aprovadas, mas ainda dependem de formalização, validação jurídica e implementação; e não há ambiente operacional de staging.
+O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 provaram autenticação, isolamento, entrada nominal, catálogo, execução, consequências e integração da gamificação; B8 removeu as fontes locais de negócio e versionou a prova Playwright frontend–API. O sistema **ainda não está pronto para armazenar dados reais de empresas ou participantes**: as políticas centrais do PP-004 ainda dependem de formalização, validação jurídica e implementação, e não há ambiente operacional de staging.
 
 | Prioridade | Abertos/planejados | Mitigados | Encerrados |
 |---|---:|---:|---:|
-| P0 | 1 | 0 | 2 |
-| P1 | 8 | 0 | 2 |
+| P0 | 0 | 0 | 3 |
+| P1 | 7 | 0 | 3 |
 | P2 | 0 | 2 | 2 |
 
 ## 3. Bloqueios para dados ou usuários reais
@@ -39,15 +39,15 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Evidência:** a matriz E2E B2.4 cobre bearer ausente, logout com revogação do access token já emitido, header inválido, ausência de membership, roles, escopo nominal e mudanças de estado com efeito imediato.
 - **Critério de encerramento:** gates E2E negativos e positivos de sessão, revogação, tenant, role e escopo aprovados.
 
-### PP-002 — Persistência frontend local remanescente
+### PP-002 — Persistência frontend local remanescente — ENCERRADO
 
-- **Prioridade/status:** P0 · ABERTO
-- **Problema:** a B5.5 removeu repositories locais do Projeto 66 e a B6.5 removeu o ledger local de gamificação, mas tracker e ritual ainda usam `localStorage`.
-- **Impacto:** fatos de tracker e ritual podem ser adulterados, perdidos ou divergir entre dispositivos; não podem ser tratados como dados de produção.
-- **Mitigação atual:** execução, conteúdo privado do Projeto 66 e gamificação já possuem fonte de verdade server-side; a proibição documental de uso real permanece enquanto repositories locais de negócio existirem.
+- **Prioridade/status:** P0 · ENCERRADO em 03/08/2026
+- **Problema original:** fatos e projeções de negócio eram mantidos ou derivados de `localStorage`, podendo divergir entre dispositivos.
+- **Resolução:** Projeto 66, gamificação, tracker, ritual e missões possuem fontes de verdade ou projeções server-side; não existe repository local de negócio no frontend.
+- **Evidência:** a suíte Playwright versionada reconstrói tracker e ritual em outro contexto autenticado, confirma as missões remotas e instrumenta o navegador para provar ausência de acesso a `localStorage`.
 - **Motivo do adiamento:** adapters HTTP dependem dos módulos backend estabilizados.
-- **Retomada:** a parcela de gamificação foi concluída na B6.5; B8 integra tracker/ritual e confirma que nenhum repository local de negócio permanece.
-- **Critério de encerramento:** repositories HTTP substituem persistência local; nenhum dado real sensível permanece no browser como fonte de verdade.
+- **Retomada:** B8.4 versiona a prova Playwright dos adapters contra a API.
+- **Critério de encerramento:** repositories HTTP substituem persistência local, nenhum dado real sensível permanece no browser como fonte de verdade e o fluxo frontend–API é reproduzido no E2E versionado.
 
 ### PP-003 — Isolamento multi-tenant ainda não provado — ENCERRADO
 
@@ -108,13 +108,14 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Critério de encerramento:** alertas testados, redação de dados sensíveis confirmada e runbook com responsáveis.
 - **Decisões operacionais de 03/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry cobre exceções, stack traces e performance; BetterStack cobre uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Cobertura: segunda a sábado, 8h–20h; reconhecimento de alerta em até 30 minutos. Permanecem pendentes contratação, implementação, configuração, testes, responsáveis, canal final, início da resposta e runbook ensaiado.
 
-### PP-009 — E2E frontend versionado insuficiente
+### PP-009 — E2E frontend versionado insuficiente — ENCERRADO
 
-- **Prioridade/status:** P1 · ABERTO
-- **Problema:** a auditoria visual usou Playwright de forma assistida, mas o repositório ainda não possui suíte E2E frontend versionada para os fluxos críticos.
-- **Impacto:** regressões de navegação, persistência, responsividade e integração frontend–API dependem de auditoria manual.
-- **Motivo do adiamento:** o frontend ainda usa adapters locais e os contratos HTTP não estão estáveis.
-- **Retomada:** B8; ampliar em B10.
+- **Prioridade/status:** P1 · ENCERRADO em 03/08/2026
+- **Problema original:** os fluxos autenticados e a integração frontend–API não possuíam suíte de navegador versionada no CI.
+- **Resolução:** B8.4 versionou harness, fixture protegida e quatro jornadas para sessão, catálogo, execução, privacidade, tracker, ritual e missões em projetos desktop/mobile.
+- **Evidência:** sete execuções Playwright aprovadas e um skip funcional intencional; Chromium é instalado e a suíte é chamada pelo workflow de CI.
+- **Motivo do adiamento original:** os adapters HTTP e seus contratos precisavam estabilizar antes da jornada de navegador.
+- **Ampliação planejada:** B10 executará os fluxos críticos em staging sem reabrir o critério local já atendido.
 - **Critério de encerramento:** suíte Playwright versionada no CI cobrindo login, ciclo principal, privacidade e viewports críticas.
 
 ### PP-010 — Acessibilidade sem validação assistiva real
@@ -261,7 +262,7 @@ Classificação consolidada:
 - B4 provou catálogo, disponibilidade e isolamento; B5.0 separou fatos objetivos de respostas privadas e B5.1 iniciou sua persistência estrutural;
 - B5.2 congelou versão e timezone no início transacional, manteve leitura restrita à membership proprietária e evitou copiar o motivo de abandono para auditoria;
 - B5.3 integrou bloqueios administrativos às transações organizacionais e comprovou que reativação não retoma ciclos implicitamente;
-- B5.4 implementou fatos objetivos no backend e isolou respostas privadas em repository, controller e DTOs exclusivos, sem payload em auditoria; B5.5.0–B5.5.4 removeu todas as fontes locais do módulo Projeto 66 e a B6.5 removeu o ledger local de gamificação, mas `PP-002` continua aberto enquanto ritual e tracker ainda possuírem repositories locais;
+- B5.4 implementou fatos objetivos no backend e isolou respostas privadas em repository, controller e DTOs exclusivos, sem payload em auditoria; B5.5.0–B5.5.4 removeu as fontes locais do módulo Projeto 66, B6.5 removeu o ledger local de gamificação e B8.2.2/B8.3 migraram tracker, ritual e missões; `PP-002` está mitigado até a prova E2E da B8.4;
 
 ### 26/07/2026 — Auditoria documental e de gates
 

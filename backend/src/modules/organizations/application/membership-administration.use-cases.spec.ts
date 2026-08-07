@@ -13,7 +13,7 @@ const targetId = '019f854f-58c7-7d1c-85ec-b855ee159030'
 const teamId = '019f854f-58c7-7d1c-85ec-b855ee159031'
 const view: MembershipView = {
   id: targetId, tenantId: tenantContext.tenantId, userId: tenantContext.userId,
-  role: 'USER', status: 'ACTIVE', suspendedAt: null, deactivatedAt: null, user: { email: 'user@example.test' },
+  role: 'USER', status: 'ACTIVE', suspendedAt: null, deactivatedAt: null, user: { email: 'user@example.test' }, teams: [],
 }
 
 describe('casos de uso de memberships', () => {

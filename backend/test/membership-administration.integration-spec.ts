@@ -88,9 +88,11 @@ describe('Membership administration integration', () => {
 
   it('limits Manager listing and lifecycle actions to a currently managed team', async () => {
     const listing = await tenantApi('get', '/memberships', managerToken).expect(200)
-    const visible = (listing.body as Array<{ id: string }>).map(({ id }) => id)
+    const memberships = listing.body as Array<{ id: string; teams: Array<{ teamId: string; role: string }> }>
+    const visible = memberships.map(({ id }) => id)
     expect(visible).toContain(scopedMembershipId)
     expect(visible).not.toContain(outsideMembershipId)
+    expect(memberships.find(({ id }) => id === scopedMembershipId)?.teams).toEqual([expect.objectContaining({ teamId, role: 'MEMBER' })])
     await tenantApi('patch', `/memberships/${outsideMembershipId}/inactivate`, managerToken).send(REASON).expect(403)
       .expect(({ body }) => expect(body).toMatchObject({ code: 'RESOURCE_SCOPE_DENIED' }))
     await tenantApi('patch', `/memberships/${scopedMembershipId}/inactivate`, managerToken).send(REASON).expect(200)

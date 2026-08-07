@@ -7,7 +7,14 @@ import { InvalidCeoReplacementError, InvalidMembershipTransitionError, InvalidTe
 import { ProgramAvailabilityProvisioner } from '../../programs/application/program-availability.provisioner.js'
 import { ExecutionAdministrativeBlocker } from '../../execution/application/execution-blocker.js'
 
-const membershipInclude = { user: { select: { email: true } } } as const
+const membershipInclude = {
+  user: { select: { email: true } },
+  teams: {
+    where: { endedAt: null },
+    select: { id: true, teamId: true, role: true, team: { select: { id: true, name: true } } },
+    orderBy: [{ assignedAt: 'asc' }, { id: 'asc' }],
+  },
+} satisfies Prisma.TenantMembershipInclude
 
 @Injectable()
 export class PrismaMembershipAdministrationRepository extends MembershipAdministrationRepository implements CeoReplacementRepository {

@@ -9,13 +9,13 @@ import './styles/private-tools.css'
 import './styles/navigation.css'
 
 const programLinks = [
-  { to: '/app/programas/projeto66', label: 'Hoje', icon: '⌂', end: true },
-  { to: '/app/programas/projeto66/hoje', label: 'Checklist', icon: '✓' },
-  { to: '/app/programas/projeto66/meditar', label: 'Meditar', icon: '◷' },
-  { to: '/app/programas/projeto66/registrar', label: 'Registrar', icon: '+' },
-  { to: '/app/programas/projeto66/novo-eu', label: 'Novo Eu', icon: '★' },
-  { to: '/app/programas/projeto66/jornada', label: 'Jornada', icon: '🔥' },
-  { to: '/app/programas/projeto66/progresso', label: 'Tracker', icon: '⌁' },
+  { to: '/app/programas/projeto-66', label: 'Hoje', icon: '⌂', end: true },
+  { to: '/app/programas/projeto-66/hoje', label: 'Checklist', icon: '✓' },
+  { to: '/app/programas/projeto-66/meditar', label: 'Meditar', icon: '◷' },
+  { to: '/app/programas/projeto-66/registrar', label: 'Registrar', icon: '+' },
+  { to: '/app/programas/projeto-66/novo-eu', label: 'Novo Eu', icon: '★' },
+  { to: '/app/programas/projeto-66/jornada', label: 'Jornada', icon: '🔥' },
+  { to: '/app/programas/projeto-66/progresso', label: 'Tracker', icon: '⌁' },
 ]
 
 function Projeto66Shell() {

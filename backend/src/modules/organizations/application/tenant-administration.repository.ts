@@ -8,6 +8,12 @@ export interface TenantView {
   closedAt: Date | null
 }
 
+export interface PlatformTenantView extends TenantView {
+  createdAt: Date
+  activeCeo: { membershipId: string; email: string } | null
+  pendingCeoInvitation: { id: string; email: string; expiresAt: Date } | null
+}
+
 export interface PlatformTenantAction {
   tenantId: string
   actorPlatformAccessId: string
@@ -16,6 +22,7 @@ export interface PlatformTenantAction {
 }
 
 export abstract class TenantAdministrationRepository {
+  abstract list(): Promise<PlatformTenantView[]>
   abstract create(input: {
     actorPlatformAccessId: string
     name: string

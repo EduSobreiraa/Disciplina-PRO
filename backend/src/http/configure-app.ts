@@ -13,6 +13,7 @@ export function configureApp(app: INestApplication) {
 
   app.use(requestIdMiddleware)
   app.use(helmet())
+  app.use('/api/tracker/backup', json({ limit: '25mb' }))
   app.use(json({ limit: bodyLimit }))
   app.use(urlencoded({ extended: true, limit: bodyLimit }))
   app.enableCors({

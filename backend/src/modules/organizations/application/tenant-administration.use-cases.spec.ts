@@ -23,11 +23,13 @@ const tenant: TenantView = {
 }
 
 describe('casos de uso de administração de tenants', () => {
+  const list = jest.fn<TenantAdministrationRepository['list']>().mockResolvedValue([])
   const create = jest.fn<TenantAdministrationRepository['create']>().mockResolvedValue(tenant)
   const suspend = jest.fn<TenantAdministrationRepository['suspend']>().mockResolvedValue(tenant)
   const reactivate = jest.fn<TenantAdministrationRepository['reactivate']>().mockResolvedValue(tenant)
   const close = jest.fn<TenantAdministrationRepository['close']>().mockResolvedValue(tenant)
   const repository = {
+    list,
     create,
     suspend,
     reactivate,

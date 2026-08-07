@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, ForbiddenException, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Put } from '@nestjs/common'
+import { BadRequestException, Body, ConflictException, Controller, ForbiddenException, Get, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Put } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import type { CurrentPlatformContext } from '../../organizations/application/organization-context.repository.js'
 import { CurrentPlatform } from '../../organizations/http/current-organization-context.decorators.js'
@@ -7,12 +7,14 @@ import { ArchiveProgramUseCase, CreateProgramUseCase, CreateProgramVersionUseCas
 import { InvalidProgramDataError, InvalidProgramTransitionError, PlatformProgramActorInactiveError, ProgramDraftAlreadyExistsError, ProgramEnablementNotAllowedError, ProgramNotFoundError, ProgramSlugAlreadyExistsError, ProgramVersionNotPublishableError } from '../domain/program.errors.js'
 import { CreateProgramDto, ProgramIdentityDto, ProgramVersionDto } from './program-administration.dto.js'
 import { DisableTenantProgramUseCase, EnableTenantProgramUseCase } from '../application/tenant-program-administration.use-cases.js'
+import { ListPlatformProgramsUseCase } from '../application/list-platform-programs.use-case.js'
 
 @ApiTags('Platform programs')
 @PlatformRoute()
 @Controller('platform')
 export class PlatformProgramsController {
   constructor(
+    private readonly listPrograms: ListPlatformProgramsUseCase,
     private readonly createProgram: CreateProgramUseCase,
     private readonly updateProgram: UpdateProgramUseCase,
     private readonly replaceDraft: ReplaceProgramDraftUseCase,
@@ -22,6 +24,12 @@ export class PlatformProgramsController {
     private readonly enableTenantProgram: EnableTenantProgramUseCase,
     private readonly disableTenantProgram: DisableTenantProgramUseCase,
   ) {}
+
+  @Get('programs')
+  @ApiOperation({ summary: 'Lista programas globais e habilitações por tenant' })
+  list(@CurrentPlatform() context: CurrentPlatformContext) {
+    return this.listPrograms.execute(context)
+  }
 
   @Post('programs')
   @ApiOperation({ summary: 'Cria programa global com primeiro draft' })

@@ -1,0 +1,10 @@
+export class TrackerContextNotFoundError extends Error {}
+export class TrackerBehaviorNotFoundError extends Error {}
+export class TrackerBehaviorLimitError extends Error {}
+export class TrackerBehaviorDuplicateError extends Error {}
+export class TrackerMarkNotFoundError extends Error {}
+export class TrackerJustificationNotAllowedError extends Error {}
+export class InvalidTrackerRangeError extends Error {}
+export class TrackerFutureDateError extends Error {}
+export class InvalidTrackerDataError extends Error {}
+export class InvalidTrackerBackupError extends Error {}

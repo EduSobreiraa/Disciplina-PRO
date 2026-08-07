@@ -73,7 +73,7 @@ describe('Team administration integration', () => {
       .expect(({ body }) => expect(body).toMatchObject({ code: 'RESOURCE_NOT_FOUND' }))
   })
 
-  it('creates and lists normalized active teams with atomic audit', async () => {
+  it('creates and lists normalized teams with atomic audit', async () => {
     const response = await api('post', '').send({ name: '  Operações   São Paulo  ' }).expect(201)
     expect(response.body).toMatchObject({ tenantId, name: 'Operações São Paulo', normalizedName: 'operações são paulo', archivedAt: null })
     const teamId = (response.body as { id: string }).id
@@ -104,7 +104,7 @@ describe('Team administration integration', () => {
     expect(await prisma.teamMembership.findUniqueOrThrow({ where: { id: link.id } })).toMatchObject({ endedAt: expect.any(Date) as Date })
     expect(await prisma.auditEvent.findFirst({ where: { entityId: link.id, action: 'TEAM_MEMBERSHIP_ENDED' } })).toMatchObject({ actorMembershipId: ceoMembershipId, targetMembershipId: memberMembershipId })
     const listing = await api('get', '').expect(200)
-    expect((listing.body as Array<{ id: string }>).map(({ id }) => id)).not.toContain(teamId)
+    expect((listing.body as Array<{ id: string; archivedAt: string | null }>).find(({ id }) => id === teamId)?.archivedAt).toBeTruthy()
 
     const replacement = await api('post', '').send({ name: 'Sucesso do Cliente' }).expect(201)
     await api('patch', `/${teamId}/restore`).expect(409)

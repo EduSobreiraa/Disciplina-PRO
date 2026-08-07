@@ -21,7 +21,7 @@ export class TenantTeamsController {
 
   @Get()
   @RequireTenantPermissions(TENANT_PERMISSIONS.TEAM_READ_ALL)
-  @ApiOperation({ summary: 'Lista times ativos do tenant atual' })
+  @ApiOperation({ summary: 'Lista times ativos e arquivados do tenant atual para administração' })
   list(@CurrentTenant() context: CurrentTenantContext) { return this.mapErrors(() => this.listTeams.execute(context)) }
 
   @Post()

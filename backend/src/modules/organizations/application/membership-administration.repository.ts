@@ -12,6 +12,7 @@ export interface MembershipView {
   suspendedAt: Date | null
   deactivatedAt: Date | null
   user: { email: string }
+  teams: Array<{ id: string; teamId: string; role: TeamAssignmentRole; team: { id: string; name: string } }>
 }
 
 export interface MembershipActor {

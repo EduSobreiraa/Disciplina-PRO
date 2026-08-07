@@ -22,7 +22,7 @@ export function DashboardPage() {
           <h2>Projeto <em>66</em></h2>
           <p>Quebre padrões automáticos, construa uma nova forma de agir e consolide sua identidade por meio da execução diária.</p>
           <div className="program-meta"><span>3 fases</span><span>66 dias</span><span>Jornada individual</span></div>
-          <Link className="button" to="/app/programas/projeto66">Acessar programa</Link>
+          <Link className="button" to="/app/programas/projeto-66">Acessar programa</Link>
         </div>
         <div className="program-seal"><span>Projeto</span><strong>66</strong><small>O Incendiário</small></div>
       </section>

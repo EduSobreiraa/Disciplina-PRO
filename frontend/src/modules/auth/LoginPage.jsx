@@ -11,7 +11,7 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
 
-  if (session.authenticated) return <Navigate to="/app" replace />
+  if (session.authenticated) return <Navigate to={session.platformAccess?.role === 'SUPER_ADMIN' ? '/plataforma' : '/app'} replace />
 
   async function submit(event) {
     event.preventDefault()
@@ -19,11 +19,11 @@ export function LoginPage() {
     setMessage('')
     try {
       const context = await session.login(email, password)
-      if (context.organizations.length === 0) {
+      if (context.organizations.length === 0 && context.platformAccess?.role !== 'SUPER_ADMIN') {
         setMessage('Sua identidade não possui uma organização ativa.')
         return
       }
-      navigate(location.state?.from ?? '/app', { replace: true })
+      navigate(location.state?.from ?? (context.platformAccess?.role === 'SUPER_ADMIN' ? '/plataforma' : '/app'), { replace: true })
     } catch {
       setMessage('E-mail ou senha inválidos.')
     } finally {

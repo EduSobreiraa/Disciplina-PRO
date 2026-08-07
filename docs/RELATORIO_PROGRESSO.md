@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 03/08/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B7 concluídos
+> Atualizado em 06/08/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos
 
 ## 1. Visão geral do produto
 
@@ -31,6 +31,46 @@ A B7.3 adicionou agregações exclusivas do CEO para o tenant e membros inativos
 
 A B7.4 explicitou todos os contratos de resposta no OpenAPI e consolidou a matriz HTTP de autenticação, autorização, tenant, validação e privacidade. Os schemas e corpos públicos não contêm payload privado nem metadata livre; a fase B7 está concluída.
 
+A B8.1 substituiu o catálogo mock do frontend por `GET /api/programs`, usando sessão e tenant selecionado, estados explícitos de loading/vazio/erro/retry e rota derivada do `slug` retornado pelo servidor. Tracker, ritual e Playwright permanecem nas próximas parcelas do B8.
+
+A B8.2.0 adicionou a décima migration com comportamentos pessoais, marcas objetivas e justificativas privadas do tracker. Chaves compostas e constraints impedem vínculos entre tenants/memberships, duplicação diária, nomes ativos duplicados e lifecycle inconsistente; API e adapter React permanecem em B8.2.1–B8.2.2.
+
+A B8.2.1 adicionou o módulo backend `tracker` em camadas, com bootstrap idempotente dos dez comportamentos iniciais, limite transacional de 20 ativos, leitura por intervalo de até 366 dias e rotas pessoais para comportamentos, marcas e justificativa privada. O teste HTTP prova autenticação, tenant, normalização, substituição de falha por sucesso com remoção do texto privado, data futura inválida e comportamento estrangeiro não enumerável. O adapter React permanece para a B8.2.2.
+
+A B8.2.2 substituiu a fonte local da tela do tracker por um adapter HTTP autenticado e tenant-scoped. Cada mês é reconstruído pelo servidor, mutações são serializadas com recarga autoritativa e a interface possui loading, erro e retry. A exportação existente foi delimitada como snapshot mensal; a importação permanece desabilitada até a restauração atômica server-side da B8.2.3.
+
+A B8.2.3 substituiu o snapshot mensal por backup pessoal completo v2 e restauração server-side atômica. O formato usa chaves portáveis em vez de IDs internos, o frontend converte arquivos locais v1, e o backend valida limites, referências, duplicações, datas e justificativas antes da substituição. Integração prova round-trip com novos UUIDs, rejeição sem perda do estado vigente e rollback quando uma constraint falha após as exclusões transacionais.
+
+A B8.3.0 adicionou a décima primeira migration para o ritual diário. Dias e checks usam escopo composto de tenant/membership, a data é única por membership e o banco restringe os oito ciclos, segundos restantes e timestamps do relógio a combinações consistentes. As chaves de seção/item são estáveis e desacopladas dos textos editoriais; aplicação e HTTP permanecem para a B8.3.1.
+
+A B8.3.1 adicionou o módulo backend `ritual`, com catálogo estável de etapas, políticas de data, casos de uso, repository Prisma transacional e contratos OpenAPI. A API lê até 366 dias, define checks idempotentemente e opera iniciar, pausar e reiniciar apenas na data civil atual do tenant. Integração com relógio controlado prova timezone, concorrência, pausa, conclusão única, reset, futuro inválido e isolamento entre tenants.
+
+A B8.3.2 substituiu a fonte local da tela do ritual por um adapter HTTP autenticado e tenant-scoped. O frontend deriva a data civil do timezone da organização, reconstrói checks por chaves estáveis e trata o servidor como autoridade para transições do cronômetro, com estados explícitos de loading, erro, retry e mutação. O repository local permanece temporariamente apenas como entrada da projeção antiga de missões, a ser removida na B8.3.3.
+
+A B8.3.3 adicionou `GET /api/missions/me` como projeção pessoal somente leitura das oito métricas de missão. Mês e semana ISO usam a data civil do tenant; tracker, ritual e XP são agregados sob tenant/membership sem ler justificativas privadas e sem produzir eventos ou recompensas. A tela passou a usar adapter HTTP e os dois repositories locais remanescentes foram removidos. Banco vazio provou resultados reproduzíveis, isolamento entre tenants e nenhuma nova transação de XP.
+
+A B8.4.0 versionou o harness Playwright frontend–API. A configuração coordena Nest e Vite, usa Chromium em projetos desktop e mobile, limita concorrência para o banco compartilhado e retém evidências somente em falha. O primeiro teste abre uma rota privada sem sessão, confirma o redirecionamento e valida o login real nos dois viewports; o CI instala explicitamente apenas o Chromium necessário.
+
+A B8.4.1 adicionou fixture idempotente protegida contra bancos não descartáveis e uma jornada autenticada em ambos os viewports. O navegador prova login, organização corrente, `X-Tenant-Id`, catálogo remoto, entrada no Projeto 66, restauração da sessão em reload/nova página e revogação no logout. O teste detectou e corrigiu a divergência entre o slug canônico `projeto-66` e as rotas antigas `projeto66`; também confirmou que o CORS rejeita a origem alternativa `127.0.0.1`, mantendo a origem exata `localhost`.
+
+A B8.4.2 cobre a execução real e o boundary de privacidade. A interface inicia o ciclo, registra placar, conclui atividade e persiste reflexão; o teste confirma o marcador secreto no endpoint privado e sua ausência nos corpos objetivos enviados, no detalhe do enrollment, reporting pessoal, auditoria pessoal, gamificação e missões. O cenário foi repetido no mesmo banco já mutado para provar compatibilidade com retries; a duplicação funcional no projeto mobile é omitida deliberadamente, pois responsividade completa fecha na B8.4.3.
+
+A B8.4.3 fecha a integração do frontend com uma jornada de projeções server-side em desktop e mobile. O teste marca tracker e ritual, abre um segundo contexto autenticado e prova reconstrução exclusiva pela API, além da atualização das missões derivadas. A instrumentação do navegador não registra acessos a `localStorage`. A suíte completa possui quatro cenários, sete execuções aprovadas e um skip funcional intencional; `PP-002` e `PP-009` atendem seus critérios locais de encerramento.
+
+A B9.1 iniciou a administração B2B com uma rota tenant-scoped para CEO/Manager. O adapter HTTP lista memberships visíveis e, somente para CEO, a estrutura de times; `USER` é redirecionado e Manager não chama a rota de times exclusiva do CEO. A tela apresenta estados de carregamento, erro/retry e vazio com layout responsivo. As demais mutações administrativas permanecem deliberadamente para B9.2–B9.4.
+
+A B9.2 integrou o lifecycle completo de times à área do CEO: criar, renomear, arquivar e restaurar. Cada mutação volta à projeção autoritativa da API; times arquivados permanecem enumeráveis apenas na leitura administrativa para viabilizar restauração. A integração PostgreSQL prova normalização, concorrência, conflito de nome, tenant estrangeiro não enumerável, encerramento dos vínculos ativos, auditoria e transições inválidas.
+
+A B9.3 integrou papéis, status e vínculos de time à administração. A leitura de memberships inclui somente atribuições ativas necessárias à tela. CEO promove/rebaixa Manager, suspende, inativa, reativa, vincula e encerra vínculos; Manager recebe apenas ações permitidas sobre participantes do próprio escopo. Transições exigem motivo, a interface recarrega a API após cada comando e não usa ocultação visual como autorização. A matriz PostgreSQL de seis cenários prova escopo, reuso do vínculo sem duplicação, downgrade de Manager, bloqueio de execução, isolamento e substituição concorrente de CEO na rota separada de plataforma.
+
+A B9.4 integrou convites administrativos à mesma área. CEO convida participante ou Manager para múltiplos times; Manager convida somente participante para times que administra. Listagem, criação, reenvio e revogação respeitam ownership e tenant, a tela mostra expiração e o último resultado do transporte, e nenhum token entra nos contratos frontend. A matriz PostgreSQL de quatro cenários prova duplicidade, membership preexistente, rotação, revogação e primeiro CEO separado; Mailpit comprova a entrega de link utilizável. Resend, retry e bounce permanecem no `PP-015` antes de staging.
+
+A B9.5 integrou reporting e auditoria à área administrativa. CEO alterna entre a visão consolidada do tenant e times ativos; Manager recebe somente os times ativos que administra, derivados de sua própria membership. A interface apresenta métricas objetivas de adesão, progresso e programas, além de eventos recentes com ações curadas, sem renderizar metadados ou respostas privadas. Quatro suítes e treze testes de integração PostgreSQL comprovam os contratos pessoal, por time e por tenant, incluindo autorização negativa e isolamento de escopo.
+
+A B9.6 criou a fronteira visual independente `/plataforma`, acessível apenas por sessão com `SUPER_ADMIN`, inclusive quando a identidade não possui membership empresarial. Consultas globais próprias enumeram tenants, CEO ativo ou convite pendente, programas, versões e habilitações; a interface cria tenants pendentes, convida o primeiro CEO, suspende, reativa ou encerra tenants e alterna programas publicados por organização. Nenhuma chamada de plataforma envia `X-Tenant-Id`, e o superadministrador continua sem acesso implícito às rotas empresariais. Duas suítes com oito testes de integração em banco reconstruído comprovam autorização negativa, lifecycle, concorrência, auditoria e provisionamento.
+
+A B9.7 separou a fixture de navegador em quatro identidades e fechou a matriz administrativa em Chromium desktop/mobile. `USER` é redirecionado, Manager enumera somente o time gerenciado e não recebe controles estruturais, CEO cria time com `X-Tenant-Id`, e `SUPER_ADMIN` consulta/cria pela fronteira global sem esse header. A ampliação revelou que o limite estrito de dez logins por minuto saturava a própria matriz; o backend preserva esse limite fora de testes e usa capacidade ampliada somente quando `NODE_ENV=test`. A suíte Playwright completa possui oito cenários, quinze execuções aprovadas e um skip funcional intencional. A B9 está concluída localmente.
+
 ## 2. Tecnologias e decisões
 
 | Área | Tecnologia/decisão |
@@ -39,8 +79,8 @@ A B7.4 explicitou todos os contratos de resposta no OpenAPI e consolidou a matri
 | Build | Vite 8 |
 | Qualidade | ESLint 10, `node:test`, Jest, Playwright e SonarQube Cloud |
 | Estilos | CSS por módulo, tokens e media queries mobile-first |
-| Persistência atual | híbrida: sessão, Projeto 66 e gamificação via API; tracker e ritual em `localStorage` |
-| Backend | NestJS 11 + TypeScript 5.9, B0–B5 e B6.0–B6.4 implementados; B6.5 integrada no frontend |
+| Persistência atual | sessão com access token em memória/refresh cookie; fontes de verdade de negócio acessadas por APIs autenticadas |
+| Backend | NestJS 11 + TypeScript 5.9, B0–B8 implementados e integrados localmente |
 | ORM/banco | Prisma 7 + adapter `pg` + PostgreSQL 18 |
 | Arquitetura backend | monolito modular em camadas |
 | Multi-tenancy | banco compartilhado com isolamento obrigatório por `tenantId` |
@@ -198,9 +238,9 @@ Projeto 66:
 
 ## 6. Persistência e privacidade atuais
 
-O frontend utiliza chaves locais separadas somente para tracker e ritual. O ciclo objetivo, as ferramentas privadas do Projeto 66 e a gamificação usam repositories HTTP; a sessão usa access token em memória e refresh por cookie. Componentes não acessam `localStorage` diretamente.
+As telas de tracker, ritual e missões, o ciclo objetivo, as ferramentas privadas do Projeto 66 e a gamificação usam repositories HTTP; a sessão usa access token em memória e refresh por cookie. Nenhum repository local de negócio permanece no frontend.
 
-Os adapters locais restantes não constituem persistência de produção. `localStorage` é legível pelo navegador e continuará sendo substituído por APIs autenticadas. O backend já separa respostas privadas dos fatos objetivos do Projeto 66, mas retenção, operação de produção e os módulos locais restantes continuam pendentes.
+O backend separa respostas privadas dos fatos objetivos do Projeto 66 e as projeções atuais são server-side. Isso não autoriza uso produtivo: retenção e operação de produção continuam pendentes, embora a prova Playwright frontend–API local esteja versionada e aprovada.
 
 ## 7. Procedimento de criação
 
@@ -267,7 +307,7 @@ Playwright foi utilizado de forma assistida no gate histórico F0–F9 para:
 - identificar controles menores que 44 px;
 - capturar telas para inspeção visual.
 
-Não há `playwright.config` nem specs frontend versionadas no repositório. Portanto essas verificações visuais não são reproduzidas pelo CI atual; a pendência está registrada no PP-009.
+Desde a B8.4, `frontend/playwright.config.js` e quatro specs frontend estão versionados. A suíte reproduz no CI sessão, catálogo, execução, privacidade, tracker, ritual e missões em projetos Chromium desktop/mobile; validação assistiva e dispositivos físicos permanecem separados no `PP-010`.
 
 Matriz responsiva adotada:
 
@@ -332,17 +372,16 @@ Uma feature visual é encerrada somente após fluxo funcional, persistência, re
 
 Implementado e validado localmente:
 
-- frontend React F0–F9, com autenticação, contexto organizacional e Projeto 66 parcialmente integrados à API;
-- nove migrations cobrindo identidade, organizações, convites, catálogo, execução, eventos internos, gamificação e idempotência de auditoria derivada;
-- módulos backend `identity-access`, `organizations`, `invitations`, `programs` e `execution`;
+- frontend React F0–F9, com autenticação, contexto organizacional, Projeto 66, tracker, ritual, gamificação e missões integrados à API;
+- onze migrations cobrindo identidade, organizações, convites, catálogo, execução, eventos internos, gamificação, idempotência de auditoria derivada, tracker e ritual;
+- módulos backend `identity-access`, `organizations`, `invitations`, `programs`, `execution`, `tracker` e `ritual`;
 - autorização por sessão atual, tenant, role e escopo;
 - conteúdo privado do Projeto 66 em tabela, repository, DTOs e rotas próprios;
-- definição editorial e materialização idempotente do Projeto 66.
+- definição editorial e materialização idempotente do Projeto 66;
+- catálogo visual consumindo as ofertas reais de `GET /api/programs` desde a B8.1.
 
 Ainda não implementado ou não validado:
 
-- B8: retirada dos repositories locais de tracker e ritual, além de E2E frontend versionado;
-- catálogo visual do frontend ainda alimentado por `programs.mock.js`, embora catálogo e ofertas reais existam no backend;
 - B9: interfaces administrativas completas;
 - B10: infraestrutura, backup/restauração, observabilidade, chaves gerenciadas, acessibilidade assistiva e release;
 - validação em staging ou produção.
@@ -351,16 +390,17 @@ O `PP-017` foi encerrado na B6.1: controllers e CORS concordam sobre `PUT`, e o 
 
 ## 11. Evidência de validação atual
 
-Gate local executado em 03/08/2026:
+Gate local atualizado em 06/08/2026:
 
 | Verificação | Resultado |
 |---|---|
 | Runtime/dependências | Node 24.18.0, npm 11.16.0 e `npm ls --workspaces --depth=0` aprovados |
-| Prisma | schema válido; nove migrations aplicadas em banco vazio descartável |
-| Frontend unitário | 7 testes aprovados |
-| Backend unitário | 33 suítes, 104 testes aprovados |
-| Integração PostgreSQL | 28 suítes, 82 testes aprovados |
+| Prisma | schema válido; onze migrations aplicadas em banco vazio descartável |
+| Frontend unitário | 13 testes aprovados |
+| Backend unitário | 34 suítes, 106 testes aprovados |
+| Integração PostgreSQL | 33 suítes, 90 testes aprovados |
 | E2E backend/Supertest | 5 suítes, 20 testes aprovados |
+| E2E frontend/Playwright | 8 cenários, 15 execuções aprovadas e 1 skip funcional intencional em projetos Chromium desktop/mobile |
 | SMTP local/Mailpit | 1 suíte, 1 teste aprovado |
 | Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
 | Dependências | gate controlado aprovado; auditoria bruta mantém 2 ocorrências altas do mesmo advisory RSC aceito estritamente no PP-016 |
@@ -369,11 +409,11 @@ O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estát
 
 ## 12. Próxima etapa e bloqueios
 
-A última fase funcional comprovadamente concluída é a B7. A próxima implementação é **B8 — integração do frontend**.
+A última fase funcional comprovadamente concluída é a B9. A próxima implementação é **B10 — hardening, staging e release MVP**.
 
 O desenvolvimento local pode continuar. Dados reais, staging público e produção continuam bloqueados pelos itens P0/P1 do relatório de problemas postergados. Em particular:
 
-- PP-002: tracker e ritual ainda possuem persistência local; a parcela de gamificação foi encerrada na B6.5;
+- PP-002 e PP-009: encerrados localmente na B8.4 por adapters HTTP e suíte Playwright versionada; a ampliação em staging permanece no B10 sem reabrir esses critérios locais;
 - PP-004: políticas centrais aprovadas pela Spark, com implementação, matriz definitiva, contratos e validação jurídica ainda pendentes;
 - PP-005–PP-010: ADR 016 fechou fornecedores e parâmetros parciais de PP-006–PP-008, incluindo BetterStack para uptime e alertas; acessos, responsáveis, contratação, implementação, validação jurídica e ensaios continuam pendentes;
 - PP-016: mitigado para duas ocorrências do mesmo advisory exclusivo de RSC; o gate controlado está verde, mas a auditoria bruta ainda não zerou;
@@ -388,4 +428,4 @@ Para o PP-004, foram registradas as políticas aprovadas de retenção do tenant
 
 ## 14. Conclusão
 
-O repositório possui frontend React funcional e backend multi-tenant implementado até B7, incluindo eventos, gamificação, auditoria e reporting objetivo com contratos e matriz HTTP de privacidade. Isso não equivale a produto completo nem a prontidão de produção. B8 é a próxima entrega real; B9–B10 e os riscos explicitamente postergados permanecem futuros.
+O repositório possui frontend React funcional e backend multi-tenant implementado até B8, incluindo eventos, gamificação, auditoria, reporting objetivo e integração frontend–API reproduzível em navegador real. Isso não equivale a produto completo nem a prontidão de produção. B9–B10 e os riscos explicitamente postergados permanecem futuros.

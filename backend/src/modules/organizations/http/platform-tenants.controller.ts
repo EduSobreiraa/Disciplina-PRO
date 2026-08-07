@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, ForbiddenException, NotFoundException, Param, Patch, Post } from '@nestjs/common'
+import { BadRequestException, Body, ConflictException, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CloseTenantUseCase } from '../application/close-tenant.use-case.js'
 import { CreateTenantUseCase } from '../application/create-tenant.use-case.js'
@@ -12,12 +12,19 @@ import { CreateTenantDto, TenantReasonDto } from './tenant-administration.dto.js
 import { ReplaceCeoUseCase } from '../application/membership-administration.use-cases.js'
 import { ReplaceCeoDto } from './membership-administration.dto.js'
 import { InvalidCeoReplacementError } from '../domain/organization.errors.js'
+import { ListPlatformTenantsUseCase } from '../application/list-platform-tenants.use-case.js'
 
 @ApiTags('Platform tenants')
 @PlatformRoute()
 @Controller('platform/tenants')
 export class PlatformTenantsController {
-  constructor(private readonly createTenant: CreateTenantUseCase, private readonly suspendTenant: SuspendTenantUseCase, private readonly reactivateTenant: ReactivateTenantUseCase, private readonly closeTenant: CloseTenantUseCase, private readonly replaceCeo: ReplaceCeoUseCase) {}
+  constructor(private readonly listTenants: ListPlatformTenantsUseCase, private readonly createTenant: CreateTenantUseCase, private readonly suspendTenant: SuspendTenantUseCase, private readonly reactivateTenant: ReactivateTenantUseCase, private readonly closeTenant: CloseTenantUseCase, private readonly replaceCeo: ReplaceCeoUseCase) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Lista tenants para administração de plataforma' })
+  list(@CurrentPlatform() context: CurrentPlatformContext) {
+    return this.listTenants.execute(context)
+  }
 
   @Post()
   @ApiOperation({ summary: 'Cria um tenant pendente' })

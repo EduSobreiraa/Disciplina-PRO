@@ -11,7 +11,7 @@ export class PrismaTeamAdministrationRepository extends TeamAdministrationReposi
   listCurrent(input: Omit<TenantTeamActor, 'now'>) {
     return this.prisma.$transaction(async (transaction) => {
       await this.assertActor(transaction, input)
-      return transaction.team.findMany({ where: { tenantId: input.tenantId, archivedAt: null }, orderBy: [{ normalizedName: 'asc' }, { id: 'asc' }] })
+      return transaction.team.findMany({ where: { tenantId: input.tenantId }, orderBy: [{ archivedAt: 'asc' }, { normalizedName: 'asc' }, { id: 'asc' }] })
     })
   }
 

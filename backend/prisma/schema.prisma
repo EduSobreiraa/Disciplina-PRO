@@ -111,6 +111,11 @@ enum InternalEventDeliveryStatus {
   FAILED
 }
 
+enum TrackerMarkStatus {
+  COMPLETED
+  FAILED
+}
+
 model User {
   id              String             @id @default(dbgenerated("uuidv7()")) @db.Uuid
   email           String             @db.VarChar(320)
@@ -128,46 +133,52 @@ model User {
 }
 
 model Tenant {
-  id             String             @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  name           String             @db.VarChar(160)
-  slug           String             @unique @db.VarChar(80)
-  timeZone       String             @default("America/Bahia") @map("time_zone") @db.VarChar(100)
-  status         TenantStatus       @default(PENDING)
-  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt      DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
-  suspendedAt    DateTime?          @map("suspended_at") @db.Timestamptz(3)
-  closedAt       DateTime?          @map("closed_at") @db.Timestamptz(3)
-  memberships    TenantMembership[]
-  teams          Team[]
-  invitations    Invitation[]
-  programs       TenantProgram[]
-  auditEvents    AuditEvent[]
-  internalEvents InternalEvent[]
-  xpTransactions XpTransaction[]
-  achievements   UserAchievement[]
+  id               String             @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name             String             @db.VarChar(160)
+  slug             String             @unique @db.VarChar(80)
+  timeZone         String             @default("America/Bahia") @map("time_zone") @db.VarChar(100)
+  status           TenantStatus       @default(PENDING)
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  suspendedAt      DateTime?          @map("suspended_at") @db.Timestamptz(3)
+  closedAt         DateTime?          @map("closed_at") @db.Timestamptz(3)
+  memberships      TenantMembership[]
+  teams            Team[]
+  invitations      Invitation[]
+  programs         TenantProgram[]
+  auditEvents      AuditEvent[]
+  internalEvents   InternalEvent[]
+  xpTransactions   XpTransaction[]
+  achievements     UserAchievement[]
+  trackerBehaviors TrackerBehavior[]
+  trackerMarks     TrackerMark[]
+  ritualDays       RitualDay[]
 
   @@map("tenants")
 }
 
 model TenantMembership {
-  id             String            @id @default(dbgenerated("uuidv7()")) @db.Uuid
-  tenantId       String            @map("tenant_id") @db.Uuid
-  userId         String            @map("user_id") @db.Uuid
-  role           TenantRole        @default(USER)
-  status         MembershipStatus  @default(ACTIVE)
-  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
-  suspendedAt    DateTime?         @map("suspended_at") @db.Timestamptz(3)
-  deactivatedAt  DateTime?         @map("deactivated_at") @db.Timestamptz(3)
-  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  user           User              @relation(fields: [userId], references: [id], onDelete: Restrict)
-  actorEvents    AuditEvent[]      @relation("AuditActorMembership")
-  targetEvents   AuditEvent[]      @relation("AuditTargetMembership")
-  teams          TeamMembership[]
-  invitations    Invitation[]      @relation("InvitationCreatorMembership")
-  enrollments    Enrollment[]
-  xpTransactions XpTransaction[]
-  achievements   UserAchievement[]
+  id               String            @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId         String            @map("tenant_id") @db.Uuid
+  userId           String            @map("user_id") @db.Uuid
+  role             TenantRole        @default(USER)
+  status           MembershipStatus  @default(ACTIVE)
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+  suspendedAt      DateTime?         @map("suspended_at") @db.Timestamptz(3)
+  deactivatedAt    DateTime?         @map("deactivated_at") @db.Timestamptz(3)
+  tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  actorEvents      AuditEvent[]      @relation("AuditActorMembership")
+  targetEvents     AuditEvent[]      @relation("AuditTargetMembership")
+  teams            TeamMembership[]
+  invitations      Invitation[]      @relation("InvitationCreatorMembership")
+  enrollments      Enrollment[]
+  xpTransactions   XpTransaction[]
+  achievements     UserAchievement[]
+  trackerBehaviors TrackerBehavior[]
+  trackerMarks     TrackerMark[]
+  ritualDays       RitualDay[]
 
   @@unique([id, tenantId])
   @@unique([tenantId, userId])
@@ -486,6 +497,97 @@ model PrivateActivityResponse {
   @@unique([enrollmentId, activityId, programDay])
   @@index([tenantId, enrollmentId, programDay])
   @@map("private_activity_responses")
+}
+
+model TrackerBehavior {
+  id             String           @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId       String           @map("tenant_id") @db.Uuid
+  membershipId   String           @map("membership_id") @db.Uuid
+  name           String           @db.VarChar(200)
+  normalizedName String           @map("normalized_name") @db.VarChar(200)
+  position       Int
+  active         Boolean          @default(true)
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  archivedAt     DateTime?        @map("archived_at") @db.Timestamptz(3)
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  membership     TenantMembership @relation(fields: [membershipId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  marks          TrackerMark[]
+
+  @@unique([id, tenantId, membershipId])
+  @@unique([membershipId, position])
+  @@index([tenantId, membershipId, active, position])
+  @@map("tracker_behaviors")
+}
+
+model TrackerMark {
+  id            String                @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId      String                @map("tenant_id") @db.Uuid
+  membershipId  String                @map("membership_id") @db.Uuid
+  behaviorId    String                @map("behavior_id") @db.Uuid
+  trackedOn     DateTime              @map("tracked_on") @db.Date
+  status        TrackerMarkStatus
+  createdAt     DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+  tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  membership    TenantMembership      @relation(fields: [membershipId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  behavior      TrackerBehavior       @relation(fields: [behaviorId, tenantId, membershipId], references: [id, tenantId, membershipId], onDelete: Restrict)
+  justification TrackerJustification?
+
+  @@unique([id, tenantId, membershipId])
+  @@unique([behaviorId, trackedOn])
+  @@index([tenantId, membershipId, trackedOn])
+  @@map("tracker_marks")
+}
+
+model TrackerJustification {
+  id            String      @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId      String      @map("tenant_id") @db.Uuid
+  membershipId  String      @map("membership_id") @db.Uuid
+  trackerMarkId String      @map("tracker_mark_id") @db.Uuid
+  text          String      @db.Text
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  trackerMark   TrackerMark @relation(fields: [trackerMarkId, tenantId, membershipId], references: [id, tenantId, membershipId], onDelete: Restrict)
+
+  @@unique([trackerMarkId, tenantId, membershipId])
+  @@index([tenantId, membershipId])
+  @@map("tracker_justifications")
+}
+
+model RitualDay {
+  id               String           @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  tenantId         String           @map("tenant_id") @db.Uuid
+  membershipId     String           @map("membership_id") @db.Uuid
+  ritualDate       DateTime         @map("ritual_date") @db.Date
+  completedCycles  Int              @default(0) @map("completed_cycles")
+  remainingSeconds Int              @default(1800) @map("remaining_seconds")
+  runningStartedAt DateTime?        @map("running_started_at") @db.Timestamptz(3)
+  runningUntil     DateTime?        @map("running_until") @db.Timestamptz(3)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  membership       TenantMembership @relation(fields: [membershipId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  checks           RitualCheck[]
+
+  @@unique([id, tenantId, membershipId])
+  @@unique([membershipId, ritualDate])
+  @@index([tenantId, membershipId, ritualDate])
+  @@map("ritual_days")
+}
+
+model RitualCheck {
+  ritualDayId  String    @map("ritual_day_id") @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  membershipId String    @map("membership_id") @db.Uuid
+  sectionKey   String    @map("section_key") @db.VarChar(40)
+  itemKey      String    @map("item_key") @db.VarChar(80)
+  completedAt  DateTime  @default(now()) @map("completed_at") @db.Timestamptz(3)
+  ritualDay    RitualDay @relation(fields: [ritualDayId, tenantId, membershipId], references: [id, tenantId, membershipId], onDelete: Restrict)
+
+  @@id([ritualDayId, sectionKey, itemKey])
+  @@index([tenantId, membershipId, completedAt])
+  @@map("ritual_checks")
 }
 
 model PlatformAccess {

@@ -70,6 +70,14 @@ describe('Tenant program enablement integration', () => {
     expect(await prisma.enrollment.count({ where: { tenantProgramId: relation.id, status: 'AVAILABLE' } })).toBe(3)
     expect(await prisma.auditEvent.count({ where: { entityId: relation.id, action: 'TENANT_PROGRAM_ENABLED' } })).toBe(1)
     expect(responses.map(({ body }) => (body as { provisionedEnrollments: number }).provisionedEnrollments).sort()).toEqual([0, 3])
+    await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .get('/api/platform/programs').set('Authorization', `Bearer ${ceoToken}`).expect(403)
+    const projection = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .get('/api/platform/programs').set('Authorization', `Bearer ${token}`).expect(200)
+    const programs = projection.body as Array<{ id: string; versions: Array<{ status: string; versionNumber: number }>; tenantPrograms: Array<{ tenantId: string; status: string }> }>
+    const listed = programs.find(({ id }) => id === programId)
+    expect(listed?.versions.some(({ status, versionNumber }) => status === 'PUBLISHED' && versionNumber === 1)).toBe(true)
+    expect(listed?.tenantPrograms.some((item) => item.tenantId === tenantId && item.status === 'ENABLED')).toBe(true)
   })
 
   it('disables idempotently, preserves offers, and provisions a later active member on reenable', async () => {

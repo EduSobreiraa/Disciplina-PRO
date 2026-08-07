@@ -12,6 +12,30 @@ export class PrismaTenantAdministrationRepository extends TenantAdministrationRe
     private readonly executions: ExecutionAdministrativeBlocker,
   ) { super() }
 
+  async list() {
+    const tenants = await this.prisma.tenant.findMany({
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      include: {
+        memberships: {
+          where: { role: 'CEO', status: 'ACTIVE', user: { status: 'ACTIVE' } },
+          select: { id: true, user: { select: { email: true } } },
+          take: 1,
+        },
+        invitations: {
+          where: { role: 'CEO', status: 'PENDING', expiresAt: { gt: new Date() } },
+          orderBy: { createdAt: 'desc' },
+          select: { id: true, email: true, expiresAt: true },
+          take: 1,
+        },
+      },
+    })
+    return tenants.map(({ memberships, invitations, ...tenant }) => ({
+      ...tenant,
+      activeCeo: memberships[0] ? { membershipId: memberships[0].id, email: memberships[0].user.email } : null,
+      pendingCeoInvitation: invitations[0] ?? null,
+    }))
+  }
+
   create(input: { actorPlatformAccessId: string; name: string; slug: string; timeZone: string; now: Date }) {
     return this.prisma.$transaction(async (transaction) => {
       await this.assertActor(transaction, input.actorPlatformAccessId)

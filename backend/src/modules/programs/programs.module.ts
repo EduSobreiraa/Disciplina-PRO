@@ -15,6 +15,7 @@ import { TenantProgramsController } from './http/tenant-programs.controller.js'
 import { BundledProgramMaterializationRepository } from './application/bundled-program-materialization.repository.js'
 import { MaterializeBundledProgramUseCase } from './application/materialize-bundled-program.use-case.js'
 import { PrismaBundledProgramMaterializationRepository } from './infrastructure/prisma-bundled-program-materialization.repository.js'
+import { ListPlatformProgramsUseCase } from './application/list-platform-programs.use-case.js'
 
 @Module({
   controllers: [PlatformProgramsController, TenantProgramsController],
@@ -25,6 +26,7 @@ import { PrismaBundledProgramMaterializationRepository } from './infrastructure/
     { provide: TenantProgramCatalogRepository, useClass: PrismaTenantProgramCatalogRepository },
     { provide: BundledProgramMaterializationRepository, useClass: PrismaBundledProgramMaterializationRepository },
     CreateProgramUseCase,
+    ListPlatformProgramsUseCase,
     UpdateProgramUseCase,
     ReplaceProgramDraftUseCase,
     CreateProgramVersionUseCase,

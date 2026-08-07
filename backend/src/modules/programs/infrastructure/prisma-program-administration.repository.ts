@@ -9,6 +9,16 @@ import { normalizeVersionDefinition, type ProgramVersionDefinition } from '../do
 export class PrismaProgramAdministrationRepository extends ProgramAdministrationRepository {
   constructor(private readonly prisma: PrismaService) { super() }
 
+  list() {
+    return this.prisma.program.findMany({
+      orderBy: [{ name: 'asc' }, { id: 'asc' }],
+      include: {
+        versions: { orderBy: { versionNumber: 'desc' }, select: { id: true, versionNumber: true, status: true, publishedAt: true } },
+        tenantPrograms: { orderBy: { tenantId: 'asc' }, select: { tenantId: true, status: true, enabledAt: true, disabledAt: true } },
+      },
+    })
+  }
+
   create(input: { actorPlatformAccessId: string; identity: { slug: string; name: string; summary: string }; definition: ProgramVersionDefinition; now: Date }) {
     return this.prisma.$transaction(async (tx) => {
       await this.assertActor(tx, input.actorPlatformAccessId)

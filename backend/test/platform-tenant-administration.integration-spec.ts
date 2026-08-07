@@ -66,6 +66,15 @@ describe('Platform tenant administration integration', () => {
       .send(body)
   }
 
+  it('lists the platform projection without accepting tenant-scoped identities', async () => {
+    await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .get('/api/platform/tenants').set('Authorization', `Bearer ${regularToken}`).expect(403)
+    const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .get('/api/platform/tenants').set('Authorization', `Bearer ${platformToken}`).expect(200)
+    const tenants = response.body as Array<{ id: string; activeCeo: { membershipId: string; email: string } | null }>
+    expect(tenants.find(({ id }) => id === activeTenantId)?.activeCeo).toEqual({ membershipId: ceoMembershipId, email: `tenant-ceo-${suffix}@disciplina.test` })
+  })
+
   it('creates a pending tenant and audit atomically without allowing a regular user', async () => {
     await post('', regularToken, { name: 'Sem acesso', slug: `sem-acesso-${suffix}`, timeZone: 'America/Bahia' }).expect(403)
     const response = await post('', platformToken, {

@@ -43,6 +43,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npx playwright install --with-deps chromium
       - run: npm run prisma:generate
       - run: npm run prisma:migrate:deploy
       - run: npm run lint

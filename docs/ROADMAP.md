@@ -1,6 +1,6 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 03/08/2026
+> Spark Inteligência Corporativa · Atualizado em 06/08/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado atual verificado
@@ -8,11 +8,11 @@
 - frontend individual F0–F9 concluído e validado em React;
 - B0, decisões B0.5 e fases B1–B5 concluídas e validadas localmente;
 - B6.0–B6.5 concluídas: eventos, gamificação server-side, consultas seguras de auditoria e integração frontend;
-- nove migrations reproduzidas em banco PostgreSQL vazio;
+- onze migrations reproduzidas em banco PostgreSQL vazio;
 - autenticação real e integração HTTP do Projeto 66 implementadas;
-- tracker e ritual ainda usam repositories locais; a gamificação consome a projeção da API;
+- tracker, ritual, gamificação e missões consomem fontes ou projeções server-side;
 - B7.1–B7.4 concluídas: reporting pessoal, por time e tenant com contratos e prova HTTP de privacidade;
-- B8 é a próxima entrega; B9–B10 permanecem planejadas.
+- B8.1–B8.4 concluídas; B9 é a próxima entrega e B10 permanece planejada.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
 
@@ -651,6 +651,53 @@ Problemas incorporados:
 
 **Gate de saída:** os fluxos principais não dependem de `localStorage` nem mocks como fonte de verdade; `PP-002` e `PP-009` estão encerrados por adapters HTTP e E2E frontend reproduzível.
 
+#### B8.1 — Catálogo empresarial no frontend
+
+Substituir `programs.mock.js` pelo catálogo autenticado de `GET /api/programs`, respeitando o tenant selecionado e apresentando loading, vazio, erro e retry.
+
+**Gate:** nenhum programa exibido é inventado pelo browser; adapter e regressão frontend aprovados.
+
+**Estado:** concluído em 03/08/2026. O mock foi removido e o link usa o `slug` retornado pela API, preservando a rota modular do programa.
+
+#### B8.2 — Tracker server-side
+
+Modelar o estado pessoal do tracker, expor API tenant-scoped e substituir o repository local sem transportar justificativas privadas para reporting ou auditoria.
+
+**Gate:** comportamentos, marcações e justificativas sobrevivem a nova sessão/dispositivo e nenhum dado de outro usuário ou tenant é enumerável.
+
+- **B8.2.0 — Fundação persistente:** schema e migration para comportamentos, marcas objetivas e justificativas privadas. Gate: banco vazio e constraints compostas provam isolamento de tenant/membership.
+- **B8.2.1 — Aplicação e HTTP:** casos de uso, repository Prisma, DTOs e rotas pessoais. Gate: contrato HTTP cobre lifecycle, limites, datas e não enumeração.
+- **B8.2.2 — Adapter React:** trocar a fonte de verdade do tracker pelo adapter autenticado e preservar estados de UX. Gate: nova sessão ou dispositivo reconstrói o mês exclusivamente pela API; exportação é identificada como snapshot mensal.
+- **B8.2.3 — Backup transacional:** substituir a importação local por contrato server-side validado e atômico, incluindo compatibilidade explícita com o formato legado que for aceito. Gate: falha de validação ou persistência não deixa estado parcial e o round-trip é provado por integração.
+
+**Estado:** B8.2.0–B8.2.3 concluídas em 03/08/2026. A décima migration separa fatos objetivos de justificativas privadas e rejeita vínculos cruzados no PostgreSQL. O módulo `tracker` expõe leitura, mutações e backup pessoal v2; o frontend reconstrói cada mês pela API e converte backups locais v1 antes da restauração. Exportação e substituição são server-side, IDs internos não atravessam restaurações e falha de persistência foi provada com rollback integral. B8.3 é a próxima implementação.
+
+#### B8.3 — Ritual server-side e projeções de missões
+
+Persistir checklist e ciclos concluídos do ritual no servidor e fazer missões derivarem das fontes remotas de tracker, ritual e gamificação.
+
+**Gate:** ritual e missões não leem `localStorage`; reexecução não duplica fatos nem recompensas.
+
+- **B8.3.0 — Fundação persistente:** modelar dias, checks e estado do timer com escopo composto de tenant/membership. Gate: banco vazio e constraints rejeitam vínculo cruzado, duplicação e timer inconsistente.
+- **B8.3.1 — Aplicação e HTTP:** expor leitura por período, checks idempotentes e comandos server-side de iniciar, pausar e reiniciar timer. Gate: timezone do tenant, data futura, concorrência e transições do relógio são provados por integração.
+- **B8.3.2 — Adapter React:** substituir o repository local do ritual, preservando relógio e estados de UX. Gate: nova sessão/dispositivo reconstrói checklist e timer exclusivamente pela API.
+- **B8.3.3 — Projeção de missões:** derivar métricas de tracker, ritual e gamificação no servidor e remover leituras locais da tela. Gate: métricas são tenant-scoped, reproduzíveis e não geram recompensa duplicada.
+
+**Estado:** B8.3.0–B8.3.3 concluídas em 03/08/2026. A décima primeira migration persiste um dia por membership/data, checks por chaves editoriais estáveis e o estado consistente dos oito ciclos. O módulo `ritual` expõe leitura pessoal por período, checks idempotentes e comandos de iniciar, pausar e reiniciar; usa a data civil do timezone do tenant, serializa concorrência por membership e encerra no máximo um ciclo por início. As telas React de ritual e missões usam adapters HTTP; `GET /api/missions/me` deriva as oito métricas de tracker, ritual e gamificação sem produzir eventos ou recompensas. A integração PostgreSQL prova reexecução reproduzível, isolamento entre tenants e ausência de nova transação de XP. B8.4 é a próxima implementação.
+
+#### B8.4 — E2E frontend–API
+
+Versionar Playwright para sessão, catálogo, execução, tracker, ritual, privacidade e viewports críticas, integrando a suíte ao CI.
+
+**Gate:** `PP-002` e `PP-009` atendem seus critérios objetivos de encerramento e nenhum repository local de negócio permanece como fonte de verdade.
+
+- **B8.4.0 — Harness reproduzível:** configurar Playwright, coordenação dos servidores, projetos desktop/mobile, scripts e instalação do Chromium no CI. Gate: navegador real prova redirecionamento privado e renderiza o login nos dois viewports.
+- **B8.4.1 — Sessão e catálogo:** criar fixture isolada e provar login, restauração da sessão, tenant selecionado, catálogo remoto e logout. Gate: nova página reconstrói contexto exclusivamente pela API e sessão revogada não reabre rota privada.
+- **B8.4.2 — Execução e privacidade:** cobrir entrada no Projeto 66, fatos objetivos e ferramentas privadas. Gate: payload privado não aparece em respostas objetivas, auditoria ou gamificação observadas pela jornada.
+- **B8.4.3 — Tracker, ritual e missões:** provar persistência entre contextos de navegador, projeção remota e viewports críticas; finalizar o gate no CI. Gate: nenhum fluxo usa mock ou `localStorage`, e `PP-002`/`PP-009` atendem os critérios de encerramento local.
+
+**Estado:** B8.4.0–B8.4.3 concluídas em 03/08/2026. O Playwright coordena backend e Vite, executa Chromium real em projetos desktop e mobile, preserva traces/screenshots de falha e integra a instalação do navegador ao CI. Uma fixture idempotente e restrita a banco descartável materializa identidade, tenant e Projeto 66. As jornadas provam boundary anônimo, login, contexto organizacional, header tenant-scoped, catálogo remoto, entrada pelo slug canônico, restauração, logout, início do ciclo, placar objetivo, conclusão de atividade e resposta privada. Um marcador secreto aparece somente no endpoint privado e permanece ausente de enrollment, reporting, auditoria, gamificação e missões. Tracker e ritual são reconstruídos em outro contexto de navegador, missões refletem as projeções remotas e a instrumentação confirma ausência de acesso a `localStorage`; a matriz fecha com 7 execuções aprovadas e 1 skip funcional intencional entre desktop e mobile. `PP-002` e `PP-009` atendem seus critérios locais de encerramento. B9 é a próxima implementação.
+
 ### B9 — Administração da plataforma
 
 **Objetivo:** completar as interfaces B2B e as operações do `SUPER_ADMIN`.
@@ -664,6 +711,18 @@ Entregas:
 - revisão mobile-first e desktop das áreas de gestão.
 
 **Gate de saída:** cada papel executa apenas as operações previstas na matriz de autorização.
+
+Para manter gates pequenos e não concentrar toda a administração em uma única entrega, a fase será executada em sete parcelas:
+
+- **B9.1 — Fundação da área administrativa:** rota protegida por papel, adapters HTTP e visão tenant-scoped de membros/times. Gate: `USER` não acessa a área, `MANAGER` não consulta a rota exclusiva de times e cada leitura preserva `X-Tenant-Id`.
+- **B9.2 — Lifecycle de times:** criar, renomear, arquivar e restaurar times pela interface do CEO. Gate: transições, conflitos e auditoria são refletidos sem estado otimista divergente.
+- **B9.3 — Lifecycle de memberships:** alterar role/status e vínculos de time conforme CEO/Manager. Gate: a matriz negativa impede autoelevação e operações fora do escopo.
+- **B9.4 — Convites administrativos:** listar, criar, reenviar e revogar convites no escopo permitido. Gate: tokens não aparecem no frontend e o estado de entrega é autoritativo.
+- **B9.5 — Adesão e auditoria:** integrar reporting e auditoria pessoal, por time e tenant nas telas adequadas a cada papel. Gate: respostas privadas permanecem ausentes e Manager não enumera outros times.
+- **B9.6 — Administração de plataforma:** interfaces separadas para tenants, primeiro CEO e programas habilitados, exclusivas de `SUPER_ADMIN`. Gate: contexto de plataforma não produz bypass empresarial.
+- **B9.7 — Matriz E2E e responsividade:** cobrir operações administrativas positivas/negativas em desktop e mobile. Gate: cada papel executa apenas sua matriz e a B9 fecha sem depender de ocultação visual como autorização.
+
+**Estado:** B9.1 concluída em 03/08/2026; B9.2–B9.4 concluídas em 04/08/2026; B9.5–B9.7 concluídas em 06/08/2026. A rota `/app/administracao` aparece apenas para CEO/Manager e redireciona `USER`; o adapter envia tenant selecionado em toda operação. CEO administra times, memberships, vínculos e convites e consulta adesão/auditoria do tenant ou de times ativos. Manager recebe somente pessoas, times gerenciados, convites de sua autoria e métricas dos times ativos que administra dentro do escopo server-side. Convites permitem múltiplos times, criação, reenvio com rotação e revogação, exibem o último resultado de entrega e nunca recebem o token da API. Reporting apresenta somente métricas objetivas e a interface de auditoria não renderiza metadados nem respostas privadas. A rota separada `/plataforma` aceita somente `SUPER_ADMIN` e permite listar/criar tenants, convidar o primeiro CEO, operar lifecycle e habilitar programas publicados; suas consultas não usam `X-Tenant-Id`, e o papel global não recebe acesso implícito às rotas empresariais. Cada mutação recarrega a projeção autoritativa. As matrizes PostgreSQL provam concorrência, conflitos, auditoria, bloqueio de execuções, isolamento, ownership, transições e provisionamento; quatro suítes com treze testes validam reporting/auditoria, e duas suítes com oito testes validam a administração de plataforma; Mailpit comprova o link utilizável pelo transporte SMTP local. A fixture Playwright separa `USER`, Manager, CEO e `SUPER_ADMIN`; oito cenários geram quinze execuções aprovadas e um skip intencional em Chromium desktop/mobile, incluindo mutações reais com e sem contexto tenant. O limite de login permanece estrito fora de `NODE_ENV=test`. A integração Resend, retry e bounce permanece no `PP-015` antes de staging. A B9 está concluída e B10 é a próxima fase.
 
 ### B10 — Hardening, staging e release MVP
 

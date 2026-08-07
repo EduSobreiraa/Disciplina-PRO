@@ -1,56 +1,100 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { TIMER_SECONDS, TOTAL_CYCLES, ritualSections } from '../data/ritual-content'
-import { dailyRitualLocalRepository, getLocalDateKey } from '../repositories/daily-ritual.local.repository'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useAppContext } from '../../../app/providers/app-context'
+import { TIMER_SECONDS, ritualSections } from '../data/ritual-content'
+import { createDailyRitualHttpRepository, getDateKeyInTimeZone, mapRitualDay } from '../repositories/daily-ritual.http.repository'
 import { getRitualProgress } from '../services/ritual-progress'
 
-const emptyDay = () => ({ checks: {}, timer: { completedCycles: 0, remainingSeconds: TIMER_SECONDS, runningUntil: null } })
+const emptyDay = () => ({ checks: {}, timer: { completedCycles: 0, remainingSeconds: TIMER_SECONDS, runningStartedAt: null, runningUntil: null } })
 
 export function useDailyRitual() {
-  const dateKey = getLocalDateKey()
-  const [state, setState] = useState(() => dailyRitualLocalRepository.load())
-  const [clock, setClock] = useState(0)
-  const day = state.days[dateKey] ?? emptyDay()
-  const timer = day.timer ?? emptyDay().timer
-  const running = Boolean(timer.runningUntil)
-  const remainingSeconds = running && clock ? Math.max(0, Math.ceil((timer.runningUntil - clock) / 1000)) : timer.remainingSeconds
-
-  const updateDay = useCallback((updater) => {
-    setState((current) => {
-      const currentDay = current.days[dateKey] ?? emptyDay()
-      const next = { ...current, days: { ...current.days, [dateKey]: updater(currentDay) } }
-      return dailyRitualLocalRepository.save(next)
-    })
-  }, [dateKey])
+  const session = useAppContext()
+  const timeZone = session.tenant?.timeZone ?? 'UTC'
+  const [dateKey, setDateKey] = useState(() => getDateKeyInTimeZone(timeZone))
+  const [view, setView] = useState({ status: 'loading', day: emptyDay(), error: null, mutating: false })
+  const [clock, setClock] = useState(Date.now())
+  const settling = useRef(false)
+  const nextSettleAttempt = useRef(0)
+  const repository = useMemo(() => createDailyRitualHttpRepository({
+    baseUrl: '/api',
+    getTenantId: () => session.tenant?.id,
+    authorizedFetch: session.sessionClient.authorizedFetch,
+  }), [session.sessionClient, session.tenant?.id])
 
   useEffect(() => {
-    if (!running) return undefined
+    const updateDate = () => setDateKey(getDateKeyInTimeZone(timeZone))
+    updateDate()
+    const interval = window.setInterval(updateDate, 60_000)
+    return () => window.clearInterval(interval)
+  }, [timeZone])
+
+  const load = useCallback(async () => {
+    setView((current) => ({ ...current, status: 'loading', error: null }))
+    try {
+      const day = mapRitualDay(await repository.load(dateKey), ritualSections)
+      setView({ status: 'ready', day, error: null, mutating: false })
+      return day
+    } catch (error) {
+      setView((current) => ({ ...current, status: 'error', error, mutating: false }))
+      throw error
+    }
+  }, [dateKey, repository])
+
+  useEffect(() => {
+    let active = true
+    setView({ status: 'loading', day: emptyDay(), error: null, mutating: false })
+    repository.load(dateKey)
+      .then((day) => { if (active) setView({ status: 'ready', day: mapRitualDay(day, ritualSections), error: null, mutating: false }) })
+      .catch((error) => { if (active) setView((current) => ({ ...current, status: 'error', error, mutating: false })) })
+    return () => { active = false }
+  }, [dateKey, repository])
+
+  const runningUntil = view.day.timer.runningUntil ? new Date(view.day.timer.runningUntil).getTime() : null
+  useEffect(() => {
+    if (!runningUntil) {
+      nextSettleAttempt.current = 0
+      return undefined
+    }
     const interval = window.setInterval(() => {
       const now = Date.now()
-      if (now < timer.runningUntil) { setClock(now); return }
-      updateDay((current) => ({ ...current, timer: { completedCycles: Math.min(TOTAL_CYCLES, timer.completedCycles + 1), remainingSeconds: timer.completedCycles + 1 >= TOTAL_CYCLES ? 0 : TIMER_SECONDS, runningUntil: null } }))
+      setClock(now)
+      if (now < runningUntil || now < nextSettleAttempt.current || settling.current) return
+      settling.current = true
+      nextSettleAttempt.current = now + 5_000
+      repository.load(dateKey)
+        .then((day) => setView({ status: 'ready', day: mapRitualDay(day, ritualSections), error: null, mutating: false }))
+        .catch((error) => setView((current) => ({ ...current, status: 'error', error, mutating: false })))
+        .finally(() => { settling.current = false })
     }, 250)
     return () => window.clearInterval(interval)
-  }, [running, timer.completedCycles, timer.runningUntil, updateDay])
+  }, [dateKey, repository, runningUntil])
 
-  function toggleCheck(sectionKey, index) {
-    const nextActive = !day.checks[sectionKey]?.[index]
-    const nextSectionChecks = { ...day.checks[sectionKey], [index]: nextActive }
-    updateDay((current) => ({ ...current, checks: { ...current.checks, [sectionKey]: nextSectionChecks } }))
+  const mutate = useCallback(async (operation) => {
+    setView((current) => ({ ...current, mutating: true, error: null }))
+    try {
+      const day = mapRitualDay(await operation(), ritualSections)
+      setView({ status: 'ready', day, error: null, mutating: false })
+      setClock(Date.now())
+      return day
+    } catch (error) {
+      setView((current) => ({ ...current, status: 'error', error, mutating: false }))
+      throw error
+    }
+  }, [])
+
+  const timer = view.day.timer
+  const running = Boolean(runningUntil)
+  const remainingSeconds = running ? Math.max(0, Math.ceil((runningUntil - clock) / 1000)) : timer.remainingSeconds
+  const progress = useMemo(() => getRitualProgress(ritualSections, view.day.checks), [view.day.checks])
+
+  return {
+    ...view,
+    dateKey,
+    checks: view.day.checks,
+    timer: { ...timer, remainingSeconds, running },
+    progress,
+    reload: load,
+    toggleCheck: (sectionKey, itemKey, index) => mutate(() => repository.setCheck(dateKey, sectionKey, itemKey, !view.day.checks[sectionKey]?.[index])),
+    toggleTimer: () => mutate(() => repository.changeTimer(dateKey, running ? 'pause' : 'start')),
+    resetTimer: () => mutate(() => repository.changeTimer(dateKey, 'reset')),
   }
-
-  function toggleTimer() {
-    if (timer.completedCycles >= TOTAL_CYCLES) return
-    updateDay((current) => ({ ...current, timer: running
-      ? { ...timer, remainingSeconds, runningUntil: null }
-      : { ...timer, runningUntil: Date.now() + timer.remainingSeconds * 1000 } }))
-    setClock(Date.now())
-  }
-
-  function resetTimer() {
-    updateDay((current) => ({ ...current, timer: emptyDay().timer }))
-    setClock(Date.now())
-  }
-
-  const progress = useMemo(() => getRitualProgress(ritualSections, day.checks), [day.checks])
-  return { dateKey, checks: day.checks, timer: { ...timer, remainingSeconds, running }, progress, toggleCheck, toggleTimer, resetTimer }
 }

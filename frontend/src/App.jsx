@@ -17,6 +17,8 @@ import { Projeto66RecordPage } from './modules/projeto66/pages/Projeto66RecordPa
 import { Projeto66MeditationPage } from './modules/projeto66/pages/Projeto66MeditationPage'
 import { Projeto66NewSelfPage } from './modules/projeto66/pages/Projeto66NewSelfPage'
 import { Projeto66TodayPage } from './modules/projeto66/pages/Projeto66TodayPage'
+import { TenantAdministrationPage } from './modules/administration/pages/TenantAdministrationPage'
+import { PlatformAdministrationPage } from './modules/platform/pages/PlatformAdministrationPage'
 import './App.css'
 import { useAppContext } from './app/providers/app-context'
 
@@ -28,14 +30,24 @@ function RequireSession({ children }) {
   return children
 }
 
+function RequirePlatformSession({ children }) {
+  const session = useAppContext()
+  const location = useLocation()
+  if (session.status === 'loading') return <main className="login-page"><p>Restaurando sessão…</p></main>
+  if (!session.authenticated) return <Navigate to="/login" state={{ from: location.pathname }} replace />
+  if (session.platformAccess?.role !== 'SUPER_ADMIN') return <Navigate to={session.tenant ? '/app' : '/login'} replace />
+  return children
+}
+
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/plataforma" element={<RequirePlatformSession><PlatformAdministrationPage /></RequirePlatformSession>} />
       <Route path="/app" element={<RequireSession><AppLayout /></RequireSession>}>
         <Route index element={<DashboardPage />} />
         <Route path="programas" element={<ProgramsPage />} />
-        <Route path="programas/projeto66" element={<Projeto66Layout />}>
+        <Route path="programas/projeto-66" element={<Projeto66Layout />}>
           <Route index element={<Projeto66OverviewPage />} />
           <Route path="hoje" element={<Projeto66TodayPage />} />
           <Route path="registrar" element={<Projeto66RecordPage />} />
@@ -50,6 +62,7 @@ function App() {
         <Route path="missoes" element={<MissionsPage />} />
         <Route path="protocolo" element={<ProtocolPage />} />
         <Route path="perfil" element={<ProfilePage />} />
+        <Route path="administracao" element={<TenantAdministrationPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/app" replace />} />
     </Routes>

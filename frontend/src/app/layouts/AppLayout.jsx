@@ -2,7 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useAppContext } from '../providers/app-context'
 import { useGamification } from '../../modules/gamification/gamification-context'
 
-const links = [
+const participantLinks = [
   { to: '/app', label: 'Visão geral', end: true },
   { to: '/app/ritual', label: 'Ritual do dia' },
   { to: '/app/missoes', label: 'Missões' },
@@ -16,6 +16,9 @@ const links = [
 export function AppLayout() {
   const { user, tenant, membership } = useAppContext()
   const gamification = useGamification()
+  const links = ['CEO', 'MANAGER'].includes(membership.role)
+    ? [...participantLinks, { to: '/app/administracao', label: 'Administração' }]
+    : participantLinks
 
   return (
     <div className="app-shell">
