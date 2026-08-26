@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { randomUUID } from 'node:crypto'
+import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { LoggerModule } from 'nestjs-pino'
@@ -27,9 +28,14 @@ import { TrackerModule } from './modules/tracker/tracker.module.js'
 import { RitualModule } from './modules/ritual/ritual.module.js'
 import { MissionsModule } from './modules/missions/missions.module.js'
 
+const moduleDirectory = dirname(fileURLToPath(import.meta.url))
+const sourceEnvironmentPath = resolve(moduleDirectory, '../../.env')
+const compiledEnvironmentPath = resolve(moduleDirectory, '../../../.env')
+const environmentPath = existsSync(sourceEnvironmentPath) ? sourceEnvironmentPath : compiledEnvironmentPath
+
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: resolve(dirname(fileURLToPath(import.meta.url)), '../../.env'), validate: validateEnvironment }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: environmentPath, validate: validateEnvironment }),
     PrismaModule,
     IdentityAccessModule,
     OrganizationsModule,

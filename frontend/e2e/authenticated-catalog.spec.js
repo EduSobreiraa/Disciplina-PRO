@@ -1,17 +1,8 @@
-import { expect, test } from '@playwright/test'
-
-const EMAIL = 'browser-e2e@disciplina.test'
-const PASSWORD = 'browser e2e password with enough entropy'
+import { expect, test } from './authenticated-test.js'
 
 test('restores the authenticated tenant and renders the remote catalog until logout', async ({ page, context }) => {
-  await page.goto('/login')
-  await page.getByLabel('E-mail').fill(EMAIL)
-  await page.getByLabel('Senha').fill(PASSWORD)
-  const loginResponse = page.waitForResponse((response) => response.url().endsWith('/api/auth/login') && response.request().method() === 'POST')
   const contextResponse = page.waitForResponse((response) => response.url().endsWith('/api/session') && response.request().method() === 'GET')
-  await page.getByRole('button', { name: 'Entrar' }).click()
-  const login = await loginResponse
-  expect(login.status(), await login.text()).toBe(200)
+  await page.goto('/app')
   const session = await contextResponse
   expect(session.status()).toBe(200)
   expect((await session.json()).organizations[0].tenant.name).toBe('Organização E2E')

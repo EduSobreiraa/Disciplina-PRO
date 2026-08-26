@@ -1,32 +1,22 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './authenticated-test.js'
 
-const PASSWORD = 'browser e2e password with enough entropy'
-const credentials = {
-  user: 'browser-e2e@disciplina.test',
-  manager: 'browser-manager-e2e@disciplina.test',
-  ceo: 'browser-ceo-e2e@disciplina.test',
-  platform: 'browser-platform-e2e@disciplina.test',
-}
-
-async function login(page, email, expectedPath) {
-  await page.goto('/login')
-  await page.getByLabel('E-mail').fill(email)
-  await page.getByLabel('Senha').fill(PASSWORD)
-  await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page).toHaveURL(new RegExp(`${expectedPath}$`))
-}
-
-test('USER cannot open tenant or platform administration', async ({ page }) => {
-  await login(page, credentials.user, '/app')
+test.describe('USER', () => {
+  test('cannot open tenant or platform administration', async ({ page }) => {
+  await page.goto('/app')
+  await expect(page).toHaveURL(/\/app$/)
   await page.goto('/app/administracao')
   await expect(page).toHaveURL(/\/app$/)
   await expect(page.getByRole('link', { name: 'Administração' })).toHaveCount(0)
   await page.goto('/plataforma')
   await expect(page).toHaveURL(/\/app$/)
+  })
 })
 
-test('MANAGER sees only the managed team and no structural controls', async ({ page }) => {
-  await login(page, credentials.manager, '/app')
+test.describe('MANAGER', () => {
+  test.use({ e2eRole: 'manager' })
+
+  test('sees only managed team and no structural controls', async ({ page }) => {
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Administração' }).click()
   await expect(page).toHaveURL(/\/app\/administracao$/)
   await expect(page.getByRole('heading', { name: 'Somente equipes atribuídas' })).toBeVisible()
@@ -35,10 +25,14 @@ test('MANAGER sees only the managed team and no structural controls', async ({ p
   await expect(scope).toHaveValue(/.+/)
   await expect(scope.locator('option')).toHaveText(['Equipe Gerenciada E2E'])
   await expect(page.getByText('Equipe Exclusiva CEO E2E')).toHaveCount(0)
+  })
 })
 
-test('CEO performs a tenant-scoped team mutation and retains the full scope', async ({ page }) => {
-  await login(page, credentials.ceo, '/app')
+test.describe('CEO', () => {
+  test.use({ e2eRole: 'ceo' })
+
+  test('performs a tenant-scoped team mutation and retains full scope', async ({ page }) => {
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Administração' }).click()
   const teamName = `Equipe Browser ${Date.now()}`
   await page.getByLabel('Novo time').fill(teamName)
@@ -49,12 +43,16 @@ test('CEO performs a tenant-scoped team mutation and retains the full scope', as
   expect(response.request().headers()['x-tenant-id']).toBeTruthy()
   await expect(page.locator('.admin-list strong').filter({ hasText: teamName })).toBeVisible()
   await expect(page.getByLabel('Escopo dos indicadores').locator('option').first()).toHaveText('Toda a organização')
+  })
 })
 
-test('SUPER_ADMIN operates only through the platform boundary without tenant header', async ({ page }) => {
+test.describe('SUPER_ADMIN', () => {
+  test.use({ e2eRole: 'platform' })
+
+  test('operates only through platform boundary without tenant header', async ({ page }) => {
   const tenantProjection = page.waitForResponse((response) => response.url().endsWith('/api/platform/tenants') && response.request().method() === 'GET')
   const programProjection = page.waitForResponse((response) => response.url().endsWith('/api/platform/programs') && response.request().method() === 'GET')
-  await login(page, credentials.platform, '/plataforma')
+  await page.goto('/plataforma')
   for (const response of [await tenantProjection, await programProjection]) {
     expect(response.status()).toBe(200)
     expect(response.request().headers()['x-tenant-id']).toBeUndefined()
@@ -72,4 +70,5 @@ test('SUPER_ADMIN operates only through the platform boundary without tenant hea
   expect(created.status(), await created.text()).toBe(201)
   expect(created.request().headers()['x-tenant-id']).toBeUndefined()
   await expect(page.locator('.platform-list strong').filter({ hasText: `Tenant Browser ${suffix}` })).toBeVisible()
+  })
 })

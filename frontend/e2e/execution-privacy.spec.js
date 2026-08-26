@@ -1,7 +1,5 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, browserE2eCredentials } from './authenticated-test.js'
 
-const EMAIL = 'browser-e2e@disciplina.test'
-const PASSWORD = 'browser e2e password with enough entropy'
 const SECRET = 'conteudo-privado-e2e-nao-propagar-8842'
 
 test('keeps a private reflection outside objective execution, audit, reporting and gamification', async ({ page, isMobile }) => {
@@ -11,10 +9,7 @@ test('keeps a private reflection outside objective execution, audit, reporting a
     if (['PUT', 'POST'].includes(request.method())) mutationBodies.push({ url: request.url(), body: request.postData() ?? '' })
   })
 
-  await page.goto('/login')
-  await page.getByLabel('E-mail').fill(EMAIL)
-  await page.getByLabel('Senha').fill(PASSWORD)
-  await page.getByRole('button', { name: 'Entrar' }).click()
+  await page.goto('/app')
   await expect(page).toHaveURL(/\/app$/)
   await page.getByRole('link', { name: 'Programas' }).click()
   const cycleResponse = page.waitForResponse((response) => /\/api\/enrollments\/[0-9a-f-]+$/.test(response.url()) && response.request().method() === 'GET')
@@ -52,7 +47,7 @@ test('keeps a private reflection outside objective execution, audit, reporting a
   expect(privateMutations.some(({ body }) => body.includes(SECRET))).toBe(true)
   expect(objectiveMutations.every(({ body }) => !body.includes(SECRET))).toBe(true)
 
-  const apiLogin = await page.request.post('/api/auth/login', { data: { email: EMAIL, password: PASSWORD }, headers: { Origin: 'http://localhost:5173' } })
+  const apiLogin = await page.request.post('/api/auth/login', { data: { email: browserE2eCredentials.user, password: browserE2eCredentials.password }, headers: { Origin: 'http://localhost:5173' } })
   expect(apiLogin.status()).toBe(200)
   const { accessToken } = await apiLogin.json()
   const session = await page.request.get('/api/session', { headers: { Authorization: `Bearer ${accessToken}`, Origin: 'http://localhost:5173' } })

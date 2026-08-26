@@ -8,7 +8,7 @@ import { Prisma } from '../src/generated/prisma/client.js'
 import { InternalEventPublisher, type InternalEventEnvelope } from '../src/modules/events/application/internal-event.contracts.js'
 import { InternalEventConsumerRegistry, type InternalEventConsumer } from '../src/modules/events/application/internal-event-consumer.js'
 import { InternalEventProcessingRepository } from '../src/modules/events/application/internal-event-processing.repository.js'
-import { ProcessInternalEventsUseCase, ReprocessInternalEventDeliveryUseCase } from '../src/modules/events/application/process-internal-events.use-case.js'
+import { GetInternalEventMetricsUseCase, ProcessInternalEventsUseCase, ReprocessInternalEventDeliveryUseCase } from '../src/modules/events/application/process-internal-events.use-case.js'
 import { EventsModule } from '../src/modules/events/events.module.js'
 
 describe('Internal event processing integration', () => {
@@ -27,6 +27,7 @@ describe('Internal event processing integration', () => {
     const registry = moduleRef.get(InternalEventConsumerRegistry)
     const processor = moduleRef.get(ProcessInternalEventsUseCase)
     const reprocessor = moduleRef.get(ReprocessInternalEventDeliveryUseCase)
+    const metrics = moduleRef.get(GetInternalEventMetricsUseCase)
     const suffix = randomUUID()
 
     try {
@@ -135,6 +136,11 @@ describe('Internal event processing integration', () => {
         lastErrorCode: 'TEST_HANDLER_FAILURE',
       })
       expect(JSON.stringify(failedDelivery)).not.toContain('mensagem que não pode ser persistida')
+      await expect(metrics.execute()).resolves.toMatchObject({
+        failed: 1,
+        expiredProcessing: 0,
+        maximumAttempts: 2,
+      })
 
       shouldFail = false
       expect(await reprocessor.execute(failedDelivery.id)).toBe(true)

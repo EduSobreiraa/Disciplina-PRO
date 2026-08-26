@@ -8,14 +8,15 @@ export function ScoreLineChart({ records }) {
   const polyline = points.map((point) => `${point.x},${point.y}`).join(' ')
   const area = `${polyline} ${points.at(-1).x},96 ${points[0].x},96`
   return (
-    <div className="p66-chart" aria-label="Evolução do placar diário">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img">
+    <div className="p66-chart">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         <defs><linearGradient id="score-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ff6b00" stopOpacity=".35"/><stop offset="1" stopColor="#ff6b00" stopOpacity="0"/></linearGradient></defs>
         <polygon points={area} fill="url(#score-area)" />
         <polyline points={polyline} fill="none" stroke="#ff6b00" strokeWidth="2" vectorEffect="non-scaling-stroke" />
         {points.map((point) => <circle key={point.day} cx={point.x} cy={point.y} r="1.7" fill="#ffd60a"><title>Dia {point.day}: {point.score}</title></circle>)}
       </svg>
       <div><span>Dia {points[0].day}</span><span>Dia {points.at(-1).day}</span></div>
+      <details className="p66-data-alternative"><summary>Ver evolução do placar em texto</summary><ol>{points.map((point) => <li key={point.day}>Dia {point.day}: {point.score} de 60 pontos</li>)}</ol></details>
     </div>
   )
 }

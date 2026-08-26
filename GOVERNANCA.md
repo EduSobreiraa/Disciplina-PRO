@@ -12,7 +12,7 @@ Nenhuma decisão empresarial, comercial ou jurídica é atribuída implicitament
 
 | Tema | Desenvolvedor | Direção da Spark | Validação jurídica futura |
 |---|---|---|---|
-| Implementação e arquitetura técnica | implementa, documenta e produz evidências técnicas | aprova release e abertura para produção | não aplicável, salvo impacto regulatório identificado |
+| Implementação e arquitetura técnica | Eduardo implementa, documenta e produz evidências técnicas | acompanha riscos empresariais e contratações aprovadas | não aplicável, salvo impacto regulatório identificado |
 | Migrations, APIs, autenticação, autorização e segurança técnica | projeta e implementa conforme arquitetura aprovada | aceita riscos empresariais residuais | valida requisitos legais quando aplicável |
 | Infraestrutura, backup, restore, observabilidade e automações | implementa, opera tecnicamente e ensaia | escolhe/contrata provedores, define RPO/RTO e aprova operação | valida contratos e tratamento de dados por provedores quando aplicável |
 | Retenção, exclusão e anonimização | implementa jobs e mecanismos aprovados | define e aprova a política | valida bases, obrigações e exceções legais |
@@ -20,7 +20,7 @@ Nenhuma decisão empresarial, comercial ou jurídica é atribuída implicitament
 | Atendimento ao titular e canal oficial | implementa mecanismos de confirmação, busca, correção, exportação, anonimização ou exclusão | administra o canal, responde ao titular e define o processo interno | valida enquadramento, conteúdo e prazos aplicáveis |
 | Papéis dos agentes de tratamento | documenta e implementa controles após definição | negocia e aprova contratos com cada tenant | valida a classificação por operação de tratamento |
 | Preços, condições comerciais e contratação | não decide | decide e aprova | valida instrumentos quando aplicável |
-| Produção e releases | prepara candidato e evidências técnicas | decide go/no-go e aceita risco empresarial | valida conformidade final quando exigida |
+| Produção e releases | Eduardo prepara candidato, executa testes de staging, decide tecnicamente o go/no-go, realiza o deploy e registra evidências por e-mail | delibera apenas sobre risco empresarial, comercial ou contratação que ultrapasse a operação técnica delegada | valida conformidade final quando exigida |
 
 ## 3. Governança de privacidade e do PP-004
 
@@ -79,3 +79,5 @@ Permanecem pendentes e não podem ser apresentados como aprovados ou concluídos
 | 26/07/2026 | Aprovadas as políticas do PP-004 para classificação por operação, cancelamento de tenant, `AuditEvent`, exclusão de participante, atendimento ao titular e canal oficial. |
 | 03/08/2026 | O proprietário do projeto aprovou no ADR 016 fornecedores e parâmetros operacionais do MVP; validações jurídicas, escolhas explicitamente abertas e evidências de implementação continuam pendentes. |
 | 03/08/2026 | BetterStack definido para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais; Sentry mantido para exceções, stack traces e performance; OpenTelemetry mantido como instrumentação. |
+| 21/08/2026 | Eduardo definido como único responsável técnico-operacional: código, infraestrutura, banco, segredos, staging, produção, monitoramento, incidentes técnicos e aprovação técnica de release. Testes de staging, decisões de release e comunicações operacionais são registrados por e-mail; não há substituto técnico no momento. |
+| 21/08/2026 | Canal interno de incidentes definido como grupo privado do Telegram com Bot API. Eduardo é, por ora, o único operador e coordenador; alertas não devem conter dados pessoais, tokens, respostas privadas ou conteúdo de clientes. Início da resposta: até 2 horas após o reconhecimento. |

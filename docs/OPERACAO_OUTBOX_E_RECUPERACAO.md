@@ -1,0 +1,115 @@
+# Operação da outbox e recuperação
+
+Este runbook cobre o pipeline `execução → InternalEvent → delivery → gamificação`. Ele não contém payloads, tokens ou credenciais.
+
+## Serviços Railway
+
+Crie um segundo serviço Railway a partir do mesmo repositório, sem domínio público, compartilhando `DATABASE_URL` e as variáveis da API por Reference Variables.
+
+- API: diretório `backend`; start command `node dist/src/main.js`.
+- Worker: diretório `backend`; start command `node dist/src/cli/run-internal-events-worker.js`.
+- Build dos dois serviços: `npm run build`.
+
+O worker é contínuo e é o mecanismo normal de produção. Ele processa lotes pelo caso de uso existente, usa leases e `SKIP LOCKED`, e aceita mais de uma réplica sem duplicar efeitos. Configure `OUTBOX_WORKER_POLL_INTERVAL_MS=1000` e `OUTBOX_WORKER_ERROR_DELAY_MS=5000` inicialmente. Use `node` diretamente no comando Railway para que `SIGTERM` alcance o worker e o encerramento seja gracioso.
+
+O comando abaixo continua disponível apenas como contingência manual:
+
+```bash
+npm run events:process --workspace backend
+```
+
+## Inspecionar a outbox
+
+Com um access token de `PlatformAccess`, consulte:
+
+```text
+GET /api/platform/operations/outbox/metrics
+Authorization: Bearer <token>
+```
+
+A resposta não expõe payloads e contém `pending`, `processing`, `expiredProcessing`, `failed`, `openDeliveries`, `oldestPendingOccurredAt`, `oldestPendingAgeSeconds` e `maximumAttempts`.
+
+Interpretação:
+
+- `failed > 0`: intervenção obrigatória;
+- `expiredProcessing > 0`: verificar worker, banco e lease; o próximo worker pode recuperar a delivery;
+- `oldestPendingAgeSeconds` crescente: não há progresso;
+- `maximumAttempts` alto: investigar erro antes de reprocessar.
+
+## Delivery FAILED
+
+1. Consulte as métricas e os logs estruturados usando `deliveryId`, `eventId`, `tenantId` e `consumer`.
+2. Corrija ou elimine a causa externa; não reprocese falha determinística sem correção.
+3. Reabra exclusivamente a delivery falha:
+
+```bash
+npm run events:reprocess --workspace backend -- <uuid-da-entrega>
+```
+
+4. Execute o worker normalmente — ou, em contingência, `npm run events:process --workspace backend`.
+5. Confirme `failed` reduzido, delivery `PROCESSED` no banco e o efeito derivado esperado, por exemplo XP/conquista.
+
+O reprocessamento é auditado. Não altere tabelas de outbox manualmente.
+
+## Backlog parado ou deploy/restart
+
+1. Verifique se o serviço worker está `Active` e se seu comando é `node dist/src/cli/run-internal-events-worker.js`.
+2. Consulte `/api/platform/operations/outbox/metrics` e os logs do worker.
+3. Se houver falha de banco, mantenha o worker ativo: ele tenta reconectar; deliveries em processamento voltam a ficar elegíveis ao expirar a lease.
+4. Após deploy/restart, confirme que `pending` cai. Os eventos persistem no PostgreSQL; restart não os descarta.
+5. Investigue `FAILED` antes de reprocessar. Não use reprocessamento em massa como primeira ação.
+
+## Alertas a configurar
+
+| Sinal | Severidade | Limiar inicial | Destino futuro |
+|---|---|---|---|
+| `failed` | crítico | `> 0` por 5 min | Better Stack → Telegram/e-mail |
+| erro contínuo de conexão do worker | crítico | 3 ciclos consecutivos | Better Stack + Sentry |
+| `oldestPendingAgeSeconds` crescente | crítico | > 10 min por 10 min | Better Stack |
+| `pending` | warning | > 100 por 10 min | Better Stack |
+| `maximumAttempts` | warning | >= 3 | Better Stack/Sentry |
+| `expiredProcessing` | warning | > 0 por 2 min | Better Stack |
+
+A integração Better Stack/Sentry/OpenTelemetry depende de contas e credenciais externas; até lá, o endpoint e os logs estruturados são os sinais operacionais.
+
+## Backup PostgreSQL para R2
+
+O diretório `ops/backup/` fornece uma imagem de cron Railway com `pg_dump`, `pg_restore` e AWS CLI. Configure o serviço de backup com Dockerfile `ops/backup/Dockerfile` e contexto de build na raiz do repositório. Variáveis necessárias:
+
+```text
+DATABASE_URL
+R2_ENDPOINT_URL=https://<account-id>.r2.cloudflarestorage.com
+R2_BUCKET=<bucket>
+R2_PREFIX=disciplina-pro/postgres
+AWS_ACCESS_KEY_ID=<R2 access key>
+AWS_SECRET_ACCESS_KEY=<R2 secret>
+AWS_REGION=auto
+```
+
+O job falha se o dump ou upload falhar, confirma ambos os objetos com `head-object` e envia um manifesto `<dump>.sha256`. Agende ao menos uma cópia completa diária, por exemplo `0 2 * * *` UTC. A retenção de 90 dias deve ser aplicada por lifecycle rule no bucket, não pelo script.
+
+O backup diário em R2 não cumpre sozinho o RPO de 1 hora. Antes de produção, habilite PITR/WAL no PostgreSQL Railway e execute um drill que registre idade do backup e tempo de restauração.
+
+## Restore drill
+
+Nunca faça restore sobre produção. Crie um banco Railway descartável e use somente URL dele.
+
+```bash
+export RESTORE_TARGET_ENVIRONMENT=drill
+export RESTORE_CONFIRM=RESTORE_DISCARDABLE_DATABASE
+export RESTORE_DATABASE_URL='postgresql://.../disciplina_pro_restore'
+export RESTORE_EXPECTED_DATABASE_NAME=disciplina_pro_restore
+export R2_BACKUP_KEY='disciplina-pro/postgres/disciplina-pro-20260822T020000Z.dump'
+./ops/backup/restore-postgres-from-r2.sh
+```
+
+O script recusa `production`, exige confirmação literal e o nome exato do banco de destino, baixa o artefato e o manifesto `<dump>.sha256`, valida a integridade antes de executar `pg_restore --clean --if-exists` e confirma as tabelas `internal_events` e `_prisma_migrations`. Use `R2_BACKUP_CHECKSUM_KEY` somente se a chave do manifesto não seguir o padrão padrão `<R2_BACKUP_KEY>.sha256`. Em seguida execute `DATABASE_URL="$RESTORE_DATABASE_URL" npm run prisma:migrate:status --workspace backend`, consulte `/api/health/ready` contra o ambiente restaurado e rode smoke tests de login, execução, gamificação e métricas de outbox.
+
+Registre duração do restore e idade do backup: ambos são a evidência para RTO de 4 horas e RPO de 1 hora.
+
+## Rollback e forward-fix
+
+- Faça rollback somente da aplicação quando a migration for compatível e o schema continuar atendendo à versão anterior.
+- Se migration já foi aplicada e a versão anterior não é compatível, aplique forward-fix; não faça rollback de dados como rotina.
+- Migration destrutiva exige plano específico, backup verificado e drill antes do deploy.
+- Restore de banco é último recurso para corrupção ou perda de dados, nunca o mecanismo normal de rollback.

@@ -19,8 +19,10 @@ import { Projeto66NewSelfPage } from './modules/projeto66/pages/Projeto66NewSelf
 import { Projeto66TodayPage } from './modules/projeto66/pages/Projeto66TodayPage'
 import { TenantAdministrationPage } from './modules/administration/pages/TenantAdministrationPage'
 import { PlatformAdministrationPage } from './modules/platform/pages/PlatformAdministrationPage'
+import { GamificationProvider } from './modules/gamification/GamificationProvider'
 import './App.css'
 import { useAppContext } from './app/providers/app-context'
+import { tenantScopeKey } from './app/providers/tenant-async-scope'
 
 function RequireSession({ children }) {
   const session = useAppContext()
@@ -40,32 +42,35 @@ function RequirePlatformSession({ children }) {
 }
 
 function App() {
+  const session = useAppContext()
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/plataforma" element={<RequirePlatformSession><PlatformAdministrationPage /></RequirePlatformSession>} />
-      <Route path="/app" element={<RequireSession><AppLayout /></RequireSession>}>
-        <Route index element={<DashboardPage />} />
-        <Route path="programas" element={<ProgramsPage />} />
-        <Route path="programas/projeto-66" element={<Projeto66Layout />}>
-          <Route index element={<Projeto66OverviewPage />} />
-          <Route path="hoje" element={<Projeto66TodayPage />} />
-          <Route path="registrar" element={<Projeto66RecordPage />} />
-          <Route path="meditar" element={<Projeto66MeditationPage />} />
-          <Route path="novo-eu" element={<Projeto66NewSelfPage />} />
-          <Route path="jornada" element={<Projeto66JourneyPage />} />
-          <Route path="progresso" element={<Projeto66ProgressPage />} />
+    <GamificationProvider key={tenantScopeKey(session.tenant?.id)}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/plataforma" element={<RequirePlatformSession><PlatformAdministrationPage /></RequirePlatformSession>} />
+        <Route path="/app" element={<RequireSession><AppLayout /></RequireSession>}>
+          <Route index element={<DashboardPage />} />
+          <Route path="programas" element={<ProgramsPage />} />
+          <Route path="programas/projeto-66" element={<Projeto66Layout />}>
+            <Route index element={<Projeto66OverviewPage />} />
+            <Route path="hoje" element={<Projeto66TodayPage />} />
+            <Route path="registrar" element={<Projeto66RecordPage />} />
+            <Route path="meditar" element={<Projeto66MeditationPage />} />
+            <Route path="novo-eu" element={<Projeto66NewSelfPage />} />
+            <Route path="jornada" element={<Projeto66JourneyPage />} />
+            <Route path="progresso" element={<Projeto66ProgressPage />} />
+          </Route>
+          <Route path="minha-evolucao" element={<DisciplineTrackerPage />} />
+          <Route path="ritual" element={<DailyRitualPage />} />
+          <Route path="conquistas" element={<GamificationPage />} />
+          <Route path="missoes" element={<MissionsPage />} />
+          <Route path="protocolo" element={<ProtocolPage />} />
+          <Route path="perfil" element={<ProfilePage />} />
+          <Route path="administracao" element={<TenantAdministrationPage />} />
         </Route>
-        <Route path="minha-evolucao" element={<DisciplineTrackerPage />} />
-        <Route path="ritual" element={<DailyRitualPage />} />
-        <Route path="conquistas" element={<GamificationPage />} />
-        <Route path="missoes" element={<MissionsPage />} />
-        <Route path="protocolo" element={<ProtocolPage />} />
-        <Route path="perfil" element={<ProfilePage />} />
-        <Route path="administracao" element={<TenantAdministrationPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/app" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/app" replace />} />
+      </Routes>
+    </GamificationProvider>
   )
 }
 

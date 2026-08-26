@@ -75,6 +75,25 @@ describe('Platform tenant administration integration', () => {
     expect(tenants.find(({ id }) => id === activeTenantId)?.activeCeo).toEqual({ membershipId: ceoMembershipId, email: `tenant-ceo-${suffix}@disciplina.test` })
   })
 
+  it('exposes outbox metrics only to platform access without event payloads', async () => {
+    await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .get('/api/platform/operations/outbox/metrics').set('Authorization', `Bearer ${regularToken}`).expect(403)
+    const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+      .get('/api/platform/operations/outbox/metrics').set('Authorization', `Bearer ${platformToken}`).expect(200)
+    const metrics = response.body as {
+      pending: number
+      processing: number
+      failed: number
+      expiredProcessing: number
+      openDeliveries: number
+      maximumAttempts: number
+    }
+    for (const value of [metrics.pending, metrics.processing, metrics.failed, metrics.expiredProcessing, metrics.openDeliveries, metrics.maximumAttempts]) {
+      expect(typeof value).toBe('number')
+    }
+    expect(JSON.stringify(metrics)).not.toContain('payload')
+  })
+
   it('creates a pending tenant and audit atomically without allowing a regular user', async () => {
     await post('', regularToken, { name: 'Sem acesso', slug: `sem-acesso-${suffix}`, timeZone: 'America/Bahia' }).expect(403)
     const response = await post('', platformToken, {

@@ -724,6 +724,16 @@ Para manter gates pequenos e não concentrar toda a administração em uma únic
 
 **Estado:** B9.1 concluída em 03/08/2026; B9.2–B9.4 concluídas em 04/08/2026; B9.5–B9.7 concluídas em 06/08/2026. A rota `/app/administracao` aparece apenas para CEO/Manager e redireciona `USER`; o adapter envia tenant selecionado em toda operação. CEO administra times, memberships, vínculos e convites e consulta adesão/auditoria do tenant ou de times ativos. Manager recebe somente pessoas, times gerenciados, convites de sua autoria e métricas dos times ativos que administra dentro do escopo server-side. Convites permitem múltiplos times, criação, reenvio com rotação e revogação, exibem o último resultado de entrega e nunca recebem o token da API. Reporting apresenta somente métricas objetivas e a interface de auditoria não renderiza metadados nem respostas privadas. A rota separada `/plataforma` aceita somente `SUPER_ADMIN` e permite listar/criar tenants, convidar o primeiro CEO, operar lifecycle e habilitar programas publicados; suas consultas não usam `X-Tenant-Id`, e o papel global não recebe acesso implícito às rotas empresariais. Cada mutação recarrega a projeção autoritativa. As matrizes PostgreSQL provam concorrência, conflitos, auditoria, bloqueio de execuções, isolamento, ownership, transições e provisionamento; quatro suítes com treze testes validam reporting/auditoria, e duas suítes com oito testes validam a administração de plataforma; Mailpit comprova o link utilizável pelo transporte SMTP local. A fixture Playwright separa `USER`, Manager, CEO e `SUPER_ADMIN`; oito cenários geram quinze execuções aprovadas e um skip intencional em Chromium desktop/mobile, incluindo mutações reais com e sem contexto tenant. O limite de login permanece estrito fora de `NODE_ENV=test`. A integração Resend, retry e bounce permanece no `PP-015` antes de staging. A B9 está concluída e B10 é a próxima fase.
 
+### BX — Preparação pré-staging em laboratório
+
+**Objetivo:** antecipar a implementação e a prova técnica de B10 sem depender das contas corporativas nem considerar staging oficial implantado.
+
+**Escopo:** candidato imutável, deploy Vercel/Railway de laboratório, rewrite `/api`, roles de banco, seed fictício, PITR, dump diário para R2, observabilidade, jobs, e-mail de laboratório, testes externos e runbooks.
+
+**Gate:** configuração reproduzível e validada apenas com dados fictícios; nenhum secret ou token de laboratório será reutilizado em staging/produção corporativos.
+
+**Plano detalhado:** [`PLANO_BX_PRE_STAGING.md`](PLANO_BX_PRE_STAGING.md).
+
 ### B10 — Hardening, staging e release MVP
 
 **Objetivo:** preparar operação segura e observável fora do ambiente local.

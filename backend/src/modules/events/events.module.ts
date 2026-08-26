@@ -8,8 +8,10 @@ import {
   ReprocessInternalEventDeliveryUseCase,
 } from './application/process-internal-events.use-case.js'
 import { PrismaInternalEventsRepository } from './infrastructure/prisma-internal-events.repository.js'
+import { OutboxOperationsController } from './http/outbox-operations.controller.js'
 
 @Module({
+  controllers: [OutboxOperationsController],
   providers: [
     InternalEventConsumerRegistry,
     PrismaInternalEventsRepository,
@@ -28,4 +30,3 @@ import { PrismaInternalEventsRepository } from './infrastructure/prisma-internal
   ],
 })
 export class EventsModule {}
-

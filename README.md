@@ -112,13 +112,15 @@ npm run dev:backend
 
 O backend expõe `GET /api/health`, `GET /api/health/ready` e a documentação OpenAPI em `/docs`.
 
-Em desenvolvimento e testes, chaves RSA efêmeras são geradas por processo. Produção exige `JWT_PRIVATE_KEY_BASE64`, `JWT_PUBLIC_KEYS_JSON`, `JWT_ACTIVE_KID`, `REFRESH_TOKEN_PEPPER` e um `INVITATION_TOKEN_PEPPER` distinto; nenhum desses segredos deve ser versionado. O access token dura 10 minutos, o refresh expira após 7 dias de inatividade e a sessão possui limite absoluto de 30 dias.
+Em desenvolvimento e testes, chaves RSA efêmeras são geradas por processo. Produção exige `JWT_PRIVATE_KEY_BASE64`, `JWT_PUBLIC_KEYS_JSON`, `JWT_ACTIVE_KID`, `REFRESH_TOKEN_PEPPER` e um `INVITATION_TOKEN_PEPPER` distinto; nenhum desses segredos deve ser versionado. Também exige SMTP autenticado com TLS (`SMTP_HOST`, `SMTP_AUTH_USER`, `SMTP_AUTH_PASSWORD`, `SMTP_FROM` e `SMTP_REQUIRE_TLS=true`), sem aceitar o transporte local. O access token dura 10 minutos, o refresh expira após 7 dias de inatividade e a sessão possui limite absoluto de 30 dias.
 
 Login, refresh e logout usam `POST /api/auth/*` e exigem `Origin` exatamente igual a `FRONTEND_URL`. Em produção, o refresh fica em `__Host-dp_refresh` (`HttpOnly`) e o CSRF em `__Host-dp_csrf`; ambos usam `Secure`, `SameSite=Lax` e `Path=/`. Desenvolvimento usa os nomes sem `__Host-`, pois HTTP local não satisfaz a exigência `Secure` desse prefixo.
 
 O frontend mantém o access token somente em memória e coordena refresh com uma única Promise compartilhada. Requisições concorrentes aguardam essa Promise e não enviam simultaneamente o mesmo refresh token, pois replay revoga a sessão inteira.
 
 Rotas são protegidas por padrão. Somente controllers marcados explicitamente como públicos dispensam bearer token. O guard valida o JWT e consulta o estado atual do usuário e da sessão. Em rotas empresariais, `X-Tenant-Id` continua sendo apenas uma seleção não confiável até o `TenantContextGuard` resolver no banco a membership e o tenant atuais; rotas de plataforma usam contexto separado.
+
+Swagger fica habilitado por padrão apenas fora de produção. Em staging/produção, ele permanece desligado até que `SWAGGER_ENABLED=true` seja configurado deliberadamente em ambiente privado.
 
 ### Prisma e primeiro acesso de plataforma
 
@@ -156,6 +158,8 @@ npm run events:reprocess --workspace backend -- <uuid-da-entrega>
 ```
 
 Na B6.3, o consumidor `gamification` passou a conceder XP e conquistas a partir dos fatos objetivos registrados pelo servidor.
+
+O worker, as métricas protegidas de plataforma, o reprocessamento, backup em R2 e o procedimento de restore estão no [runbook de outbox e recuperação](docs/OPERACAO_OUTBOX_E_RECUPERACAO.md).
 
 ## Comandos de qualidade
 
@@ -238,7 +242,7 @@ PUT  /api/enrollments/:enrollmentId/private-responses/:activityId
 GET  /api/enrollments/:enrollmentId/private-responses/:activityId
 ```
 
-O frontend consome a API exclusivamente pelo caminho relativo `/api`. No desenvolvimento, o Vite encaminha esse caminho para `localhost:3000`; em produção, o gateway deve preservar o mesmo proxy de origem para que cookies `__Host-`, CSRF e refresh funcionem sem expor tokens ao JavaScript.
+O frontend consome a API exclusivamente pelo caminho relativo `/api`. No desenvolvimento, o Vite encaminha esse caminho para `localhost:3000`; em produção, `app.disciplinapro.com.br` e, em staging, `staging.disciplinapro.com.br` devem preservar o mesmo proxy de origem. Não haverá `api.disciplinapro.com.br` no MVP: o gateway encaminha `/api` internamente para que cookies `__Host-`, CSRF e refresh funcionem sem expor tokens ao JavaScript.
 
 ## Princípios de implementação
 

@@ -1,6 +1,6 @@
 # Checklist de definições pendentes
 
-> Disciplina PRO · Atualizado em 03/08/2026 · Reconciliado com o ADR 016
+> Disciplina PRO · Atualizado em 21/08/2026 · Reconciliado com o ADR 016
 
 Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovador e a evidência no documento canônico indicado.
 
@@ -12,22 +12,23 @@ Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovad
 |---|---|---|---|---|
 | Responsável interno pelo canal de privacidade | **A DEFINIR** | Direção da Spark | agora | PP-004 |
 | Substituto do responsável pelo canal de privacidade | **A DEFINIR** | Direção da Spark | agora | PP-004 |
-| Responsável por receber alertas operacionais | **A DEFINIR** | Direção da Spark | antes de staging público | PP-008 |
-| Substituto do responsável por alertas | **A DEFINIR** | Direção da Spark | antes de staging público | PP-008 |
-| Responsável por coordenar incidentes | **A DEFINIR** | Direção da Spark | antes de staging público | PP-008 |
-| Responsável por autorizar comunicação a clientes em incidente | **A DEFINIR** | Direção da Spark | antes de staging público | PP-008 |
-| Pessoas autorizadas a acessar staging | **A DEFINIR** | Direção da Spark | antes de staging privado | B10.0 |
-| Pessoas autorizadas a acessar produção | **A DEFINIR** | Direção da Spark | antes de produção | PP-005/B10.1 |
-| Pessoas autorizadas a administrar o banco | **A DEFINIR** | Direção da Spark | antes de staging privado | PP-005 |
-| Pessoas autorizadas a acessar o cofre de segredos | **A DEFINIR** | Direção da Spark | antes de staging privado | PP-006 |
-| Responsável pela aprovação de release | **A DEFINIR** | Direção da Spark | antes de staging público | B10.5 |
-| Responsável operacional após o lançamento | **A DEFINIR** | Direção da Spark | antes de produção | GOVERNANCA |
+| Responsável por receber alertas operacionais | **Eduardo — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
+| Substituto do responsável por alertas | **não há substituto; risco de pessoa-chave registrado** | Direção da Spark | revisar antes de produção | decisão operacional de 21/08/2026 |
+| Responsável por coordenar incidentes técnicos | **Eduardo — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
+| Comunicação operacional a clientes em incidente | **Eduardo, por e-mail; conteúdo jurídico ou comercial depende da Spark/Jurídico** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
+| Pessoas autorizadas a acessar staging | **Eduardo exclusivamente — DEFINIDO** | Direção da Spark | antes de staging privado | decisão operacional de 21/08/2026 |
+| Pessoas autorizadas a acessar produção | **Eduardo exclusivamente — DEFINIDO** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
+| Pessoas autorizadas a administrar o banco | **Eduardo exclusivamente — DEFINIDO** | Direção da Spark | antes de staging privado | decisão operacional de 21/08/2026 |
+| Pessoas autorizadas a acessar o cofre de segredos | **Eduardo exclusivamente — DEFINIDO** | Direção da Spark | antes de staging privado | decisão operacional de 21/08/2026 |
+| Responsável pela aprovação técnica de release | **Eduardo — DEFINIDO** | Direção da Spark | antes de staging público | decisão operacional de 21/08/2026 |
+| Responsável operacional após o lançamento | **Eduardo — DEFINIDO** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
 
 ### Ambientes e fornecedores
 
 | Definição | Valor | Decide/aprova | Limite | Fonte |
 |---|---|---|---|---|
 | Provedor de hospedagem | **Railway — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016 |
+| Frontend de staging e produção | **Vercel — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/BX |
 | Região de hospedagem dos dados | **us-east — DEFINIDA; validação jurídica pendente** | proprietário + Jurídico | antes da contratação/uso com dados reais | ADR-016/PP-004 |
 | Serviço de banco de dados | **PostgreSQL via Railway — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016 |
 | Serviço de armazenamento de backups | **Cloudflare R2 — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/PP-007 |
@@ -36,8 +37,13 @@ Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovad
 | Exceções, stack traces e performance | **Sentry — DEFINIDO** | proprietário do projeto | contratar e implementar antes de staging público | ADR-016/PP-008 |
 | Uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais | **BetterStack — DEFINIDO** | proprietário do projeto | contratar e implementar antes de staging público | ADR-016/PP-008 |
 | Provedor de e-mail transacional | **Resend — DEFINIDO; contrato pendente de validação** | proprietário + Jurídico | antes de staging com e-mail real | ADR-016/PP-015 |
-| Domínio dos e-mails | **A DEFINIR E REGISTRAR** | Direção da Spark | antes de staging com e-mail real | ADR-016/PP-015 |
-| Remetente dos e-mails | **no-reply@<domínio> — FORMATO DEFINIDO** | proprietário do projeto | depende do domínio | ADR-016 |
+| Domínio dos e-mails | **disciplinapro.com.br — REGISTRADO** | Direção da Spark | configurar antes de staging com e-mail real | decisão operacional de 21/08/2026 |
+| Remetente dos e-mails | **no-reply@disciplinapro.com.br — DEFINIDO** | proprietário do projeto | configurar no Resend | decisão operacional de 21/08/2026 |
+| Domínio raiz | **disciplinapro.com.br — DEFINIDO** | proprietário do projeto | configurar no Cloudflare | decisão operacional de 21/08/2026 |
+| Subdomínio de produção | **app.disciplinapro.com.br — DEFINIDO** | proprietário do projeto | configurar no Railway/Cloudflare | decisão operacional de 21/08/2026 |
+| Subdomínio de staging | **staging.disciplinapro.com.br — DEFINIDO** | proprietário do projeto | configurar no Railway/Cloudflare | decisão operacional de 21/08/2026 |
+| Caminho da API | **`/api` na mesma origem de cada ambiente — DEFINIDO** | proprietário do projeto | preservar cookies e CSRF | decisão operacional de 21/08/2026 |
+| Subdomínio dedicado da API | **não criar `api.disciplinapro.com.br` no MVP — DEFINIDO** | proprietário do projeto | gateway deve encaminhar `/api` internamente | decisão operacional de 21/08/2026 |
 | Ferramenta adicional de segurança ou manutenção da mitigação atual | **A DEFINIR** | Direção da Spark | antes do release | PP-014 |
 | Avaliador de acessibilidade interno ou contratado | **A DEFINIR** | Direção da Spark | durante staging | PP-010 |
 | Orçamento autorizado para infraestrutura e serviços externos | **A DEFINIR** | Direção da Spark | antes das contratações | B10.0 |
@@ -52,8 +58,8 @@ Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovad
 | Cópia de backup em provedor separado | **Sim, Cloudflare R2 — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/PP-007 |
 | Horário de cobertura operacional | **segunda a sábado, 8h–20h — DEFINIDO** | proprietário do projeto | operar antes de staging público | ADR-016/PP-008 |
 | Tempo interno esperado para reconhecer um alerta | **30 minutos — DEFINIDO** | proprietário do projeto | operar antes de staging público | ADR-016/PP-008 |
-| Tempo interno esperado para iniciar resposta a incidente | **A DEFINIR** | Direção da Spark | antes de staging público | PP-008 |
-| Canal interno de incidentes | **A DEFINIR: WhatsApp ou Telegram** | Direção da Spark | antes de staging público | ADR-016/PP-008 |
+| Tempo interno esperado para iniciar resposta a incidente | **até 2 horas após o reconhecimento do alerta — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
+| Canal interno de incidentes | **grupo privado no Telegram, com Bot API — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
 | Critério para comunicar incidente a clientes | **A DEFINIR** | Direção + Jurídico | antes de produção | PP-008 |
 | Critério de aceite do ensaio de restauração | **A DEFINIR** | Direção da Spark | antes de produção | PP-007/B10.3 |
 | Estratégia empresarial diante de falha de atualização | **rollback automático — DEFINIDO** | proprietário do projeto | implementar e ensaiar antes de produção | ADR-016/PP-007 |
@@ -68,11 +74,11 @@ Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovad
 | Prazo operacional de primeira resposta ao cliente | **até 2 dias úteis — DEFINIDO** | proprietário do projeto | operar antes do primeiro cliente | ADR-016 |
 | Volume inicial esperado de e-mails | **A DEFINIR** | Direção da Spark | antes da contratação | PP-015 |
 | Regra empresarial para convite não entregue | **1 reenvio após 30 minutos; persistindo, notificar admin do tenant — DEFINIDA** | proprietário do projeto | implementar antes do primeiro cliente | ADR-016/PP-015 |
-| Critério empresarial para abertura de staging público | **A DEFINIR** | Direção da Spark | antes de staging público | B10.5 |
-| Critério empresarial para abertura de produção | **A DEFINIR** | Direção da Spark | antes de produção | B10.5 |
-| Checklist executivo de autorização de release | **A DEFINIR** | Direção da Spark | antes de produção | B10.5 |
-| Registro formal de autorização ou recusa de staging | **A DEFINIR** | Direção da Spark | antes de staging público | B10.5 |
-| Registro formal de autorização ou recusa de produção | **A DEFINIR** | Direção da Spark | antes de produção | B10.5 |
+| Critério técnico para abertura de staging | **Eduardo valida o candidato em staging e registra o resultado por e-mail** | Direção da Spark | antes de staging público | decisão operacional de 21/08/2026 |
+| Critério técnico para abertura de produção | **testes de staging aprovados por Eduardo e decisão registrada por e-mail** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
+| Checklist de autorização técnica de release | **e-mail com versão, evidências de staging, migrations, riscos e decisão — DEFINIDO** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
+| Registro formal de autorização ou recusa de staging | **e-mail — DEFINIDO** | Direção da Spark | antes de staging público | decisão operacional de 21/08/2026 |
+| Registro formal de autorização ou recusa de produção | **e-mail — DEFINIDO** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
 
 ### Riscos e acessibilidade
 
@@ -191,7 +197,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Frequência e procedimento de troca de chaves | **A DEFINIR** | política aprovada | antes de staging público | PP-006 |
 | Procedimento de revogação por comprometimento | **A DEFINIR** | responsáveis aprovados | antes de staging público | PP-006 |
 | Procedimento de recuperação após comprometimento | **A DEFINIR** | responsáveis aprovados | antes de staging público | PP-006 |
-| Frequência técnica de backup | **no máximo 1 hora — DERIVADA DO RPO** | RPO de 1 hora aprovado | antes de staging privado | ADR-016/PP-007 |
+| Frequência técnica de backup | **PITR contínuo para RPO de 1 hora; dump lógico diário para R2** | RPO de 1 hora aprovado | antes de staging privado | ADR-016/BX/PP-007 |
 | Procedimento de restauração | **A DEFINIR E ENSAIAR** | RTO aprovado | antes de produção | PP-007 |
 | Procedimento para falha de atualização do banco | **A DEFINIR E ENSAIAR** | estratégia aprovada | antes de produção | PP-007 |
 | Monitoramento de falha de backup | **A DEFINIR E TESTAR** | serviço aprovado | antes de produção | PP-007 |
@@ -233,14 +239,14 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Checklist técnico de produção | **A DEFINIR** | critérios empresariais aprovados | antes de produção | B10.5 |
 | Evidências exigidas para implantação | **A DEFINIR** | gates B10.0–B10.4 | antes de produção | B10.5 |
 | Procedimento de smoke test após implantação | **A DEFINIR** | ambiente aprovado | antes de produção | B10.5 |
-| Procedimento técnico de go/no-go | **A DEFINIR** | aprovador indicado | antes de produção | B10.5 |
+| Procedimento técnico de go/no-go | **Eduardo aprova tecnicamente após staging; decisão e evidências ficam registradas por e-mail — DEFINIDO** | decisão operacional registrada | antes de produção | decisão operacional de 21/08/2026 |
 
 ## 4. Operação futura
 
 | Definição | Valor | Aprova | Limite | Fonte |
 |---|---|---|---|---|
-| Escala de acompanhamento de alertas | **A DEFINIR** | Direção da Spark | antes de staging público | PP-008 |
-| Registro de incidentes | **A DEFINIR** | Direção da Spark | antes de staging público | PP-008 |
+| Escala de acompanhamento de alertas | **Eduardo, segunda a sábado, 8h–20h; sem substituto — DEFINIDA** | Direção da Spark | operar antes de staging público | ADR-016 e decisão operacional de 21/08/2026 |
+| Registro de incidentes | **e-mail corporativo, com alerta/coordenação no Telegram — DEFINIDO** | Direção da Spark | antes de staging público | decisão operacional de 21/08/2026 |
 | Registro de solicitações de titulares | **A DEFINIR** | Spark + Jurídico | antes de dados reais | PP-004 |
 | Registro de concessão e revogação de acessos | **A DEFINIR** | Direção da Spark | antes de staging privado | PP-005 |
 | Calendário de revisão de acessos | **A DEFINIR** | Direção da Spark | antes de produção | PP-005 |
@@ -248,7 +254,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Calendário de troca de segredos | **A DEFINIR** | Direção aprova proposta técnica | antes de produção | PP-006 |
 | Acompanhamento de entrega de e-mails | **A DEFINIR** | Direção da Spark | antes do primeiro cliente | PP-015 |
 | Processo de suporte ao cliente | **A DEFINIR** | Direção da Spark | antes do primeiro cliente | GOVERNANCA |
-| Guarda das evidências de aprovação de release | **A DEFINIR** | Direção da Spark | antes de produção | B10.5 |
+| Guarda das evidências de aprovação de release | **e-mail corporativo — DEFINIDO** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
 
 ## 5. Decisões já aprovadas — não redefinir
 
@@ -276,8 +282,6 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 
 Não exigem nova decisão para começar; exigem execução pelo Desenvolvedor:
 
-- remover o armazenamento local restante de tracker e ritual — PP-002;
-- versionar os testes completos da interface — PP-009;
 - concluir reporting, integração final da interface e administração conforme o roadmap;
 - executar as automações, testes, ensaios e documentação após as definições deste checklist.
 

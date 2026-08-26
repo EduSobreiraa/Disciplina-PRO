@@ -50,22 +50,49 @@ export class ProcessInternalEventsUseCase {
       for (const claim of claims) {
         try {
           const status = await this.repository.process(claim, consumer, new Date())
+          this.logger[status === 'PROCESSED' ? 'log' : 'warn']({
+            eventId: claim.eventId,
+            deliveryId: claim.id,
+            tenantId: claim.tenantId,
+            consumer: claim.consumer,
+            attempts: claim.attempts,
+            status,
+          }, 'Processamento de evento interno concluído')
           if (status === 'PROCESSED') result.processed += 1
           else result.leaseLost += 1
         } catch (error) {
           const failureTime = new Date()
-          const status = await this.repository.reschedule(claim, {
-            now: failureTime,
-            nextAttemptAt: new Date(failureTime.getTime() + retryDelay(claim.attempts)),
-            maximumAttempts,
-            errorCode: errorCode(error),
-          })
+          const handlerErrorCode = errorCode(error)
+          let status: 'PENDING' | 'FAILED' | 'LEASE_LOST'
+          try {
+            status = await this.repository.reschedule(claim, {
+              now: failureTime,
+              nextAttemptAt: new Date(failureTime.getTime() + retryDelay(claim.attempts)),
+              maximumAttempts,
+              errorCode: handlerErrorCode,
+            })
+          } catch (rescheduleError) {
+            this.logger.error({
+              eventId: claim.eventId,
+              deliveryId: claim.id,
+              tenantId: claim.tenantId,
+              consumer: claim.consumer,
+              attempts: claim.attempts,
+              status: 'PROCESSING',
+              errorCode: errorCode(rescheduleError),
+              handlerErrorCode,
+              err: rescheduleError,
+            }, 'Falha ao registrar retry de evento interno')
+            throw rescheduleError
+          }
           this.logger.warn({
+            eventId: claim.eventId,
             deliveryId: claim.id,
+            tenantId: claim.tenantId,
             consumer: claim.consumer,
             attempts: claim.attempts,
             status,
-            errorCode: errorCode(error),
+            errorCode: handlerErrorCode,
           }, 'Falha ao processar evento interno')
           if (status === 'PENDING') result.retried += 1
           else if (status === 'FAILED') result.failed += 1

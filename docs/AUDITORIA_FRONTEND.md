@@ -60,3 +60,51 @@ Em 14/07/2026, a rota `/app/conquistas` foi aprovada nas quatro larguras. Foram 
 ## Extensão F9 — Missões e protocolo
 
 Em 14/07/2026, `/app/missoes` e `/app/protocolo` foram verificadas em 320, 375, 768 e 1440 px. Uma missão foi concluída a partir de fatos reais do tracker, apresentou progresso 7/7, concedeu 200 XP uma única vez e apareceu no ledger. A expansão da navegação revelou e corrigiu um overflow do indicador de ambiente em tablet.
+
+## Auditoria UX atual — situação em 11/08/2026
+
+Esta seção registra o estado da auditoria UX/UI iniciada sobre o frontend React atual. Ela complementa o histórico acima e não substitui suas evidências anteriores.
+
+### Escopo
+
+- Disciplina PRO: shell da plataforma, login, dashboard, programas, tracker e administração.
+- Projeto 66: shell, navegação, formulários privados, registro diário, meditação, progresso e modo crise.
+- Critérios: usabilidade, responsividade, hierarquia, feedback, formulários, estados assíncronos, acessibilidade, foco, teclado, contraste e touch targets.
+- Identidades preservadas: Disciplina PRO em estética “sala de guerra”; Projeto 66 em estética mobile/iOS de fogo, laranja e dourado.
+
+### Lote 1 implementado
+
+Foram corrigidos somente os itens do primeiro lote:
+
+- diálogo de crise com foco inicial, focus trap, `Escape` e retorno de foco ao acionador;
+- padrões `:focus-visible` para shell Disciplina PRO, plataforma, Projeto 66 e login;
+- labels persistentes e associações semânticas em campos antes orientados apenas por placeholder, incluindo Projeto 66, plataforma e tracker.
+
+Arquivos de código alterados permanecem como mudanças locais não commitadas. Nenhuma correção dos lotes seguintes foi implementada.
+
+### Validações executadas
+
+| Verificação | Resultado |
+|---|---|
+| ESLint frontend | aprovado |
+| Testes unitários direcionados de Projeto 66/tracker | 13 aprovados |
+| Build frontend | aprovado |
+| `git diff --check` | aprovado |
+| Playwright em `/login`, snapshot e labels | aprovado |
+| Playwright: foco por teclado no login | aprovado após correção |
+| Playwright: Projeto 66 e diálogo de crise | aprovado com fixture autenticada descartável |
+| Viewports autenticados `320×568`, `375×812`, `768×1024` e `1440×900` | aprovado sem overflow horizontal ou modal fora da viewport |
+
+### Situação do ambiente
+
+O backend foi iniciado com sucesso em `http://127.0.0.1:3000` após execução fora do sandbox. O endpoint `/api/health` respondeu `200` via Playwright.
+
+O seed E2E exige `NODE_ENV=test`, confirmação explícita, host local e banco com nome exato `disciplina_pro_test`, `disciplina_pro_e2e` ou `disciplina_pro_validation`. A fixture limpa o banco permitido, materializa dados mínimos e cria sessões autenticadas por papel. Qualquer outro ambiente falha antes do reset.
+
+### Pendências imediatas
+
+As pendências de fixture, jornada autenticada do Projeto 66, diálogo de crise e viewports foram encerradas por testes Playwright versionados. Traces e screenshots continuam retidos automaticamente quando houver falha.
+
+### Lotes seguintes ainda não implementados
+
+Permanecem fora desta etapa: redução da navegação do Projeto 66, feedback detalhado de mutações administrativas, confirmação acessível de ações destrutivas, retry de salvamentos, alternativas acessíveis para gráficos/heatmap, revisão de contraste medida e melhorias de loading.

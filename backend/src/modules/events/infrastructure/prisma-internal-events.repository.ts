@@ -16,6 +16,8 @@ interface ClaimedRow {
   consumer: string
   attempts: number
   lockedAt: Date
+  eventId: string
+  tenantId: string | null
 }
 
 interface ProcessingRow {
@@ -87,15 +89,16 @@ export class PrismaInternalEventsRepository
     const lockedUntil = new Date(input.now.getTime() + input.leaseMilliseconds)
     return this.prisma.$queryRaw<ClaimedRow[]>`
       WITH candidates AS (
-        SELECT "id"
-        FROM "internal_event_deliveries"
-        WHERE "consumer" = ${consumer}
+        SELECT delivery."id", event."id" AS "eventId", event."tenant_id" AS "tenantId"
+        FROM "internal_event_deliveries" AS delivery
+        JOIN "internal_events" AS event ON event."id" = delivery."internal_event_id"
+        WHERE delivery."consumer" = ${consumer}
           AND (
-            ("status" = 'PENDING' AND "next_attempt_at" <= ${input.now})
-            OR ("status" = 'PROCESSING' AND "locked_until" <= ${input.now})
+            (delivery."status" = 'PENDING' AND delivery."next_attempt_at" <= ${input.now})
+            OR (delivery."status" = 'PROCESSING' AND delivery."locked_until" <= ${input.now})
           )
-        ORDER BY "next_attempt_at" ASC, "created_at" ASC
-        FOR UPDATE SKIP LOCKED
+        ORDER BY delivery."next_attempt_at" ASC, delivery."created_at" ASC
+        FOR UPDATE OF delivery SKIP LOCKED
         LIMIT ${input.batchSize}
       )
       UPDATE "internal_event_deliveries" AS delivery
@@ -108,7 +111,7 @@ export class PrismaInternalEventsRepository
           "updated_at" = ${input.now}
       FROM candidates
       WHERE delivery."id" = candidates."id"
-      RETURNING delivery."id", delivery."consumer", delivery."attempts", delivery."locked_at" AS "lockedAt"
+      RETURNING delivery."id", delivery."consumer", delivery."attempts", delivery."locked_at" AS "lockedAt", candidates."eventId", candidates."tenantId"
     `
   }
 
@@ -266,7 +269,7 @@ export class PrismaInternalEventsRepository
   }
 
   async metrics(now: Date): Promise<InternalEventProcessingMetrics> {
-    const [counts, oldest, maximum] = await Promise.all([
+    const [counts, oldest, maximum, expiredProcessing] = await Promise.all([
       this.prisma.internalEventDelivery.groupBy({ by: ['status'], _count: { _all: true } }),
       this.prisma.internalEvent.findFirst({
         where: {
@@ -283,12 +286,16 @@ export class PrismaInternalEventsRepository
         select: { occurredAt: true },
       }),
       this.prisma.internalEventDelivery.aggregate({ _max: { attempts: true } }),
+      this.prisma.internalEventDelivery.count({
+        where: { status: 'PROCESSING', lockedUntil: { lte: now } },
+      }),
     ])
     const count = (status: string) => counts.find((row) => row.status === status)?._count._all ?? 0
     return {
       pending: count('PENDING'),
       processing: count('PROCESSING'),
       failed: count('FAILED'),
+      expiredProcessing,
       oldestPendingOccurredAt: oldest?.occurredAt ?? null,
       maximumAttempts: maximum._max.attempts ?? 0,
     }

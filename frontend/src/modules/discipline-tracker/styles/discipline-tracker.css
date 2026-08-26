@@ -9,5 +9,6 @@
 /* A tabela mantém a densidade visual, com áreas clicáveis adequadas ao toque. */
 .tracker-panel td.behavior-col{height:46px}
 .behavior-col input,.behavior-col>button,.tracker-add input,.tracker-add button,.tracker-modal form button{min-height:44px}
+.tracker-add label{grid-column:1/-1;color:var(--cinza);font:600 10px 'IBM Plex Mono';text-transform:uppercase}
 .behavior-col>button{width:44px;height:44px}
 .tracker-state{display:grid;justify-items:start;gap:8px;margin-bottom:14px;padding:18px;background:var(--carvao);border:1px solid var(--linha);border-radius:6px;color:var(--cinza)}.tracker-state strong{color:var(--branco)}.tracker-state.error{border-color:rgba(224,48,48,.5)}.tracker-state .button{margin-top:4px}

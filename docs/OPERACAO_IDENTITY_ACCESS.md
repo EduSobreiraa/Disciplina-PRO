@@ -17,8 +17,9 @@ Produção exige HTTPS e as variáveis:
 - `JWT_PUBLIC_KEYS_JSON`, mapa `kid → SPKI em base64`;
 - `REFRESH_TOKEN_PEPPER`, secreto aleatório com pelo menos 32 caracteres.
 - `INVITATION_TOKEN_PEPPER`, secreto aleatório distinto, também com pelo menos 32 caracteres.
+- `SMTP_HOST`, `SMTP_AUTH_USER`, `SMTP_AUTH_PASSWORD`, `SMTP_FROM` e `SMTP_REQUIRE_TLS=true`; o transporte local sem autenticação é aceito somente fora de produção.
 
-Chave privada e peppers não entram no Git, em logs, imagens ou tickets. O processo falha ao iniciar produção se o material obrigatório estiver ausente, se os peppers forem iguais ou se o par ativo não corresponder.
+Chave privada, peppers e senha SMTP não entram no Git, em logs, imagens ou tickets. O processo falha ao iniciar produção se o material obrigatório estiver ausente, se os peppers forem iguais, se o SMTP não exigir TLS ou se o par ativo não corresponder. Swagger fica desligado por padrão em produção; `SWAGGER_ENABLED=true` só é permitido como escolha deliberada em ambiente privado.
 
 ## 2. Rotação de chave JWT
 

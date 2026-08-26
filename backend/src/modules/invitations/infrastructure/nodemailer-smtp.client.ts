@@ -15,6 +15,13 @@ export class NodemailerSmtpClient extends SmtpClient {
       host: config.get('SMTP_HOST', { infer: true }),
       port: config.get('SMTP_PORT', { infer: true }),
       secure: config.get('SMTP_SECURE', { infer: true }),
+      requireTLS: config.get('SMTP_REQUIRE_TLS', { infer: true }),
+      auth: config.get('SMTP_AUTH_USER', { infer: true }) && config.get('SMTP_AUTH_PASSWORD', { infer: true })
+        ? {
+            user: config.get('SMTP_AUTH_USER', { infer: true }),
+            pass: config.get('SMTP_AUTH_PASSWORD', { infer: true }),
+          }
+        : undefined,
     }
     this.transporter = nodemailer.createTransport(options)
   }

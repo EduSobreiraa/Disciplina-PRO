@@ -1,7 +1,4 @@
-import { expect, test } from '@playwright/test'
-
-const EMAIL = 'browser-e2e@disciplina.test'
-const PASSWORD = 'browser e2e password with enough entropy'
+import { expect, test } from './authenticated-test.js'
 
 async function observeLocalStorage(context) {
   await context.addInitScript(() => {
@@ -14,14 +11,6 @@ async function observeLocalStorage(context) {
       }
     }
   })
-}
-
-async function login(page) {
-  await page.goto('/login')
-  await page.getByLabel('E-mail').fill(EMAIL)
-  await page.getByLabel('Senha').fill(PASSWORD)
-  await page.getByRole('button', { name: 'Entrar' }).click()
-  await expect(page).toHaveURL(/\/app$/)
 }
 
 async function expectTrackerGreen(page, day, mutate) {
@@ -49,7 +38,8 @@ async function expectOpeningComplete(page, mutate) {
 
 test('reconstructs tracker and ritual in a separate browser context and projects missions without localStorage', async ({ browser, context, page }) => {
   await observeLocalStorage(context)
-  await login(page)
+  await page.goto('/app')
+  await expect(page).toHaveURL(/\/app$/)
   const day = new Date().getDate()
 
   await expectTrackerGreen(page, day, true)
@@ -59,7 +49,13 @@ test('reconstructs tracker and ritual in a separate browser context and projects
   await observeLocalStorage(restoredContext)
   const restored = await restoredContext.newPage()
   try {
-    await login(restored)
+    const response = await restored.request.post('http://localhost:3000/api/auth/login', {
+      data: { email: 'browser-e2e@disciplina.test', password: 'browser e2e password with enough entropy' },
+      headers: { Origin: 'http://localhost:5173' },
+    })
+    expect(response.ok()).toBe(true)
+    await restored.goto('/app')
+    await expect(restored).toHaveURL(/\/app$/)
     await expectTrackerGreen(restored, day, false)
     await expectOpeningComplete(restored, false)
     await restored.getByRole('link', { name: 'Missões' }).click()

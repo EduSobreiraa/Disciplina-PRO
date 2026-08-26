@@ -2,6 +2,7 @@
 
 - Estado: aceita
 - Data: 03/08/2026
+- Atualizado em: 23/08/2026
 - Fase: B10.0
 - Decidido por: Eduardo, proprietário do projeto
 
@@ -14,23 +15,30 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 | Definição | Decisão | Observações |
 |---|---|---|
 | Provedor de hospedagem | **Railway** | Revisão prevista se houver crescimento significativo |
+| Frontend | **Vercel** | Staging privado; rewrite `/api` para Railway preserva origem única |
 | Região de hospedagem dos dados | **us-east (padrão Railway)** | Validar implicações LGPD com Jurídico (dados em território EUA) |
 | Serviço de banco de dados | **PostgreSQL via Railway** | — |
 | Serviço de armazenamento de backups | **Cloudflare R2** | Já usa Cloudflare para DNS; integração natural |
 | Serviço de gestão de segredos | **Railway Environment Variables** (fase inicial); **Doppler** a avaliar no futuro | Sem vault dedicado no MVP |
 | Monitoramento e alertas | **OpenTelemetry** para instrumentação; **Sentry** para exceções, stack traces e performance; **BetterStack** para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais | Responsabilidades separadas por finalidade |
 | Provedor de e-mail transacional | **Resend** | — |
-| Domínio dos e-mails | **A DEFINIR** — domínio ainda não registrado. Recomendação: `disciplinapro.com.br` para e-mails transacionais, separado do domínio institucional `sparkinteligencia.com.br` | Pendente registro |
-| Remetente padrão | `no-reply@<domínio>` | — |
+| Domínio dos e-mails | **`disciplinapro.com.br` — registrado** | Usado para e-mails transacionais; configurar DNS no Cloudflare e validar no Resend. |
+| Remetente padrão | `no-reply@disciplinapro.com.br` | Configuração pendente no Resend. |
+| Domínio raiz | **`disciplinapro.com.br`** | Página institucional ou redirecionamento; não hospeda a aplicação autenticada no MVP. |
+| Produção | **`app.disciplinapro.com.br`** | Frontend e API na mesma origem; API preservada no caminho `/api`. |
+| Staging | **`staging.disciplinapro.com.br`** | Ambiente separado; frontend e API na mesma origem, com API em `/api`. |
+| API dedicada | **não haverá `api.disciplinapro.com.br` no MVP** | O gateway encaminha `/api` internamente para o backend, preservando cookies, CSRF e origem única. |
 
 ### Continuidade e Recuperação
 
 | Definição | Decisão | Observações |
 |---|---|---|
-| RPO (perda máxima de dados) | **1 hora** | Requer backup/WAL de alta frequência. Railway Postgres PITR (plano pago) atende. |
+| RPO (perda máxima de dados) | **1 hora** | Validar PITR Railway em ensaio; dump lógico diário não substitui essa janela. |
 | RTO (tempo máximo de recuperação) | **4 horas** | — |
 | Tempo de retenção dos backups | **90 dias** | Validar com Jurídico se há obrigação legal diferente |
 | Backup em região/provedor separado | **Sim — Cloudflare R2** | Cópia externa ao Railway |
+| Backup lógico independente | **Diário para Cloudflare R2** | Retenção de 90 dias por Lifecycle Rule, preferencialmente |
+| Camada adicional Railway | **PITR + backup automático do banco/volume** | Não depender de uma única camada de recuperação |
 | Estratégia diante de falha de atualização | **Rollback automático** (retornar ao deploy anterior) | Migrations devem ser reversíveis; Railway suporta rollback de deploy nativamente |
 
 ### Operação e Incidentes
@@ -39,8 +47,9 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 |---|---|---|
 | Horário de cobertura operacional | **Seg–Sab, 8h–20h** | — |
 | Tempo para reconhecer alerta | **30 minutos** | — |
-| Tempo para iniciar resposta a incidente | **A DEFINIR** — sugestão: até 2 horas após reconhecimento | Pendente aprovação da Direção |
-| Canal interno de incidentes | **WhatsApp / Telegram do time** | Sentry e BetterStack permitem integração com o fluxo operacional; escolha final do canal permanece pendente |
+| Tempo para iniciar resposta a incidente | **até 2 horas após o reconhecimento do alerta — definido** | Iniciar diagnóstico, contenção ou comunicação de status; não é prazo de resolução. |
+| Canal interno de incidentes | **grupo privado no Telegram — definido** | Alertas podem chegar por Bot API; não enviar dados pessoais, tokens, respostas privadas ou conteúdo de clientes. |
+| Operação de incidentes | **Eduardo exclusivamente, por ora — definido** | Recebe alertas, coordena a resposta técnica e registra o incidente por e-mail; ausência de substituto é risco aceito temporariamente. |
 
 ### Suporte ao Cliente
 
@@ -61,8 +70,12 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 
 | Definição | Decisão | Observações |
 |---|---|---|
-| Ambientes | **staging → produção** (2 ambientes no Railway) | — |
+| Ambientes | **BX em laboratório → staging privado → produção** | BX usa contas técnicas sem dados reais; staging/produção ficam em contas corporativas |
+| Plano Railway inicial | **Hobby** | Não subir para Pro preventivamente; reavaliar por limite, consumo ou recurso necessário |
 | Sequência de implantação | staging primeiro, produção após validação manual | — |
+| Responsável técnico único | **Eduardo** | Opera código, infraestrutura, banco, segredos, staging, produção, testes e resposta técnica a incidentes; não há substituto técnico atualmente. |
+| Aprovação técnica de release | **Eduardo** | Executa testes em staging, decide tecnicamente o go/no-go e registra evidências por e-mail. |
+| Registro de comunicação operacional | **e-mail corporativo** | Registra releases, incidentes e respectivas evidências; conteúdo jurídico ou comercial continua sujeito à Spark/Jurídico. |
 
 ---
 
@@ -70,9 +83,7 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 
 ### Requer Direção da Spark
 - Responsáveis pelo canal de privacidade e substituto
-- Responsável por alertas operacionais, coordenação de incidentes e comunicação a clientes
-- Pessoas autorizadas a acessar staging, produção e banco
-- Responsável pela aprovação de release e operação pós-lançamento
+- Não há substituto técnico para Eduardo; a Direção deve aceitar e revisar periodicamente esse risco de pessoa-chave
 - Orçamento autorizado para infraestrutura
 - Critérios formais de abertura de staging público e produção
 - Checklists executivos de autorização de release
@@ -88,15 +99,14 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 - Hipóteses de anonimização, retenção legal, procedimentos de direitos do titular
 - Revisão final de conformidade com LGPD
 
-### Requer definição de produto/domínio
-- Registro do domínio (`disciplinapro.com.br` recomendado)
-
----
-
 ## 📝 Notas técnicas geradas pelas decisões
 
-1. **RPO de 1h** → configurar Point-in-Time Recovery no Railway Postgres (plano pago) + job de export para Cloudflare R2 com frequência ≤ 1h.
+1. **RPO de 1h** → configurar e ensaiar Point-in-Time Recovery no Railway Postgres. O dump lógico diário no R2 é cópia independente de disaster recovery, não substituto do PITR.
 2. **Rollback automático** → todas as migrations Prisma devem ter `down migration` correspondente; documentar procedimento no runbook.
 3. **Resend + Cloudflare DNS** → configurar SPF, DKIM e DMARC no Cloudflare assim que o domínio for registrado. O Resend guia esse processo nativamente.
 4. **Monitoramento** → manter OpenTelemetry como instrumentação; configurar Sentry para exceções, stack traces e performance; configurar BetterStack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais; documentar runbook com reconhecimento e escalonamento.
 5. **2 ambientes Railway** → variáveis de ambiente devem ser gerenciadas separadamente por ambiente; nunca compartilhar segredos entre staging e produção.
+6. **Operação individual** → acessos técnicos permanecem exclusivos de Eduardo; a ausência de substituto exige evidência operacional por e-mail e revisão periódica do risco de pessoa-chave.
+7. **Subdomínios** → `app.disciplinapro.com.br` é produção, `staging.disciplinapro.com.br` é staging e ambos preservam a API em `/api` na mesma origem; não criar `api.disciplinapro.com.br` no MVP.
+8. **Incidentes** → usar grupo privado do Telegram com Bot API para alertas operacionais; o prazo de início da resposta é de até 2 horas após o reconhecimento, e o e-mail mantém o registro formal.
+9. **BX** → contas técnicas/pessoais podem provar configurações com dados fictícios; secrets e tokens corporativos serão sempre novos. O plano detalhado está em [`../PLANO_BX_PRE_STAGING.md`](../PLANO_BX_PRE_STAGING.md).

@@ -7,6 +7,7 @@ import { CreateUserUseCase } from '../modules/identity-access/application/create
 import { MaterializeBundledProgramUseCase } from '../modules/programs/application/materialize-bundled-program.use-case.js'
 import { EnableTenantProgramUseCase } from '../modules/programs/application/tenant-program-administration.use-cases.js'
 import { PROJETO66_CATALOG } from '../modules/programs/catalog/projeto66.definition.js'
+import { assertBrowserE2EDatabase } from './browser-e2e-fixture.js'
 
 const EMAIL = 'browser-e2e@disciplina.test'
 const CEO_EMAIL = 'browser-ceo-e2e@disciplina.test'
@@ -18,10 +19,11 @@ const TENANT_SLUG = 'browser-e2e-tenant'
 const app = await NestFactory.createApplicationContext(AppModule, { logger: false })
 try {
   const databaseUrl = app.get(ConfigService<Environment, true>).get('DATABASE_URL', { infer: true })
-  const databaseName = new URL(databaseUrl).pathname.slice(1)
-  if (!/(test|e2e|validation)/i.test(databaseName)) throw new Error('Fixture Playwright exige banco explicitamente descartável de test/e2e/validation')
+  const nodeEnvironment = app.get(ConfigService<Environment, true>).get('NODE_ENV', { infer: true })
+  assertBrowserE2EDatabase({ databaseUrl, nodeEnvironment, resetConfirmation: process.env.E2E_DATABASE_RESET })
 
   const prisma = app.get(PrismaService)
+  await prisma.$executeRawUnsafe('TRUNCATE TABLE "users", "tenants", "programs" CASCADE')
   const users = app.get(CreateUserUseCase)
   async function ensureUser(email: string) {
     return await prisma.user.findUnique({ where: { normalizedEmail: email }, select: { id: true, email: true } })

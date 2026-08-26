@@ -5,12 +5,15 @@ export interface ClaimedInternalEventDelivery {
   consumer: string
   attempts: number
   lockedAt: Date
+  eventId: string
+  tenantId: string | null
 }
 
 export interface InternalEventProcessingMetrics {
   pending: number
   processing: number
   failed: number
+  expiredProcessing: number
   oldestPendingOccurredAt: Date | null
   maximumAttempts: number
 }
@@ -39,4 +42,3 @@ export abstract class InternalEventProcessingRepository {
   abstract reprocess(deliveryId: string, now: Date): Promise<boolean>
   abstract metrics(now: Date): Promise<InternalEventProcessingMetrics>
 }
-

@@ -10,18 +10,21 @@ import './styles/navigation.css'
 
 const programLinks = [
   { to: '/app/programas/projeto-66', label: 'Hoje', icon: '⌂', end: true },
-  { to: '/app/programas/projeto-66/hoje', label: 'Checklist', icon: '✓' },
-  { to: '/app/programas/projeto-66/meditar', label: 'Meditar', icon: '◷' },
-  { to: '/app/programas/projeto-66/registrar', label: 'Registrar', icon: '+' },
+  { to: '/app/programas/projeto-66/registrar', label: 'Registro', icon: '+' },
   { to: '/app/programas/projeto-66/novo-eu', label: 'Novo Eu', icon: '★' },
-  { to: '/app/programas/projeto-66/jornada', label: 'Jornada', icon: '🔥' },
-  { to: '/app/programas/projeto-66/progresso', label: 'Tracker', icon: '⌁' },
+  { to: '/app/programas/projeto-66/progresso', label: 'Progresso', icon: '⌁' },
+]
+
+const secondaryLinks = [
+  { to: '/app/programas/projeto-66/hoje', label: 'Checklist' },
+  { to: '/app/programas/projeto-66/meditar', label: 'Meditar' },
+  { to: '/app/programas/projeto-66/jornada', label: 'Jornada' },
 ]
 
 function Projeto66Shell() {
   const [crisisOpen, setCrisisOpen] = useState(false)
   const execution = useProjeto66Context()
-  if (execution.status === 'loading') return <section className="p66-app"><div className="p66-content"><p>Carregando seu ciclo…</p></div></section>
+  if (execution.status === 'loading') return <section className="p66-app"><div className="p66-content"><p className="p66-loading" role="status">Carregando seu ciclo…</p></div></section>
   if (execution.status === 'error') return <section className="p66-app"><div className="p66-content"><section className="p66-callout"><b>!</b><p>{execution.error.message}</p></section><button className="p66-primary" type="button" onClick={() => execution.reload()}>Tentar novamente</button></div></section>
   return (
     <section className="p66-app">
@@ -29,7 +32,12 @@ function Projeto66Shell() {
         <div><NavLink className="p66-back" to="/app/programas">‹ Disciplina PRO</NavLink><span>O Incendiário × Spark</span><strong>Protocolo <em>66</em></strong></div>
         <span className="p66-day-badge">{execution.cycle.status === 'ACTIVE' ? `Dia ${execution.cycle.currentDay}` : execution.cycle.status}</span>
       </header>
-      <div className="p66-content"><Outlet /></div>
+      <div className="p66-content">
+        <nav className="p66-secondary-nav" aria-label="Ações do ciclo">
+          {secondaryLinks.map((link) => <NavLink key={link.to} to={link.to}>{link.label}</NavLink>)}
+        </nav>
+        <Outlet />
+      </div>
       <button className="p66-crisis-fab" type="button" aria-label="Abrir modo crise" onClick={() => setCrisisOpen(true)}>🆘</button>
       <CrisisSupportDialog open={crisisOpen} onClose={() => setCrisisOpen(false)} />
       <nav className="p66-tabbar" aria-label="Navegação do Projeto 66">

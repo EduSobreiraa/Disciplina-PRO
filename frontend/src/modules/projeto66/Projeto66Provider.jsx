@@ -1,61 +1,70 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAppContext } from '../../app/providers/app-context'
+import { createTenantAsyncScope } from '../../app/providers/tenant-async-scope'
 import { createProjeto66HttpRepository, Projeto66ApiError } from './repositories/projeto66.http.repository'
 import { Projeto66Context } from './projeto66-context'
 import { PROJETO66_PROGRAM_SLUG } from './data/projeto66-contract'
 
 export function Projeto66Provider({ children }) {
   const session = useAppContext()
+  const tenantId = session.tenant?.id ?? null
+  const scopeRef = useRef(createTenantAsyncScope(tenantId))
+  scopeRef.current.sync(tenantId)
   const [state, setState] = useState({ status: 'loading', cycle: null, error: null })
 
   const repository = useMemo(() => createProjeto66HttpRepository({
     baseUrl: '/api',
     getAccessToken: session.sessionClient.getAccessToken,
-    getTenantId: () => session.tenant?.id,
+    getTenantId: () => tenantId,
     fetchImplementation: session.sessionClient.authorizedFetch,
-  }), [session.sessionClient, session.tenant?.id])
+  }), [session.sessionClient, tenantId])
 
   const load = useCallback(async () => {
+    const scope = scopeRef.current.capture()
     setState((current) => ({ ...current, status: 'loading', error: null }))
     try {
       const enrollments = await repository.listEnrollments()
       const enrollment = enrollments.find(({ program }) => program.slug === PROJETO66_PROGRAM_SLUG)
       if (!enrollment) throw new Error('Projeto 66 não está habilitado para esta organização')
       const cycle = await repository.loadCycle(enrollment.id)
-      setState({ status: 'ready', cycle, error: null })
+      scopeRef.current.commit(scope, () => setState({ status: 'ready', cycle, error: null }))
       return cycle
     } catch (error) {
-      setState({ status: 'error', cycle: null, error })
+      scopeRef.current.commit(scope, () => setState({ status: 'error', cycle: null, error }))
       throw error
     }
   }, [repository])
 
   useEffect(() => {
     let active = true
+    const scope = scopeRef.current.capture()
     repository.listEnrollments()
       .then((enrollments) => {
         const enrollment = enrollments.find(({ program }) => program.slug === PROJETO66_PROGRAM_SLUG)
         if (!enrollment) throw new Error('Projeto 66 não está habilitado para esta organização')
         return repository.loadCycle(enrollment.id)
       })
-      .then((cycle) => { if (active) setState({ status: 'ready', cycle, error: null }) })
-      .catch((error) => { if (active) setState({ status: 'error', cycle: null, error }) })
+        .then((cycle) => { if (active) scopeRef.current.commit(scope, () => setState({ status: 'ready', cycle, error: null })) })
+        .catch((error) => { if (active) scopeRef.current.commit(scope, () => setState({ status: 'error', cycle: null, error })) })
     return () => { active = false }
   }, [repository])
 
   const value = useMemo(() => ({
     ...state,
     async startCycle() {
+      const scope = scopeRef.current.capture()
       const cycle = await repository.startCycle(state.cycle.id)
-      setState({ status: 'ready', cycle, error: null })
+      scopeRef.current.commit(scope, () => setState({ status: 'ready', cycle, error: null }))
       return cycle
     },
     async saveDailyRecord(programDay, record) {
+      const scope = scopeRef.current.capture()
       const cycle = await repository.saveDailyRecord(state.cycle.id, record.pillars)
-      setState({ status: 'ready', cycle, error: null })
+      scopeRef.current.commit(scope, () => setState({ status: 'ready', cycle, error: null }))
       return cycle
     },
     async saveChecklist(programDay, checklist) {
+      const scope = scopeRef.current.capture()
       const pending = Object.entries(checklist)
         .filter(([key, active]) => active && !state.cycle.checklistByDay[programDay]?.[key])
       let cycle = state.cycle
@@ -64,7 +73,7 @@ export function Projeto66Provider({ children }) {
         if (!activity) throw new Error(`Atividade ${key} não publicada`)
         cycle = await repository.completeActivity(cycle.id, activity.id)
       }
-      setState({ status: 'ready', cycle, error: null })
+      scopeRef.current.commit(scope, () => setState({ status: 'ready', cycle, error: null }))
       return cycle
     },
     async loadPrivateResponse(activityKey) {

@@ -106,14 +106,14 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Motivo do adiamento:** serviço externo não é necessário para desenvolvimento local.
 - **Retomada:** B10, antes de staging público.
 - **Critério de encerramento:** alertas testados, redação de dados sensíveis confirmada e runbook com responsáveis.
-- **Decisões operacionais de 03/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry cobre exceções, stack traces e performance; BetterStack cobre uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Cobertura: segunda a sábado, 8h–20h; reconhecimento de alerta em até 30 minutos. Permanecem pendentes contratação, implementação, configuração, testes, responsáveis, canal final, início da resposta e runbook ensaiado.
+- **Decisões operacionais de 03/08/2026 e 21/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry cobre exceções, stack traces e performance; BetterStack cobre uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Cobertura: segunda a sábado, 8h–20h; reconhecimento de alerta em até 30 minutos; início da resposta em até 2 horas após o reconhecimento. O canal interno será um grupo privado do Telegram com Bot API, operado exclusivamente por Eduardo por ora; o e-mail mantém o registro formal. Permanecem pendentes contratação, implementação, configuração, testes, redação de dados sensíveis e runbook ensaiado.
 
 ### PP-009 — E2E frontend versionado insuficiente — ENCERRADO
 
 - **Prioridade/status:** P1 · ENCERRADO em 03/08/2026
 - **Problema original:** os fluxos autenticados e a integração frontend–API não possuíam suíte de navegador versionada no CI.
 - **Resolução:** B8.4 versionou harness, fixture protegida e quatro jornadas para sessão, catálogo, execução, privacidade, tracker, ritual e missões em projetos desktop/mobile.
-- **Evidência:** sete execuções Playwright aprovadas e um skip funcional intencional; Chromium é instalado e a suíte é chamada pelo workflow de CI.
+- **Evidência:** a suíte Playwright é chamada pelo CI, usa fixture descartável com reset protegido e autenticação reutilizável por papel; cobre sessão, catálogo, execução, privacidade, tracker, ritual, missões, administração, Projeto 66, diálogo de crise e os viewports auditados.
 - **Motivo do adiamento original:** os adapters HTTP e seus contratos precisavam estabilizar antes da jornada de navegador.
 - **Ampliação planejada:** B10 executará os fluxos críticos em staging sem reabrir o critério local já atendido.
 - **Critério de encerramento:** suíte Playwright versionada no CI cobrindo login, ciclo principal, privacidade e viewports críticas.

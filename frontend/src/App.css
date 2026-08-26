@@ -11,6 +11,8 @@ body{background:var(--preto);color:var(--branco);font-family:Inter,sans-serif}.a
 .button,.program-card footer a{display:inline-flex;min-height:44px;align-items:center;justify-content:center}
 .program-card footer a{padding-inline:8px}
 .login-card input{min-height:44px}
+.app-shell :is(a,button,input,textarea,select):focus-visible,.platform-page :is(a,button,input,textarea,select):focus-visible{outline:2px solid var(--ouro-claro);outline-offset:3px}
+.login-page :is(a,button,input,textarea,select):focus-visible{outline:2px solid var(--vermelho);outline-offset:3px}
 @media (max-width:480px){.program-grid{grid-template-columns:minmax(0,1fr)}}
 .login-page{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 20%,#2a0e0e,transparent 35%),#000}.login-card{width:min(420px,100%);background:var(--carvao);border:1px solid var(--linha);border-top:3px solid var(--vermelho);border-radius:7px;padding:34px}.brand-mark{width:42px;height:42px;display:grid;place-items:center;background:var(--vermelho);font:400 17px Anton;border-radius:3px}.login-card .eyebrow{display:block;margin-top:24px}.login-card h1{font:400 38px Anton;text-transform:uppercase;margin:6px 0}.login-card p{color:var(--cinza)}.login-card label{display:grid;gap:6px;font:600 10px 'IBM Plex Mono';text-transform:uppercase;color:var(--cinza);margin-top:20px}.login-card input{background:var(--grafite);color:var(--branco);border:1px solid var(--linha);border-radius:3px;padding:12px}.login-card .button{width:100%}
 @media(max-width:900px){.war-header{align-items:flex-start}.war-user{flex-direction:column-reverse;align-items:flex-end}.war-identity small{display:none}.metric-grid{grid-template-columns:repeat(2,1fr)}}
