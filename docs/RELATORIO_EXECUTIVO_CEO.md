@@ -183,7 +183,7 @@ Sem metas e testes, um incidente pode causar perda de dados, indisponibilidade p
 
 **O que já foi feito**
 
-Foram aprovados RPO de 1 hora, RTO de 4 horas, retenção de backups por 90 dias, cópia externa no Cloudflare R2 e rollback automático. Ainda não há configuração e restauração ensaiadas; os 90 dias dependem de validação jurídica.
+Foram aprovados RPO de 1 hora, RTO de 4 horas, retenção de backups por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação somente quando o schema permanecer compatível; nos demais casos, aplica-se forward-fix. Ainda não há configuração e restauração ensaiadas; os 90 dias dependem de validação jurídica.
 
 **O que precisa ser decidido pelo CEO**
 

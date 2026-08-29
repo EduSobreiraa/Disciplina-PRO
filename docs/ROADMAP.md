@@ -1,6 +1,6 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 06/08/2026
+> Spark Inteligência Corporativa · Atualizado em 29/08/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado atual verificado
@@ -12,7 +12,7 @@
 - autenticação real e integração HTTP do Projeto 66 implementadas;
 - tracker, ritual, gamificação e missões consomem fontes ou projeções server-side;
 - B7.1–B7.4 concluídas: reporting pessoal, por time e tenant com contratos e prova HTTP de privacidade;
-- B8.1–B8.4 concluídas; B9 é a próxima entrega e B10 permanece planejada.
+- B8.1–B8.4 e B9.1–B9.7 concluídas; BX é a preparação pré-staging em laboratório e B10 é a próxima fase de entrega.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
 
@@ -766,9 +766,7 @@ Problemas incorporados:
 
 **Objetivo:** fechar provedores, responsabilidades, ambientes, critérios de aceite e sequência de deploy antes de alterar infraestrutura.
 
-**Entregas:** desenho de staging/produção, responsáveis, classificação dos dados, escolha preliminar de hospedagem, secret manager, observabilidade e e-mail.
-
-**Gate:** nenhuma etapa seguinte depende de provedor, responsável ou política ainda indefinidos.
+**Checklist e gate:** a conclusão de B10.0 é controlada pelo [checklist operacional B10.0](CHECKLIST_DEFINICOES_PENDENTES.md#0-gate-operacional-da-b100). Nenhuma etapa seguinte pode depender de item ainda aberto nesse checklist.
 
 **Decisões parciais aprovadas em 03/08/2026:** Railway para hospedagem e PostgreSQL em `us-east`; Cloudflare R2 para cópia externa de backups; Railway Environment Variables para segredos no MVP; OpenTelemetry para instrumentação; Sentry para exceções, stack traces e performance; BetterStack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais; Resend para e-mail; RPO de 1 hora, RTO de 4 horas, retenção de backup de 90 dias; dois ambientes, com staging antes de produção. Região, retenção e contratos ainda dependem de validação jurídica. Domínio, responsáveis, orçamento e critérios de abertura permanecem pendentes. Fonte: [ADR 016](adr/016-EscolhasDev.md).
 

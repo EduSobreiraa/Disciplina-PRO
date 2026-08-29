@@ -14,7 +14,7 @@ const participantLinks = [
 ]
 
 export function AppLayout() {
-  const { user, tenant, membership } = useAppContext()
+  const { user, tenant, membership, logout } = useAppContext()
   const gamification = useGamification()
   const links = ['CEO', 'MANAGER'].includes(membership.role)
     ? [...participantLinks, { to: '/app/administracao', label: 'Administração' }]
@@ -35,6 +35,7 @@ export function AppLayout() {
             <div><small>Nível {gamification.level.level}</small><strong>{gamification.level.name} · <em>{gamification.xp} XP</em></strong><span className="xp-track"><i style={{ width: `${gamification.progress}%` }} /></span></div>
           </div>
           <div className="war-identity"><div><strong>{user.email}</strong><small>{membership.role} · {tenant.name}</small></div><span className="war-avatar">{user.email.slice(0, 2).toUpperCase()}</span></div>
+          <button className="war-logout" type="button" onClick={() => logout().catch(() => {})}>Sair</button>
         </div>
       </header>
       <nav className="war-nav" aria-label="Navegação principal">

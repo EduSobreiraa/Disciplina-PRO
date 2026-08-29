@@ -96,7 +96,7 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Motivo do adiamento:** requer infraestrutura de staging e provedor definidos.
 - **Retomada:** B10.
 - **Critério de encerramento:** RPO/RTO definidos, backup verificado, restauração e rollback/forward-fix ensaiados.
-- **Decisões operacionais de 03/08/2026:** RPO de 1 hora, RTO de 4 horas, backups retidos por 90 dias, cópia externa no Cloudflare R2 e rollback automático. A retenção depende de validação jurídica; configuração, monitoramento e ensaios continuam pendentes.
+- **Decisões operacionais de 03/08/2026, atualizadas em 29/08/2026:** RPO de 1 hora, RTO de 4 horas, backups retidos por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação apenas quando o schema for compatível; caso contrário, aplica-se forward-fix. A retenção depende de validação jurídica; configuração, monitoramento e ensaios continuam pendentes.
 
 ### PP-008 — Observabilidade de produção definida, ainda não implantada
 

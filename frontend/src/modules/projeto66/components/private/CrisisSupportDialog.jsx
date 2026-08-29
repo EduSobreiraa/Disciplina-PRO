@@ -7,6 +7,8 @@ const phrases = ['Você não é sua reação automática.', 'O velho eu quer rea
 export function CrisisSupportDialog({ open, onClose }) {
   const execution = useProjeto66Cycle()
   const [breaths, setBreaths] = useState(0)
+  const [savingOutcome, setSavingOutcome] = useState(null)
+  const [saveError, setSaveError] = useState(null)
   const dialogRef = useRef(null)
   const initialFocusRef = useRef(null)
   const previousFocusRef = useRef(null)
@@ -19,6 +21,8 @@ export function CrisisSupportDialog({ open, onClose }) {
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
         event.preventDefault()
+        setSaveError(null)
+        setSavingOutcome(null)
         onClose()
         return
       }
@@ -44,9 +48,21 @@ export function CrisisSupportDialog({ open, onClose }) {
 
   if (!open) return null
   async function finish(outcome) {
-    await execution.savePrivateResponse(PROJETO66_ACTIVITY_KEYS.crisisSupport, { outcome, breaths, occurredAt: new Date().toISOString() })
-    setBreaths(0)
-    onClose()
+    if (execution.cycle.status !== 'ACTIVE') {
+      setSaveError('Inicie seu ciclo para registrar este momento de forma privada.')
+      return
+    }
+    setSavingOutcome(outcome)
+    setSaveError(null)
+    try {
+      await execution.savePrivateResponse(PROJETO66_ACTIVITY_KEYS.crisisSupport, { outcome, breaths, occurredAt: new Date().toISOString() })
+      setBreaths(0)
+      onClose()
+    } catch {
+      setSaveError('Não foi possível registrar este momento. Tente novamente.')
+    } finally {
+      setSavingOutcome(null)
+    }
   }
-  return <div ref={dialogRef} className="p66-crisis" role="dialog" aria-modal="true" aria-labelledby="crisis-title"><span>🫁</span><small>Modo crise · conteúdo privado</small><h2 id="crisis-title">Pare. Respire. Escolha.</h2><p>{phrases[Math.min(breaths, phrases.length - 1)]}</p><button ref={initialFocusRef} className="p66-breath" type="button" onClick={() => setBreaths((value) => value + 1)}><b>{breaths < 4 ? 'Inspirar e soltar' : 'Estou no controle'}</b><small>{breaths} respirações conscientes</small></button><div><button type="button" onClick={() => finish('overcame')}>Venci o impulso</button><button type="button" onClick={() => finish('withdrew')}>Sair por agora</button></div></div>
+  return <div ref={dialogRef} className="p66-crisis" role="dialog" aria-modal="true" aria-labelledby="crisis-title"><span>🫁</span><small>Modo crise · conteúdo privado</small><h2 id="crisis-title">Pare. Respire. Escolha.</h2><p>{phrases[Math.min(breaths, phrases.length - 1)]}</p><button disabled={Boolean(savingOutcome)} ref={initialFocusRef} className="p66-breath" type="button" onClick={() => setBreaths((value) => value + 1)}><b>{breaths < 4 ? 'Inspirar e soltar' : 'Estou no controle'}</b><small>{breaths} respirações conscientes</small></button>{saveError && <p className="p66-crisis-error" role="alert">{saveError}</p>}<div><button disabled={Boolean(savingOutcome)} type="button" onClick={() => finish('overcame')}>{savingOutcome === 'overcame' ? 'Registrando…' : 'Venci o impulso'}</button><button disabled={Boolean(savingOutcome)} type="button" onClick={() => { setSaveError(null); setSavingOutcome(null); onClose() }}>Sair por agora</button></div></div>
 }

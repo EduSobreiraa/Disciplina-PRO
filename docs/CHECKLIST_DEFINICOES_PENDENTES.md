@@ -1,8 +1,24 @@
 # Checklist de definições pendentes
 
-> Disciplina PRO · Atualizado em 21/08/2026 · Reconciliado com o ADR 016
+> Disciplina PRO · Atualizado em 29/08/2026 · Reconciliado com o ADR 016
 
 Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovador e a evidência no documento canônico indicado.
+
+## 0. Gate operacional da B10.0
+
+Este checklist é a fonte de controle do gate B10.0. Um item marcado só é aceito com a evidência indicada; itens de Direção ou Jurídico não podem ser encerrados unilateralmente pelo Desenvolvedor.
+
+- [x] Ambientes e sequência definidos: laboratório BX, staging privado e produção; staging precede produção. Evidência: ADR-016.
+- [x] Fornecedores técnicos do MVP definidos: Vercel, Railway/PostgreSQL, Cloudflare R2, OpenTelemetry, Sentry, Better Stack e Resend. Evidência: ADR-016.
+- [x] Responsabilidade técnica e operacional registrada: Eduardo é o único responsável pelo sistema — código, infraestrutura, banco, segredos, ambientes, testes e resposta técnica a incidentes — sem substituto técnico no momento. Evidência: ADR-016 e decisão operacional de 29/08/2026.
+- [ ] Orçamento e contratação dos serviços externos autorizados. Responsável: Direção da Spark. Evidência: aprovação registrada.
+- [ ] Contratos dos fornecedores, região `us-east` e retenção de backups validados para o tratamento de dados aplicável. Responsável: Spark + Jurídico. Evidência: parecer/contratos validados.
+- [ ] Responsáveis pelo canal de privacidade e respectivas substituições definidos. Responsável: Direção da Spark. Evidência: registro de designação.
+- [ ] Matriz de tratamento, bases legais, papéis e políticas de retenção aprovados. Responsável: Spark + Jurídico. Evidência: matriz e documentos jurídicos validados.
+- [ ] Critérios empresariais de abertura de staging público e produção aprovados. Responsável: Direção da Spark. Evidência: autorização registrada.
+- [ ] Critério de aceite do ensaio de restauração definido. Decisão explicitamente adiada por Eduardo em 29/08/2026; não bloquear o trabalho preparatório BX, mas bloquear a conclusão de B10.3/produção. Evidência futura: decisão registrada.
+
+**Gate B10.0:** concluído somente quando todos os itens aplicáveis acima estiverem marcados e suas evidências estiverem registradas. BX pode avançar apenas nos itens técnicos que não dependem dessas decisões externas.
 
 ## 1. Direção da Spark
 
@@ -61,8 +77,8 @@ Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovad
 | Tempo interno esperado para iniciar resposta a incidente | **até 2 horas após o reconhecimento do alerta — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
 | Canal interno de incidentes | **grupo privado no Telegram, com Bot API — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
 | Critério para comunicar incidente a clientes | **A DEFINIR** | Direção + Jurídico | antes de produção | PP-008 |
-| Critério de aceite do ensaio de restauração | **A DEFINIR** | Direção da Spark | antes de produção | PP-007/B10.3 |
-| Estratégia empresarial diante de falha de atualização | **rollback automático — DEFINIDO** | proprietário do projeto | implementar e ensaiar antes de produção | ADR-016/PP-007 |
+| Critério de aceite do ensaio de restauração | **A DEFINIR — decisão adiada em 29/08/2026** | Direção da Spark | antes de produção; não bloqueia BX | PP-007/B10.3 |
+| Estratégia diante de falha de atualização | **rollback da aplicação somente se o schema for compatível; caso contrário, forward-fix — DEFINIDA** | proprietário do projeto | implementar e ensaiar antes de produção | ADR-016/PP-007 e runbook de recuperação |
 
 ### Clientes, suporte e compromissos
 

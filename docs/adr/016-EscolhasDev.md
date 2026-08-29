@@ -2,7 +2,7 @@
 
 - Estado: aceita
 - Data: 03/08/2026
-- Atualizado em: 23/08/2026
+- Atualizado em: 29/08/2026
 - Fase: B10.0
 - Decidido por: Eduardo, proprietário do projeto
 
@@ -39,7 +39,7 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 | Backup em região/provedor separado | **Sim — Cloudflare R2** | Cópia externa ao Railway |
 | Backup lógico independente | **Diário para Cloudflare R2** | Retenção de 90 dias por Lifecycle Rule, preferencialmente |
 | Camada adicional Railway | **PITR + backup automático do banco/volume** | Não depender de uma única camada de recuperação |
-| Estratégia diante de falha de atualização | **Rollback automático** (retornar ao deploy anterior) | Migrations devem ser reversíveis; Railway suporta rollback de deploy nativamente |
+| Estratégia diante de falha de atualização | **Rollback da aplicação quando compatível; forward-fix quando a migration já aplicada impedir o retorno seguro** | Migration destrutiva exige plano específico, backup verificado e drill; restore de banco não é rollback rotineiro. |
 
 ### Operação e Incidentes
 
@@ -73,7 +73,7 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 | Ambientes | **BX em laboratório → staging privado → produção** | BX usa contas técnicas sem dados reais; staging/produção ficam em contas corporativas |
 | Plano Railway inicial | **Hobby** | Não subir para Pro preventivamente; reavaliar por limite, consumo ou recurso necessário |
 | Sequência de implantação | staging primeiro, produção após validação manual | — |
-| Responsável técnico único | **Eduardo** | Opera código, infraestrutura, banco, segredos, staging, produção, testes e resposta técnica a incidentes; não há substituto técnico atualmente. |
+| Responsável técnico e operacional único | **Eduardo** | É o único responsável pelo sistema: opera código, infraestrutura, banco, segredos, staging, produção, testes e resposta técnica a incidentes; não há substituto técnico atualmente. Aprovações empresariais e jurídicas permanecem nas partes competentes. |
 | Aprovação técnica de release | **Eduardo** | Executa testes em staging, decide tecnicamente o go/no-go e registra evidências por e-mail. |
 | Registro de comunicação operacional | **e-mail corporativo** | Registra releases, incidentes e respectivas evidências; conteúdo jurídico ou comercial continua sujeito à Spark/Jurídico. |
 
@@ -102,7 +102,7 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 ## 📝 Notas técnicas geradas pelas decisões
 
 1. **RPO de 1h** → configurar e ensaiar Point-in-Time Recovery no Railway Postgres. O dump lógico diário no R2 é cópia independente de disaster recovery, não substituto do PITR.
-2. **Rollback automático** → todas as migrations Prisma devem ter `down migration` correspondente; documentar procedimento no runbook.
+2. **Falha de atualização** → seguir o runbook: retornar apenas a aplicação quando o schema continuar compatível; se a migration já aplicada impedir retorno seguro, executar forward-fix. Migration destrutiva exige plano específico, backup verificado e drill; restore de banco é último recurso.
 3. **Resend + Cloudflare DNS** → configurar SPF, DKIM e DMARC no Cloudflare assim que o domínio for registrado. O Resend guia esse processo nativamente.
 4. **Monitoramento** → manter OpenTelemetry como instrumentação; configurar Sentry para exceções, stack traces e performance; configurar BetterStack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais; documentar runbook com reconhecimento e escalonamento.
 5. **2 ambientes Railway** → variáveis de ambiente devem ser gerenciadas separadamente por ambiente; nunca compartilhar segredos entre staging e produção.
