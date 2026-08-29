@@ -18,6 +18,8 @@ const managerEmail = process.env.LAB_SEED_MANAGER_EMAIL ?? 'lab-manager@discipli
 const userEmail = process.env.LAB_SEED_USER_EMAIL ?? 'lab-user@disciplina.test'
 const password = process.env.LAB_SEED_PASSWORD
 const tenantSlug = process.env.LAB_SEED_TENANT_SLUG ?? 'organizacao-laboratorio'
+const seedConfirmation = process.env.LAB_SEED_CONFIRM
+const defaultRailwayDatabaseConfirmation = process.env.LAB_SEED_ALLOW_DEFAULT_RAILWAY_DATABASE
 
 if (!password) throw new Error('LAB_SEED_PASSWORD é obrigatória')
 const labSeedPassword = password
@@ -28,8 +30,8 @@ try {
   const databaseUrl = config.get('DATABASE_URL', { infer: true })
   assertLabSeedDatabase({
     databaseUrl,
-    confirmation: process.env.LAB_SEED_CONFIRM,
-    defaultRailwayDatabaseConfirmation: process.env.LAB_SEED_ALLOW_DEFAULT_RAILWAY_DATABASE,
+    confirmation: seedConfirmation,
+    defaultRailwayDatabaseConfirmation,
   })
   assertPasswordPolicy(labSeedPassword)
 
