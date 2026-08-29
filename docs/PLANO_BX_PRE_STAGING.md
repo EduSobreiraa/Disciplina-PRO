@@ -58,7 +58,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 ### Seed de laboratório
 
-`npm run lab:seed --workspace backend` prepara de forma idempotente a organização fictícia, Projeto 66 e quatro identidades descartáveis: `SUPER_ADMIN`, CEO, MANAGER e USER. O MANAGER e o USER também pertencem à mesma equipe, para validar permissões de gestão. A seed exige `LAB_SEED_PASSWORD`, `LAB_SEED_CONFIRM=seed-disciplina-pro-lab` e recusa qualquer banco que não seja `disciplina_pro_lab`, `disciplina_pro_staging` ou `disciplina_pro_validation`; além disso, recusa um tenant que já possua membro ativo fora das três identidades de tenant previstas. Não use a seed em produção nem com dados reais.
+`npm run lab:seed --workspace backend` prepara de forma idempotente a organização fictícia, Projeto 66 e quatro identidades descartáveis: `SUPER_ADMIN`, CEO, MANAGER e USER. O MANAGER e o USER também pertencem à mesma equipe, para validar permissões de gestão. A seed exige `LAB_SEED_PASSWORD`, `LAB_SEED_CONFIRM=seed-disciplina-pro-lab` e recusa qualquer banco que não seja `disciplina_pro_lab`, `disciplina_pro_staging` ou `disciplina_pro_validation`. Para a conta técnica temporária da Railway, cujo banco padrão é `railway`, exige ainda `LAB_SEED_ALLOW_DEFAULT_RAILWAY_DATABASE=allow-temporary-railway-database`; remova ambas as confirmações após a execução. A seed também recusa um tenant que já possua membro ativo fora das três identidades de tenant previstas. Não use a seed com dados reais.
 
 ## BX.3 — Segurança e configuração
 

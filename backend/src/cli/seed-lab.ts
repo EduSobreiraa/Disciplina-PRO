@@ -26,7 +26,11 @@ const app = await NestFactory.createApplicationContext(AppModule, { logger: fals
 try {
   const config = app.get(ConfigService<Environment, true>)
   const databaseUrl = config.get('DATABASE_URL', { infer: true })
-  assertLabSeedDatabase({ databaseUrl, confirmation: process.env.LAB_SEED_CONFIRM })
+  assertLabSeedDatabase({
+    databaseUrl,
+    confirmation: process.env.LAB_SEED_CONFIRM,
+    defaultRailwayDatabaseConfirmation: process.env.LAB_SEED_ALLOW_DEFAULT_RAILWAY_DATABASE,
+  })
   assertPasswordPolicy(labSeedPassword)
 
   const labEmails = [adminEmail, ceoEmail, managerEmail, userEmail]
