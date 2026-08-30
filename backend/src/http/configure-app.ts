@@ -10,6 +10,12 @@ import { requestIdMiddleware } from './request-id.middleware.js'
 export function configureApp(app: INestApplication) {
   const config = app.get<ConfigService<Environment, true>>(ConfigService)
   const bodyLimit = config.get('REQUEST_BODY_LIMIT', { infer: true })
+  const trustProxyHops = config.get('TRUST_PROXY_HOPS', { infer: true })
+
+  if (trustProxyHops > 0) {
+    const express = app.getHttpAdapter().getInstance() as { set(name: string, value: number): void }
+    express.set('trust proxy', trustProxyHops)
+  }
 
   app.use(requestIdMiddleware)
   app.use(helmet())

@@ -44,6 +44,8 @@ describe('validateEnvironment', () => {
     const production = {
       NODE_ENV: 'production',
       DATABASE_URL: 'postgresql://user:pass@localhost:5432/db',
+      JWT_ACTIVE_KID: 'production-2026-08',
+      JWT_AUDIENCE: 'disciplina-pro-api',
       JWT_PRIVATE_KEY_BASE64: 'encoded',
       JWT_PUBLIC_KEYS_JSON: '{}',
       REFRESH_TOKEN_PEPPER: 'a-production-pepper-with-32-characters',
@@ -53,6 +55,7 @@ describe('validateEnvironment', () => {
       SMTP_AUTH_PASSWORD: 'smtp-password',
       SMTP_FROM: 'Disciplina PRO <no-reply@example.test>',
       SMTP_REQUIRE_TLS: 'true',
+      TRUST_PROXY_HOPS: '1',
     }
     expect(() => validateEnvironment({ ...production, FRONTEND_URL: 'http://app.disciplina.pro', JWT_ISSUER: 'https://api.disciplina.pro' })).toThrow(
       'FRONTEND_URL deve usar HTTPS',
@@ -82,6 +85,8 @@ describe('validateEnvironment', () => {
       DATABASE_URL: 'postgresql://user:pass@localhost:5432/db',
       FRONTEND_URL: 'https://staging.example.test',
       JWT_ISSUER: 'https://staging.example.test',
+      JWT_ACTIVE_KID: 'staging-2026-08',
+      JWT_AUDIENCE: 'disciplina-pro-api',
       JWT_PRIVATE_KEY_BASE64: 'encoded',
       JWT_PUBLIC_KEYS_JSON: '{}',
       REFRESH_TOKEN_PEPPER: 'a-production-pepper-with-32-characters',
@@ -90,6 +95,63 @@ describe('validateEnvironment', () => {
     }
     expect(() => validateEnvironment(production)).toThrow('SMTP_HOST')
     expect(() => validateEnvironment({ ...production, SMTP_HOST: 'smtp.example.test', SMTP_AUTH_USER: 'user', SMTP_AUTH_PASSWORD: 'password', SMTP_FROM: 'Disciplina PRO <no-reply@example.test>' })).toThrow('SMTP_REQUIRE_TLS')
-    expect(validateEnvironment({ ...production, SMTP_HOST: 'smtp.example.test', SMTP_AUTH_USER: 'user', SMTP_AUTH_PASSWORD: 'password', SMTP_FROM: 'Disciplina PRO <no-reply@example.test>', SMTP_REQUIRE_TLS: 'true' }).SWAGGER_ENABLED).toBe(false)
+    expect(validateEnvironment({ ...production, SMTP_HOST: 'smtp.example.test', SMTP_AUTH_USER: 'user', SMTP_AUTH_PASSWORD: 'password', SMTP_FROM: 'Disciplina PRO <no-reply@example.test>', SMTP_REQUIRE_TLS: 'true', TRUST_PROXY_HOPS: '1' }).SWAGGER_ENABLED).toBe(false)
+  })
+
+  it('rejects unsafe production proxy, Swagger and development peppers', () => {
+    const production = {
+      NODE_ENV: 'production',
+      DATABASE_URL: 'postgresql://user:pass@localhost:5432/db',
+      FRONTEND_URL: 'https://staging.example.test',
+      JWT_ISSUER: 'https://staging.example.test',
+      JWT_AUDIENCE: 'disciplina-pro-api',
+      JWT_ACTIVE_KID: 'staging-2026-08',
+      JWT_PRIVATE_KEY_BASE64: 'encoded',
+      JWT_PUBLIC_KEYS_JSON: '{}',
+      REFRESH_TOKEN_PEPPER: 'a-production-pepper-with-32-characters',
+      INVITATION_TOKEN_PEPPER: 'another-production-pepper-with-32-characters',
+      INVITATION_ACCEPTANCE_URL: 'https://staging.example.test/convites/aceitar',
+      SMTP_HOST: 'smtp.example.test',
+      SMTP_AUTH_USER: 'user',
+      SMTP_AUTH_PASSWORD: 'password',
+      SMTP_FROM: 'Disciplina PRO <no-reply@example.test>',
+      SMTP_REQUIRE_TLS: 'true',
+    }
+
+    expect(() => validateEnvironment(production)).toThrow('TRUST_PROXY_HOPS')
+    expect(() => validateEnvironment({ ...production, TRUST_PROXY_HOPS: '1', SWAGGER_ENABLED: 'true' })).toThrow('SWAGGER_ENABLED')
+    expect(() => validateEnvironment({
+      ...production,
+      TRUST_PROXY_HOPS: '1',
+      REFRESH_TOKEN_PEPPER: 'development-only-refresh-pepper-change-me',
+    })).toThrow('Peppers de desenvolvimento')
+  })
+
+  it('requires stable non-empty JWT identifiers', () => {
+    expect(() => validateEnvironment({ JWT_ACTIVE_KID: 'invalid key id' })).toThrow('JWT_ACTIVE_KID')
+    expect(() => validateEnvironment({ JWT_AUDIENCE: '   ' })).toThrow('JWT_AUDIENCE')
+  })
+
+  it('allows production security with delivery disabled only in the lab stage', () => {
+    const lab = {
+      NODE_ENV: 'production',
+      DEPLOYMENT_STAGE: 'lab',
+      DATABASE_URL: 'postgresql://user:pass@localhost:5432/db',
+      FRONTEND_URL: 'https://lab.example.test',
+      JWT_ISSUER: 'https://lab.example.test',
+      JWT_AUDIENCE: 'disciplina-pro-api',
+      JWT_ACTIVE_KID: 'lab-2026-08',
+      JWT_PRIVATE_KEY_BASE64: 'encoded',
+      JWT_PUBLIC_KEYS_JSON: '{}',
+      REFRESH_TOKEN_PEPPER: 'a-production-pepper-with-32-characters',
+      INVITATION_TOKEN_PEPPER: 'another-production-pepper-with-32-characters',
+      INVITATION_ACCEPTANCE_URL: 'https://lab.example.test/convites/aceitar',
+      SMTP_DELIVERY_ENABLED: 'false',
+      SWAGGER_ENABLED: 'false',
+      TRUST_PROXY_HOPS: '1',
+    }
+
+    expect(validateEnvironment(lab)).toMatchObject({ NODE_ENV: 'production', DEPLOYMENT_STAGE: 'lab', SMTP_DELIVERY_ENABLED: false })
+    expect(() => validateEnvironment({ ...lab, DEPLOYMENT_STAGE: 'staging' })).toThrow('SMTP_DELIVERY_ENABLED')
   })
 })

@@ -41,7 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       ...(validationDetails ? { details: validationDetails } : {}),
       requestId,
       timestamp: new Date().toISOString(),
-      path: request.originalUrl,
+      path: request.path,
     })
   }
 }

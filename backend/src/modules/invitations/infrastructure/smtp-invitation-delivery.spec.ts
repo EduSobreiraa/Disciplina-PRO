@@ -9,12 +9,14 @@ const message = {
   expiresAt: new Date('2026-07-26T12:00:00.000Z'),
 }
 
-function subject() {
+function subject(enabled = true) {
   const smtp = { send: jest.fn<SmtpClient['send']>().mockResolvedValue() }
   const config = {
-    get: jest.fn((key: string) => key === 'SMTP_FROM'
-      ? 'Disciplina PRO <no-reply@disciplina.local>'
-      : 'http://localhost:5173/convites/aceitar'),
+    get: jest.fn((key: string) => {
+      if (key === 'SMTP_FROM') return 'Disciplina PRO <no-reply@disciplina.local>'
+      if (key === 'SMTP_DELIVERY_ENABLED') return enabled
+      return 'http://localhost:5173/convites/aceitar'
+    }),
   }
   return { delivery: new SmtpInvitationDelivery(config as never, smtp), smtp }
 }
@@ -34,5 +36,11 @@ describe('SmtpInvitationDelivery', () => {
     const { delivery, smtp } = subject()
     smtp.send.mockRejectedValueOnce(new Error(`SMTP rejected ${message.token}`))
     await expect(delivery.send(message)).resolves.toBe('FAILED')
+  })
+
+  it('does not contact SMTP when delivery is disabled for the lab', async () => {
+    const { delivery, smtp } = subject(false)
+    await expect(delivery.send(message)).resolves.toBe('FAILED')
+    expect(smtp.send).not.toHaveBeenCalled()
   })
 })

@@ -2,6 +2,7 @@ import './instrument.js'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { Logger } from 'nestjs-pino'
 import { AppModule } from './app.module.js'
 import type { Environment } from './config/environment.js'
 import { configureApp } from './http/configure-app.js'
@@ -10,6 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true, bodyParser: false })
   const config = app.get<ConfigService<Environment, true>>(ConfigService)
 
+  app.useLogger(app.get(Logger))
   configureApp(app)
 
   if (config.get('SWAGGER_ENABLED', { infer: true })) {

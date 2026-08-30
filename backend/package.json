@@ -17,6 +17,8 @@
     "platform:bootstrap": "node --loader ts-node/esm src/cli/bootstrap-super-admin.ts",
     "lab:seed": "node --loader ts-node/esm src/cli/seed-lab.ts",
     "lab:seed:compiled": "node dist/src/cli/seed-lab.js",
+    "security:generate": "node --loader ts-node/esm src/cli/generate-security-material.ts",
+    "security:generate:compiled": "node dist/src/cli/generate-security-material.js",
     "sessions:cleanup": "node --loader ts-node/esm src/cli/cleanup-sessions.ts",
     "programs:materialize:projeto66": "node --loader ts-node/esm src/cli/materialize-projeto66.ts",
     "events:process": "node --loader ts-node/esm src/cli/process-internal-events.ts",

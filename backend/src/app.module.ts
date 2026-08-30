@@ -11,6 +11,7 @@ import { type Environment, validateEnvironment } from './config/environment.js'
 import { PrismaModule } from './database/prisma.module.js'
 import { HealthController } from './health/health.controller.js'
 import { HealthService } from './health/health.service.js'
+import { LOG_REDACTION_PATHS, sanitizeLoggedRequest } from './logging/log-redaction.js'
 import { IdentityAccessModule } from './modules/identity-access/identity-access.module.js'
 import { AuthenticationGuard } from './modules/identity-access/http/authentication.guard.js'
 import { OrganizationsModule } from './modules/organizations/organizations.module.js'
@@ -59,7 +60,8 @@ const environmentPath = existsSync(sourceEnvironmentPath) ? sourceEnvironmentPat
         pinoHttp: {
           level: config.get('LOG_LEVEL', { infer: true }),
           genReqId: (request) => request.headers['x-request-id']?.toString() ?? randomUUID(),
-          redact: ['req.headers.authorization', 'req.headers.cookie', 'req.headers.x-csrf-token', 'res.headers.set-cookie'],
+          serializers: { req: sanitizeLoggedRequest },
+          redact: { paths: LOG_REDACTION_PATHS, censor: '[REDACTED]' },
         },
       }),
     }),
