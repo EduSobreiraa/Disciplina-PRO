@@ -11,6 +11,7 @@ import { type Environment, validateEnvironment } from './config/environment.js'
 import { PrismaModule } from './database/prisma.module.js'
 import { HealthController } from './health/health.controller.js'
 import { HealthService } from './health/health.service.js'
+import { DebugSentryController } from './monitoring/debug-sentry.controller.js'
 import { IdentityAccessModule } from './modules/identity-access/identity-access.module.js'
 import { AuthenticationGuard } from './modules/identity-access/http/authentication.guard.js'
 import { OrganizationsModule } from './modules/organizations/organizations.module.js'
@@ -64,7 +65,7 @@ const environmentPath = existsSync(sourceEnvironmentPath) ? sourceEnvironmentPat
       }),
     }),
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, DebugSentryController],
   providers: [
     HealthService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
