@@ -23,7 +23,6 @@ import { GamificationProvider } from './modules/gamification/GamificationProvide
 import './App.css'
 import { useAppContext } from './app/providers/app-context'
 import { tenantScopeKey } from './app/providers/tenant-async-scope'
-import { SentryTestButton } from './monitoring/SentryTestButton'
 
 function RequireSession({ children }) {
   const session = useAppContext()
@@ -71,7 +70,6 @@ function App() {
         </Route>
         <Route path="*" element={<Navigate to="/app" replace />} />
       </Routes>
-      <SentryTestButton />
     </GamificationProvider>
   )
 }
