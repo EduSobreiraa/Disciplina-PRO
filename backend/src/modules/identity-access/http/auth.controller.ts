@@ -54,8 +54,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Rotaciona o refresh token uma única vez' })
   async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
     this.assertAllowedOrigin(request)
-    const refreshToken = this.cookie(request, this.refreshCookieName())
     try {
+      const refreshToken = this.cookie(request, this.refreshCookieName())
       const sessionId = await this.resolveSession.execute(refreshToken)
       this.assertCsrf(request, sessionId)
       const session = await this.rotate.execute({ refreshToken })
@@ -81,8 +81,8 @@ export class AuthController {
   @ApiResponse({ status: 204 })
   async logout(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
     this.assertAllowedOrigin(request)
-    const refreshToken = this.cookie(request, this.refreshCookieName())
     try {
+      const refreshToken = this.cookie(request, this.refreshCookieName())
       const sessionId = await this.resolveSession.execute(refreshToken)
       this.assertCsrf(request, sessionId)
       await this.revoke.execute({ sessionId })

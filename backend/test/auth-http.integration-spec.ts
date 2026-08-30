@@ -44,6 +44,16 @@ describe('Authentication HTTP contract', () => {
     expect(unknownUser.body).toMatchObject({ code: 'INVALID_CREDENTIALS', message: 'E-mail ou senha inválidos' })
   })
 
+  it('rejects refresh and logout without a session cookie as unauthorized', async () => {
+    for (const endpoint of ['refresh', 'logout']) {
+      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+        .post(`/api/auth/${endpoint}`)
+        .set('Origin', ORIGIN)
+        .expect(401)
+      expect(response.body).toMatchObject({ code: 'INVALID_SESSION', message: 'Sessão inválida ou expirada' })
+    }
+  })
+
   it('sets secure transport cookies, requires CSRF and detects replay', async () => {
     const login = await request(app.getHttpServer() as Parameters<typeof request>[0]).post('/api/auth/login').set('Origin', ORIGIN).send({ email, password }).expect(200)
     const loginBody = login.body as Record<string, unknown>
