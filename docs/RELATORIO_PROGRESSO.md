@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 06/08/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos
+> Atualizado em 30/08/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos; BX.1/BX.2 comprovadas no recorte de laboratório e base local da BX.3 aprovada
 
 ## 1. Visão geral do produto
 
@@ -382,8 +382,8 @@ Implementado e validado localmente:
 
 Ainda não implementado ou não validado:
 
-- B9: interfaces administrativas completas;
-- B10: infraestrutura, backup/restauração, observabilidade, chaves gerenciadas, acessibilidade assistiva e release;
+- PITR/restore dentro do Railway e prova do RPO de 1 hora;
+- B10: observabilidade, chaves gerenciadas, acessibilidade assistiva, serviços externos e release;
 - validação em staging ou produção.
 
 O `PP-017` foi encerrado na B6.1: controllers e CORS concordam sobre `PUT`, e o preflight cross-origin é exercitado automaticamente sem relaxar a origem permitida.
@@ -404,12 +404,14 @@ Gate local atualizado em 06/08/2026:
 | SMTP local/Mailpit | 1 suíte, 1 teste aprovado |
 | Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
 | Dependências | gate controlado aprovado; auditoria bruta mantém 2 ocorrências altas do mesmo advisory RSC aceito estritamente no PP-016 |
+| Backup lógico externo | job diário Railway → Cloudflare R2 ativo; SHA-256 válido e restore local do artefato de 30/08 aprovado com 33 tabelas recuperadas |
+| Segurança BX.3 | contrato fail-fast, estágio lab sem SMTP fictício, chaves/peppers, proxy, Swagger, redação e sanitização do Sentry aprovados; 44 suítes/142 testes unitários e 33 suítes/92 testes PostgreSQL |
 
 O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estático versionado. A presença de boundaries organizacionais no documento gerado é coberta por teste, mas não há teste automático comparando todas as rotas narrativas com todo o OpenAPI.
 
 ## 12. Próxima etapa e bloqueios
 
-A última fase funcional comprovadamente concluída é a B9. A próxima implementação é **B10 — hardening, staging e release MVP**.
+A última fase funcional comprovadamente concluída é a B9. Na preparação pré-staging, BX.1 e o recorte de backup lógico/restore local da BX.2 foram concluídos. A base local da **BX.3 — segurança e configuração** também está aprovada; a próxima ação é cadastrar as variáveis no Railway, fazer redeploy e validar externamente a origem Vercel, cookies e rate limit.
 
 O desenvolvimento local pode continuar. Dados reais, staging público e produção continuam bloqueados pelos itens P0/P1 do relatório de problemas postergados. Em particular:
 
@@ -428,4 +430,4 @@ Para o PP-004, foram registradas as políticas aprovadas de retenção do tenant
 
 ## 14. Conclusão
 
-O repositório possui frontend React funcional e backend multi-tenant implementado até B8, incluindo eventos, gamificação, auditoria, reporting objetivo e integração frontend–API reproduzível em navegador real. Isso não equivale a produto completo nem a prontidão de produção. B9–B10 e os riscos explicitamente postergados permanecem futuros.
+O repositório possui frontend React funcional e backend multi-tenant implementado até B9, incluindo eventos, gamificação, auditoria, reporting objetivo, administração e integração frontend–API reproduzível em navegador real. O laboratório também comprovou deploy, backup lógico diário externo, restauração local descartável e a base local de segurança/configuração da BX.3. Isso não equivale a prontidão de produção: validação externa da BX.3, BX.4–BX.5, PITR/restore Railway, B10 e os riscos explicitamente postergados permanecem necessários.

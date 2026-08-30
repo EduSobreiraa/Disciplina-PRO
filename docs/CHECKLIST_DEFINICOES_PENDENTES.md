@@ -1,6 +1,6 @@
 # Checklist de definições pendentes
 
-> Disciplina PRO · Atualizado em 29/08/2026 · Reconciliado com o ADR 016
+> Disciplina PRO · Atualizado em 30/08/2026 · Reconciliado com o ADR 016
 
 Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovador e a evidência no documento canônico indicado.
 
@@ -47,7 +47,7 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 | Frontend de staging e produção | **Vercel — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/BX |
 | Região de hospedagem dos dados | **us-east — DEFINIDA; validação jurídica pendente** | proprietário + Jurídico | antes da contratação/uso com dados reais | ADR-016/PP-004 |
 | Serviço de banco de dados | **PostgreSQL via Railway — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016 |
-| Serviço de armazenamento de backups | **Cloudflare R2 — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/PP-007 |
+| Serviço de armazenamento de backups | **Cloudflare R2 — DEFINIDO E OPERACIONAL NO LABORATÓRIO** | proprietário do projeto | recriar/validar no ambiente corporativo antes de dados reais | ADR-016/BX.2/PP-007 |
 | Serviço de gestão de segredos | **Railway Environment Variables no MVP — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/PP-006 |
 | Instrumentação | **OpenTelemetry — DEFINIDO** | proprietário do projeto | implementar antes de staging público | ADR-016/PP-008 |
 | Exceções, stack traces e performance | **Sentry — DEFINIDO** | proprietário do projeto | contratar e implementar antes de staging público | ADR-016/PP-008 |
@@ -203,18 +203,18 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Permissões mínimas de cada credencial | **A DEFINIR E TESTAR** | política de acesso aprovada | antes de staging público | PP-005 |
 | Processo de concessão e revogação de acesso | **A DEFINIR** | responsáveis aprovados | antes de staging privado | PP-005 |
 | Configuração de conexão segura | **A DEFINIR E TESTAR** | provedor aprovado | antes de staging público | B10.1 |
-| Configuração de cookies e headers por ambiente | **A DEFINIR E TESTAR** | domínios aprovados | antes de staging público | B10.1 |
+| Configuração de cookies e headers por ambiente | **IMPLEMENTADA E TESTADA LOCALMENTE; validação externa pendente** | variáveis Railway e origem Vercel | antes de staging público | BX.3/B10.1 |
 
 ### Segredos e recuperação
 
 | Definição técnica | Valor | Dependência | Limite | Fonte |
 |---|---|---|---|---|
-| Processo de armazenamento dos segredos | **A DEFINIR** | cofre aprovado | antes de staging privado | PP-006 |
-| Frequência e procedimento de troca de chaves | **A DEFINIR** | política aprovada | antes de staging público | PP-006 |
-| Procedimento de revogação por comprometimento | **A DEFINIR** | responsáveis aprovados | antes de staging público | PP-006 |
-| Procedimento de recuperação após comprometimento | **A DEFINIR** | responsáveis aprovados | antes de staging público | PP-006 |
-| Frequência técnica de backup | **PITR contínuo para RPO de 1 hora; dump lógico diário para R2** | RPO de 1 hora aprovado | antes de staging privado | ADR-016/BX/PP-007 |
-| Procedimento de restauração | **A DEFINIR E ENSAIAR** | RTO aprovado | antes de produção | PP-007 |
+| Processo de armazenamento dos segredos | **Railway Environment Variables — DEFINIDO; cadastro final pendente** | ambiente Railway | antes de staging privado | ADR-016/BX.3/PP-006 |
+| Frequência e procedimento de troca de chaves | **PROCEDIMENTO DEFINIDO; ensaio Railway pendente** | material cadastrado no Railway | antes de staging público | runbook/BX.3/PP-006 |
+| Procedimento de revogação por comprometimento | **PROCEDIMENTO DEFINIDO; ensaio Railway pendente** | material cadastrado no Railway | antes de staging público | runbook/BX.3/PP-006 |
+| Procedimento de recuperação após comprometimento | **PROCEDIMENTO DEFINIDO; ensaio Railway pendente** | material cadastrado no Railway | antes de staging público | runbook/BX.3/PP-006 |
+| Frequência técnica de backup | **dump lógico diário para R2 — OPERACIONAL NO LAB; PITR contínuo para RPO de 1 hora — PENDENTE** | plano Railway com PITR | antes de produção | ADR-016/BX.2/PP-007 |
+| Procedimento de restauração | **DEFINIDO E ENSAIADO LOCALMENTE; repetir no Railway e validar PITR** | plano Railway adequado e critério formal de aceite | antes de produção | runbook/BX.2/PP-007 |
 | Procedimento para falha de atualização do banco | **A DEFINIR E ENSAIAR** | estratégia aprovada | antes de produção | PP-007 |
 | Monitoramento de falha de backup | **A DEFINIR E TESTAR** | serviço aprovado | antes de produção | PP-007 |
 

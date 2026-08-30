@@ -80,28 +80,28 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 
 ### PP-006 — Secrets, chaves JWT e rotação ainda sem infraestrutura
 
-- **Prioridade/status:** P1 · PLANEJADO
-- **Problema:** `RS256`, `kid` e rotação estão implementados, mas não existe secret manager, par de chaves persistentes por ambiente nem runbook de comprometimento.
+- **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 30/08/2026
+- **Problema:** `RS256`, `kid`, validação de produção, geração em memória e runbook de rotação/comprometimento estão implementados, mas o novo material ainda precisa ser cadastrado e rotacionado em ensaio no Railway.
 - **Impacto:** sessão segura não pode operar fora do desenvolvimento.
 - **Motivo do adiamento:** o contrato de B1.4 usa chaves efêmeras fora de produção; materialização operacional depende de staging.
 - **Retomada:** B10 para operação.
 - **Critério de encerramento:** chaves fora do Git, rotação ensaiada, acesso restrito, revogação e recuperação documentadas.
-- **Decisão operacional de 03/08/2026:** Railway Environment Variables será usado no MVP; Doppler poderá ser reavaliado futuramente. A escolha não encerra o PP: integração, responsáveis, rotação e ensaio de comprometimento continuam pendentes.
+- **Decisão operacional de 03/08/2026, atualizada em 30/08/2026:** Railway Environment Variables será usado no MVP; Doppler poderá ser reavaliado futuramente. A BX.3 adicionou gerador de par RSA/peppers, validação fail-fast, regras de revogação/recuperação e testes locais. Cadastro no Railway, rotação real e ensaio de comprometimento continuam pendentes.
 
-### PP-007 — Backup, restauração e rollback não ensaiados
+### PP-007 — Recuperação Railway/PITR e rollback ainda não ensaiados
 
-- **Prioridade/status:** P1 · ABERTO
-- **Problema:** migrations são reproduzíveis em banco vazio, mas não há backup automatizado, restauração ensaiada nem estratégia comprovada para falha de migration.
+- **Prioridade/status:** P1 · PARCIALMENTE MITIGADO
+- **Problema:** o backup lógico diário e a restauração local estão comprovados, mas PITR, restore dentro do Railway, monitoramento de falha e ensaio de rollback/forward-fix ainda não foram comprovados.
 - **Impacto:** risco de indisponibilidade ou perda de dados durante deploy/incidente.
 - **Motivo do adiamento:** requer infraestrutura de staging e provedor definidos.
 - **Retomada:** B10.
 - **Critério de encerramento:** RPO/RTO definidos, backup verificado, restauração e rollback/forward-fix ensaiados.
-- **Decisões operacionais de 03/08/2026, atualizadas em 29/08/2026:** RPO de 1 hora, RTO de 4 horas, backups retidos por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação apenas quando o schema for compatível; caso contrário, aplica-se forward-fix. A retenção depende de validação jurídica; configuração, monitoramento e ensaios continuam pendentes.
+- **Decisões operacionais de 03/08/2026, atualizadas em 30/08/2026:** RPO de 1 hora, RTO de 4 horas, backups retidos por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação apenas quando o schema for compatível; caso contrário, aplica-se forward-fix. Em 30/08, o job diário Railway → R2, o checksum e o restore local descartável do artefato `disciplina-pro-20260830T142746Z.dump` foram aprovados, recuperando 33 tabelas e os dados fictícios esperados. A retenção depende de validação jurídica; PITR/restore Railway, monitoramento, aceite formal e ensaio de falha de migration continuam pendentes antes da produção.
 
-### PP-008 — Observabilidade de produção definida, ainda não implantada
+### PP-008 — Observabilidade externa ainda não implantada
 
-- **Prioridade/status:** P1 · PLANEJADO
-- **Problema:** os serviços e suas responsabilidades foram definidos, mas ainda não estão contratados, configurados e testados em staging; também faltam responsáveis e runbook de incidente.
+- **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 30/08/2026
+- **Problema:** logging estruturado e redação de dados sensíveis foram implementados e testados localmente, mas Sentry, Better Stack, alertas e runbook de incidente ainda não foram configurados e ensaiados externamente.
 - **Impacto:** falhas e ataques podem não ser detectados ou diagnosticados em tempo adequado.
 - **Motivo do adiamento:** serviço externo não é necessário para desenvolvimento local.
 - **Retomada:** B10, antes de staging público.

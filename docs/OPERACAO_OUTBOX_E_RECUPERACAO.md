@@ -107,6 +107,18 @@ O script recusa `production`, exige confirmação literal e o nome exato do banc
 
 Registre duração do restore e idade do backup: ambos são a evidência para RTO de 4 horas e RPO de 1 hora.
 
+### Evidência de laboratório — 30/08/2026
+
+- artefato: `disciplina-pro-20260830T142746Z.dump` e manifesto `disciplina-pro-20260830T142746Z.dump.sha256`;
+- SHA-256 validado: `0bc189d1e6c9d4a73b6462aeeec09ac8fcf793bdf6d72dd4e0fc51b4124f5987`;
+- origem: job Railway PostgreSQL → bucket R2 privado, com execução diária e Lifecycle Rule de 90 dias;
+- destino: container descartável `postgres:18`, escolhido porque o arquivo custom possui formato de archive `v1.16` gerado pelo PostgreSQL 18;
+- restore: `pg_restore --clean --if-exists --no-owner --no-privileges --exit-on-error`, concluído com código zero em menos de 1 segundo;
+- validação: 33 tabelas públicas, schema mínimo `internal_events` + `_prisma_migrations` íntegro, 11 migrations, 4 usuários fictícios, 1 tenant, 3 memberships, 3 enrollments e 30 comportamentos;
+- descarte: container e banco temporários removidos após a conferência; artefato e manifesto permaneceram disponíveis para auditoria local.
+
+O ensaio comprova PostgreSQL → dump → R2 → verificação de checksum → restore → dados recuperáveis. Ele encerra o recorte de backup lógico da BX.2, mas não comprova PITR nem o RPO de 1 hora. Antes do lançamento, repetir o restore em infraestrutura Railway descartável e ensaiar PITR/corte manual.
+
 ## Rollback e forward-fix
 
 - Faça rollback somente da aplicação quando a migration for compatível e o schema continuar atendendo à versão anterior.

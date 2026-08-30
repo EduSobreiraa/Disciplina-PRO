@@ -1,6 +1,6 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 29/08/2026
+> Spark Inteligência Corporativa · Atualizado em 30/08/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado atual verificado
@@ -12,7 +12,9 @@
 - autenticação real e integração HTTP do Projeto 66 implementadas;
 - tracker, ritual, gamificação e missões consomem fontes ou projeções server-side;
 - B7.1–B7.4 concluídas: reporting pessoal, por time e tenant com contratos e prova HTTP de privacidade;
-- B8.1–B8.4 e B9.1–B9.7 concluídas; BX é a preparação pré-staging em laboratório e B10 é a próxima fase de entrega.
+- B8.1–B8.4 e B9.1–B9.7 concluídas;
+- BX.1 concluída no laboratório; BX.2 comprovou backup lógico diário no Cloudflare R2 e restauração local descartável; a base local da BX.3 está implementada e aguarda configuração/redeploy externo;
+- PITR e restore dentro da infraestrutura Railway permanecem como risco residual obrigatório antes do lançamento e não são substituídos pelo dump diário.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
 
@@ -733,6 +735,8 @@ Para manter gates pequenos e não concentrar toda a administração em uma únic
 **Gate:** configuração reproduzível e validada apenas com dados fictícios; nenhum secret ou token de laboratório será reutilizado em staging/produção corporativos.
 
 **Plano detalhado:** [`PLANO_BX_PRE_STAGING.md`](PLANO_BX_PRE_STAGING.md).
+
+**Estado em 30/08/2026:** BX.1 concluída. BX.2 encerrou o recorte de laboratório com PostgreSQL Railway populado por seed fictício, backup lógico diário enviado ao R2, retenção configurada por 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável. Foram recuperadas 33 tabelas e dados coerentes com a seed. O PITR/restore Railway foi transferido explicitamente para PP-007/B10.3 antes do lançamento. A base local da BX.3 está implementada e aprovada por 44 suítes/142 testes unitários e 33 suítes/92 testes PostgreSQL; faltam configuração Railway, redeploy e prova externa pela origem Vercel para encerrar a etapa.
 
 ### B10 — Hardening, staging e release MVP
 

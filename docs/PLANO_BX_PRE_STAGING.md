@@ -2,6 +2,8 @@
 
 > Decisão operacional registrada em 23/08/2026. Esta fase não autoriza dados reais, domínio corporativo, billing corporativo nem considera staging oficial implantado.
 
+**Estado em 30/08/2026:** BX.1 concluída no laboratório; BX.2 concluída no recorte de backup lógico independente e recuperação local; a base local da BX.3 está implementada e aguarda configuração/redeploy externo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
+
 ## Objetivo
 
 Implementar, testar e documentar tudo que for possível antes da criação das contas corporativas. Contas pessoais/técnicas podem ser usadas exclusivamente como laboratório; staging e produção definitivos serão recriados nas contas da empresa, com credenciais novas.
@@ -56,6 +58,10 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 **Plataformas necessárias:** Railway e Cloudflare R2 temporários.
 
+**Evidência de encerramento do recorte de laboratório em 30/08/2026:** frontend e API implantados, PostgreSQL Railway populado somente com seed fictício, job diário PostgreSQL → R2 ativo, bucket privado com Lifecycle Rule de 90 dias e primeiro artefato confirmado. O dump `disciplina-pro-20260830T142746Z.dump` e seu manifesto `.sha256` foram baixados, tiveram checksum validado e foram restaurados em PostgreSQL 18 descartável. O ensaio recuperou 33 tabelas, 11 migrations, 4 usuários fictícios, 1 tenant, 3 memberships, 3 enrollments e 30 comportamentos; o container foi removido após a validação.
+
+**Risco residual transferido:** o dump diário comprovado não atende sozinho ao RPO de 1 hora. PITR/WAL, restore em serviço Railway novo, corte manual, monitoramento de falha do backup e aceite formal da evidência continuam no PP-007/B10.3 e bloqueiam produção, mas não bloqueiam o início da BX.3.
+
 ### Seed de laboratório
 
 `npm run lab:seed --workspace backend` prepara de forma idempotente a organização fictícia, Projeto 66 e quatro identidades descartáveis: `SUPER_ADMIN`, CEO, MANAGER e USER. O MANAGER e o USER também pertencem à mesma equipe, para validar permissões de gestão. A seed exige `LAB_SEED_PASSWORD`, `LAB_SEED_CONFIRM=seed-disciplina-pro-lab` e recusa qualquer banco que não seja `disciplina_pro_lab`, `disciplina_pro_staging` ou `disciplina_pro_validation`. Para a conta técnica temporária da Railway, cujo banco padrão é `railway`, exige ainda `LAB_SEED_ALLOW_DEFAULT_RAILWAY_DATABASE=allow-temporary-railway-database`; remova ambas as confirmações após a execução. A seed também recusa um tenant que já possua membro ativo fora das três identidades de tenant previstas. Não use a seed com dados reais.
@@ -69,6 +75,8 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - testar sessão, origem, tenant, role, CSRF e rate limit negativamente.
 
 **Plataformas necessárias:** Railway temporário; Vercel temporário para validar origem e cookies.
+
+**Estado em 30/08/2026:** base local implementada. O backend agora distingue `lab`, `staging` e `production`, permite e-mail explicitamente desabilitado apenas no laboratório, exige contrato de proxy em produção, rejeita Swagger público, defaults de pepper e identificadores JWT inválidos, aplica logging Pino como logger da aplicação, remove queries e segredos dos logs e oferece gerador em memória para par RSA/peppers. Os gates locais aprovaram 44 suítes/142 testes unitários e 33 suítes/92 testes PostgreSQL, incluindo origem, sessão, CSRF, tenant, role, rate limit e sanitização do Sentry. Restam cadastrar/confirmar as variáveis no Railway, redeploy e executar a prova externa Vercel → Railway antes de encerrar a BX.3.
 
 ## BX.4 — Observabilidade, jobs e e-mail
 

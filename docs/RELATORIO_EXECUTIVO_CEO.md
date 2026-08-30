@@ -183,7 +183,7 @@ Sem metas e testes, um incidente pode causar perda de dados, indisponibilidade p
 
 **O que já foi feito**
 
-Foram aprovados RPO de 1 hora, RTO de 4 horas, retenção de backups por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação somente quando o schema permanecer compatível; nos demais casos, aplica-se forward-fix. Ainda não há configuração e restauração ensaiadas; os 90 dias dependem de validação jurídica.
+Foram aprovados RPO de 1 hora, RTO de 4 horas, retenção de backups por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação somente quando o schema permanecer compatível; nos demais casos, aplica-se forward-fix. Em 30/08/2026, o laboratório comprovou o job diário Railway → R2, checksum e restauração local descartável, com 33 tabelas e dados fictícios recuperados. Ainda faltam PITR e restore dentro do Railway, monitoramento de falha, ensaio de migration e aceite formal da evidência; os 90 dias dependem de validação jurídica.
 
 **O que precisa ser decidido pelo CEO**
 
