@@ -101,12 +101,12 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 ### PP-008 — Observabilidade externa ainda não implantada
 
 - **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 30/08/2026
-- **Problema:** logging estruturado, redação de dados sensíveis e Sentry frontend/backend foram implementados e ensaiados no laboratório, mas Better Stack, alertas operacionais e runbook de incidente ainda não foram configurados e exercitados.
+- **Problema:** logging estruturado, redação de dados sensíveis, Sentry frontend/backend e Better Stack foram implementados e ensaiados no laboratório, mas OpenTelemetry, alertas/canais corporativos e runbook de incidente ainda não foram concluídos.
 - **Impacto:** falhas e ataques podem não ser detectados ou diagnosticados em tempo adequado.
 - **Motivo do adiamento:** serviço externo não é necessário para desenvolvimento local.
 - **Retomada:** B10, antes de staging público.
 - **Critério de encerramento:** alertas testados, redação de dados sensíveis confirmada e runbook com responsáveis.
-- **Decisões operacionais de 03/08/2026, 21/08/2026 e 30/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry frontend/backend está ativo no laboratório, captura `5xx`, ignora `4xx` e preserva somente metadados técnicos sanitizados e `requestId`; BetterStack cobrirá uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Cobertura: segunda a sábado, 8h–20h; reconhecimento de alerta em até 30 minutos; início da resposta em até 2 horas após o reconhecimento. O canal interno será um grupo privado do Telegram com Bot API, operado exclusivamente por Eduardo por ora; o e-mail mantém o registro formal. Permanecem pendentes Better Stack, ensaio dos alertas e runbook de incidente.
+- **Decisões operacionais de 03/08/2026, 21/08/2026 e 30/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry frontend/backend está ativo no laboratório, captura `5xx`, ignora `4xx` e preserva somente metadados técnicos sanitizados e `requestId`. Better Stack monitora backend, frontend, rewrite Vercel/Railway e heartbeat do backup; o heartbeat usa período de 24 horas, tolerância de 5 horas e alerta após 29 horas. O alerta por e-mail do plano gratuito foi recebido; Telegram fica adiado até existir plano/canal compatível. Cobertura: segunda a sábado, 8h–20h; reconhecimento em até 30 minutos e início da resposta em até 2 horas. Permanecem pendentes OpenTelemetry, canais corporativos e runbook de incidente ensaiado.
 
 ### PP-009 — E2E frontend versionado insuficiente — ENCERRADO
 

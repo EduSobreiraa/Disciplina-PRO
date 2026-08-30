@@ -44,6 +44,7 @@ printf 'deterministic fixture dump\\n' > "$output"
   await writeExecutable(resolve(bin, 'aws'), `#!/bin/sh
 set -eu
 root="\${FAKE_R2_DIRECTORY:?}"
+if [ "\${FAKE_AWS_FAIL:-}" = 'true' ]; then exit 1; fi
 service="$3"
 action="$4"
 if [ "$service" = 's3' ] && [ "$action" = 'cp' ]; then
@@ -66,6 +67,13 @@ if [ "$service" = 's3api' ] && [ "$action" = 'head-object' ]; then
 fi
 exit 64
 `)
+  await writeExecutable(resolve(bin, 'curl'), `#!/bin/sh
+set -eu
+: "\${FAKE_HEARTBEAT_MARKER:?}"
+for argument in "$@"; do url="$argument"; done
+test "$url" = "$BACKUP_HEARTBEAT_URL"
+printf 'received\n' > "$FAKE_HEARTBEAT_MARKER"
+`)
   await writeExecutable(resolve(bin, 'psql'), `#!/bin/sh
 set -eu
 case "$*" in
@@ -86,11 +94,13 @@ printf 'restored\\n' > "$FAKE_RESTORE_MARKER"
       FAKE_R2_DIRECTORY: objectStore,
       FAKE_DATABASE_NAME: 'disciplina_pro_restore',
       FAKE_RESTORE_MARKER: resolve(root, 'restore.marker'),
+      FAKE_HEARTBEAT_MARKER: resolve(root, 'heartbeat.marker'),
       DATABASE_URL: 'postgresql://backup:backup@localhost:5432/disciplina_pro_source',
       R2_ENDPOINT_URL: 'https://r2.test.invalid',
       R2_BUCKET: 'disciplina-pro-test',
       AWS_ACCESS_KEY_ID: 'test-access-key',
       AWS_SECRET_ACCESS_KEY: 'test-secret-key',
+      BACKUP_HEARTBEAT_URL: 'https://heartbeat.test.invalid/backup',
     },
   }
 }
@@ -106,6 +116,7 @@ test('backup uploads a checksum manifest and restore validates it before restori
     assert.ok(dump)
     const checksum = `${dump}.sha256`
     assert.ok(objects.includes(checksum))
+    assert.equal(await readFile(harness.environment.FAKE_HEARTBEAT_MARKER, 'utf8'), 'received\n')
     await assert.doesNotReject(async () => {
       const manifest = await readFile(resolve(directory, checksum), 'utf8')
       assert.match(manifest, new RegExp(`^[a-f0-9]{64}  ${dump}\\n$`))
@@ -121,6 +132,17 @@ test('backup uploads a checksum manifest and restore validates it before restori
     })
     assert.equal(restore.code, 0, restore.stderr)
     assert.equal(await readFile(harness.environment.FAKE_RESTORE_MARKER, 'utf8'), 'restored\n')
+  } finally {
+    await rm(harness.root, { recursive: true, force: true })
+  }
+})
+
+test('backup does not report a heartbeat when the R2 upload fails', async () => {
+  const harness = await createHarness()
+  try {
+    const backup = await execute(backupScript, { ...harness.environment, FAKE_AWS_FAIL: 'true' })
+    assert.notEqual(backup.code, 0)
+    await assert.rejects(readFile(harness.environment.FAKE_HEARTBEAT_MARKER, 'utf8'), { code: 'ENOENT' })
   } finally {
     await rm(harness.root, { recursive: true, force: true })
   }

@@ -89,6 +89,8 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 **Plataformas necessárias:** Sentry, Better Stack, Resend e Railway temporários.
 
+**Estado em 30/08/2026:** Sentry frontend/backend e Better Stack estão operacionais no laboratório. O Better Stack monitora backend direto, frontend e readiness pelo rewrite Vercel → Railway; o alerta por e-mail e o heartbeat manual foram aprovados. O heartbeat espera execução a cada 24 horas, aceita 5 horas de tolerância e abre incidente após 29 horas. O repositório passou a notificar o heartbeat somente depois de dump, checksum, upload e verificação no R2; falta implantar essa versão no serviço de backup e comprovar uma execução automática. OpenTelemetry, worker contínuo de eventos, limpeza agendada de sessões e runbook de incidente continuam executáveis; Resend, retry/bounce de convite e canal corporativo permanecem bloqueados pela ausência de e-mail/domínio corporativos.
+
 ## BX.5 — Qualidade, staging tests e operação
 
 - adaptar Playwright para URL externa sem reset destrutivo;

@@ -84,9 +84,10 @@ R2_PREFIX=disciplina-pro/postgres
 AWS_ACCESS_KEY_ID=<R2 access key>
 AWS_SECRET_ACCESS_KEY=<R2 secret>
 AWS_REGION=auto
+BACKUP_HEARTBEAT_URL=<URL HTTPS secreta do heartbeat Better Stack>
 ```
 
-O job falha se o dump ou upload falhar, confirma ambos os objetos com `head-object` e envia um manifesto `<dump>.sha256`. Agende ao menos uma cópia completa diária, por exemplo `0 2 * * *` UTC. A retenção de 90 dias deve ser aplicada por lifecycle rule no bucket, não pelo script.
+O job falha se o dump, upload, verificação ou notificação do heartbeat falhar. Ele confirma ambos os objetos com `head-object`, envia um manifesto `<dump>.sha256` e só então chama `BACKUP_HEARTBEAT_URL`; assim, uma falha anterior nunca produz sinal falso de sucesso. A URL é secret do serviço de backup e não deve aparecer no Git ou nos logs. Agende ao menos uma cópia completa diária, por exemplo `0 2 * * *` UTC. No laboratório, o heartbeat é esperado a cada 24 horas, com 5 horas de tolerância e alerta por e-mail após 29 horas. A retenção de 90 dias deve ser aplicada por lifecycle rule no bucket, não pelo script.
 
 O backup diário em R2 não cumpre sozinho o RPO de 1 hora. Antes de produção, habilite PITR/WAL no PostgreSQL Railway e execute um drill que registre idade do backup e tempo de restauração.
 
