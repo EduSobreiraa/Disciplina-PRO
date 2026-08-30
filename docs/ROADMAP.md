@@ -13,7 +13,7 @@
 - tracker, ritual, gamificação e missões consomem fontes ou projeções server-side;
 - B7.1–B7.4 concluídas: reporting pessoal, por time e tenant com contratos e prova HTTP de privacidade;
 - B8.1–B8.4 e B9.1–B9.7 concluídas;
-- BX.1 concluída no laboratório; BX.2 comprovou backup lógico diário no Cloudflare R2 e restauração local descartável; a base local da BX.3 está implementada e aguarda configuração/redeploy externo;
+- BX.1, BX.2 e BX.3 concluídas no recorte de laboratório, incluindo deploy, backup/restore e segurança/configuração externa;
 - PITR e restore dentro da infraestrutura Railway permanecem como risco residual obrigatório antes do lançamento e não são substituídos pelo dump diário.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
@@ -736,7 +736,7 @@ Para manter gates pequenos e não concentrar toda a administração em uma únic
 
 **Plano detalhado:** [`PLANO_BX_PRE_STAGING.md`](PLANO_BX_PRE_STAGING.md).
 
-**Estado em 30/08/2026:** BX.1 concluída. BX.2 encerrou o recorte de laboratório com PostgreSQL Railway populado por seed fictício, backup lógico diário enviado ao R2, retenção configurada por 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável. Foram recuperadas 33 tabelas e dados coerentes com a seed. O PITR/restore Railway foi transferido explicitamente para PP-007/B10.3 antes do lançamento. A base local da BX.3 está implementada e aprovada por 44 suítes/142 testes unitários e 33 suítes/92 testes PostgreSQL; faltam configuração Railway, redeploy e prova externa pela origem Vercel para encerrar a etapa.
+**Estado em 30/08/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. O PostgreSQL Railway recebeu somente seed fictício; o backup lógico diário foi enviado ao R2 com retenção de 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável, recuperando 33 tabelas e dados coerentes. A segurança/configuração foi aprovada por 44 suítes/142 testes unitários, 33 suítes/92 testes PostgreSQL e uma regressão focada posterior de 1 suíte/6 testes. A prova externa Vercel → Railway confirmou readiness, rewrite, CORS/CSRF, headers, Swagger fechado, sanitização de caminhos, rate limit com resposta `429`, login, persistência da sessão, cookies `__Host-` e logout. O PITR/restore Railway permanece transferido explicitamente para PP-007/B10.3 antes do lançamento.
 
 ### B10 — Hardening, staging e release MVP
 

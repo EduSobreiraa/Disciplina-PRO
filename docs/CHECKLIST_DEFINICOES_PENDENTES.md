@@ -203,13 +203,13 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Permissões mínimas de cada credencial | **A DEFINIR E TESTAR** | política de acesso aprovada | antes de staging público | PP-005 |
 | Processo de concessão e revogação de acesso | **A DEFINIR** | responsáveis aprovados | antes de staging privado | PP-005 |
 | Configuração de conexão segura | **A DEFINIR E TESTAR** | provedor aprovado | antes de staging público | B10.1 |
-| Configuração de cookies e headers por ambiente | **IMPLEMENTADA E TESTADA LOCALMENTE; validação externa pendente** | variáveis Railway e origem Vercel | antes de staging público | BX.3/B10.1 |
+| Configuração de cookies e headers por ambiente | **IMPLEMENTADA E APROVADA NO LAB VERCEL/RAILWAY** | repetir com credenciais definitivas | antes de staging público | BX.3/B10.1 |
 
 ### Segredos e recuperação
 
 | Definição técnica | Valor | Dependência | Limite | Fonte |
 |---|---|---|---|---|
-| Processo de armazenamento dos segredos | **Railway Environment Variables — DEFINIDO; cadastro final pendente** | ambiente Railway | antes de staging privado | ADR-016/BX.3/PP-006 |
+| Processo de armazenamento dos segredos | **Railway Environment Variables — OPERACIONAL NO LAB; cadastro corporativo pendente** | ambiente corporativo Railway | antes de staging privado | ADR-016/BX.3/PP-006 |
 | Frequência e procedimento de troca de chaves | **PROCEDIMENTO DEFINIDO; ensaio Railway pendente** | material cadastrado no Railway | antes de staging público | runbook/BX.3/PP-006 |
 | Procedimento de revogação por comprometimento | **PROCEDIMENTO DEFINIDO; ensaio Railway pendente** | material cadastrado no Railway | antes de staging público | runbook/BX.3/PP-006 |
 | Procedimento de recuperação após comprometimento | **PROCEDIMENTO DEFINIDO; ensaio Railway pendente** | material cadastrado no Railway | antes de staging público | runbook/BX.3/PP-006 |

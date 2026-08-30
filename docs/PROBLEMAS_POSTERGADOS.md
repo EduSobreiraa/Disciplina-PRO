@@ -81,12 +81,12 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 ### PP-006 — Secrets, chaves JWT e rotação ainda sem infraestrutura
 
 - **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 30/08/2026
-- **Problema:** `RS256`, `kid`, validação de produção, geração em memória e runbook de rotação/comprometimento estão implementados, mas o novo material ainda precisa ser cadastrado e rotacionado em ensaio no Railway.
+- **Problema:** `RS256`, `kid`, validação de produção, geração em memória, cadastro no Railway e runbook de rotação/comprometimento estão implementados no laboratório, mas a rotação e o comprometimento ainda precisam ser ensaiados.
 - **Impacto:** sessão segura não pode operar fora do desenvolvimento.
 - **Motivo do adiamento:** o contrato de B1.4 usa chaves efêmeras fora de produção; materialização operacional depende de staging.
 - **Retomada:** B10 para operação.
 - **Critério de encerramento:** chaves fora do Git, rotação ensaiada, acesso restrito, revogação e recuperação documentadas.
-- **Decisão operacional de 03/08/2026, atualizada em 30/08/2026:** Railway Environment Variables será usado no MVP; Doppler poderá ser reavaliado futuramente. A BX.3 adicionou gerador de par RSA/peppers, validação fail-fast, regras de revogação/recuperação e testes locais. Cadastro no Railway, rotação real e ensaio de comprometimento continuam pendentes.
+- **Decisão operacional de 03/08/2026, atualizada em 30/08/2026:** Railway Environment Variables será usado no MVP; Doppler poderá ser reavaliado futuramente. A BX.3 adicionou gerador de par RSA/peppers, validação fail-fast, regras de revogação/recuperação, cadastro no laboratório e prova externa. Rotação real, acesso corporativo restrito e ensaio de comprometimento continuam pendentes.
 
 ### PP-007 — Recuperação Railway/PITR e rollback ainda não ensaiados
 
@@ -101,12 +101,12 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 ### PP-008 — Observabilidade externa ainda não implantada
 
 - **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 30/08/2026
-- **Problema:** logging estruturado e redação de dados sensíveis foram implementados e testados localmente, mas Sentry, Better Stack, alertas e runbook de incidente ainda não foram configurados e ensaiados externamente.
+- **Problema:** logging estruturado, redação de dados sensíveis e Sentry frontend/backend foram implementados e ensaiados no laboratório, mas Better Stack, alertas operacionais e runbook de incidente ainda não foram configurados e exercitados.
 - **Impacto:** falhas e ataques podem não ser detectados ou diagnosticados em tempo adequado.
 - **Motivo do adiamento:** serviço externo não é necessário para desenvolvimento local.
 - **Retomada:** B10, antes de staging público.
 - **Critério de encerramento:** alertas testados, redação de dados sensíveis confirmada e runbook com responsáveis.
-- **Decisões operacionais de 03/08/2026 e 21/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry cobre exceções, stack traces e performance; BetterStack cobre uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Cobertura: segunda a sábado, 8h–20h; reconhecimento de alerta em até 30 minutos; início da resposta em até 2 horas após o reconhecimento. O canal interno será um grupo privado do Telegram com Bot API, operado exclusivamente por Eduardo por ora; o e-mail mantém o registro formal. Permanecem pendentes contratação, implementação, configuração, testes, redação de dados sensíveis e runbook ensaiado.
+- **Decisões operacionais de 03/08/2026, 21/08/2026 e 30/08/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry frontend/backend está ativo no laboratório, captura `5xx`, ignora `4xx` e preserva somente metadados técnicos sanitizados e `requestId`; BetterStack cobrirá uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Cobertura: segunda a sábado, 8h–20h; reconhecimento de alerta em até 30 minutos; início da resposta em até 2 horas após o reconhecimento. O canal interno será um grupo privado do Telegram com Bot API, operado exclusivamente por Eduardo por ora; o e-mail mantém o registro formal. Permanecem pendentes Better Stack, ensaio dos alertas e runbook de incidente.
 
 ### PP-009 — E2E frontend versionado insuficiente — ENCERRADO
 

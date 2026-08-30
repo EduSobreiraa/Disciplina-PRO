@@ -2,7 +2,7 @@
 
 > Decisão operacional registrada em 23/08/2026. Esta fase não autoriza dados reais, domínio corporativo, billing corporativo nem considera staging oficial implantado.
 
-**Estado em 30/08/2026:** BX.1 concluída no laboratório; BX.2 concluída no recorte de backup lógico independente e recuperação local; a base local da BX.3 está implementada e aguarda configuração/redeploy externo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
+**Estado em 30/08/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
 
 ## Objetivo
 
@@ -76,7 +76,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 **Plataformas necessárias:** Railway temporário; Vercel temporário para validar origem e cookies.
 
-**Estado em 30/08/2026:** base local implementada. O backend agora distingue `lab`, `staging` e `production`, permite e-mail explicitamente desabilitado apenas no laboratório, exige contrato de proxy em produção, rejeita Swagger público, defaults de pepper e identificadores JWT inválidos, aplica logging Pino como logger da aplicação, remove queries e segredos dos logs e oferece gerador em memória para par RSA/peppers. Os gates locais aprovaram 44 suítes/142 testes unitários e 33 suítes/92 testes PostgreSQL, incluindo origem, sessão, CSRF, tenant, role, rate limit e sanitização do Sentry. Restam cadastrar/confirmar as variáveis no Railway, redeploy e executar a prova externa Vercel → Railway antes de encerrar a BX.3.
+**Encerrada em 30/08/2026:** o backend distingue `lab`, `staging` e `production`, permite e-mail explicitamente desabilitado apenas no laboratório, exige contrato de proxy em produção, rejeita Swagger público, defaults de pepper e identificadores JWT inválidos, aplica logging Pino como logger da aplicação, remove queries e segredos dos logs e oferece gerador em memória para par RSA/peppers. Os gates locais aprovaram 44 suítes/142 testes unitários e 33 suítes/92 testes PostgreSQL; a regressão de sessão posterior aprovou ainda 1 suíte/6 testes PostgreSQL. No Railway/Vercel foram comprovados readiness, rewrite `/api`, headers, CORS positivo e negativo, caminhos sem query, Swagger e sondas fechados, `401` controlado para refresh/logout sem sessão, `429` no rate limit e cookies `__Host-` seguros, persistentes durante a sessão e removidos no logout. O hotfix dessa prova está no commit `c388ad5`.
 
 ## BX.4 — Observabilidade, jobs e e-mail
 

@@ -113,3 +113,11 @@ npm audit --workspaces --audit-level=high
 ```
 
 Executar migrations e integrações em banco vazio descartável. O deploy não prossegue se o CI ou o Quality Gate falhar. Em 26/07/2026, o gate local de dependências permanece reprovado pelo PP-016; portanto esta lista não comprova prontidão de deploy.
+
+## 9. Evidência do laboratório BX.3 — 30/08/2026
+
+Os commits `01a44b4`, `6b1e46e` e o hotfix `c388ad5` foram implantados no Railway com `NODE_ENV=production`, `DEPLOYMENT_STAGE=lab`, `TRUST_PROXY_HOPS=1`, Swagger desligado e SMTP deliberadamente desabilitado. A prova externa confirmou readiness direto e pelo rewrite `/api` da Vercel, headers de segurança, origem permitida e rejeitada, CSRF, caminhos sem query refletida, `/api/docs` e `/api/debug-sentry` em `404`, refresh/logout sem sessão em `401 INVALID_SESSION` e rate limit emitindo `429`.
+
+Em navegador, o responsável único pelo sistema confirmou login, restauração da sessão após recarregar, cookies `__Host-dp_refresh` e `__Host-dp_csrf` com `Secure`/`SameSite=Lax`, refresh `HttpOnly` e limpeza de ambos no logout. Os gates locais do estado combinado aprovaram 44 suítes/142 testes unitários; a base PostgreSQL já havia aprovado 33 suítes/92 testes, e o hotfix aprovou adicionalmente sua regressão focada com 1 suíte/6 testes.
+
+O recorte de laboratório da BX.3 está encerrado. Antes de staging público, repetir a matriz com credenciais corporativas, ensaiar rotação/comprometimento e revisar a chave de rate limit após restringir o ingresso direto do Railway; chamadas de verificação vindas de infraestrutura com múltiplos IPs externos não produzem uma sequência determinística de contadores, embora a resposta `429` tenha sido observada.
