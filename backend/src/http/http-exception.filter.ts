@@ -1,4 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common'
+import * as Sentry from '@sentry/nestjs'
 import type { Request, Response } from 'express'
 
 @Catch()
@@ -19,6 +20,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const requestId = typeof request.id === 'string' || typeof request.id === 'number' ? String(request.id) : undefined
     const code = validationDetails ? 'VALIDATION_ERROR' : typeof bodyCode === 'string' ? bodyCode : statusCode === 413 ? 'PAYLOAD_TOO_LARGE' : statusCode >= 500 ? 'INTERNAL_SERVER_ERROR' : 'HTTP_ERROR'
     const message = validationDetails ? 'Dados inválidos' : statusCode === 413 ? 'Payload excede o limite permitido' : typeof rawMessage === 'string' ? rawMessage : statusCode >= 500 ? 'Erro interno do servidor' : 'Requisição inválida'
+
+    if (statusCode >= 500) {
+      Sentry.captureException(exception, {
+        tags: { http_status_code: statusCode },
+        contexts: {
+          request: {
+            requestId,
+            method: request.method,
+            path: request.path,
+          },
+        },
+      })
+    }
 
     response.status(statusCode).json({
       statusCode,
