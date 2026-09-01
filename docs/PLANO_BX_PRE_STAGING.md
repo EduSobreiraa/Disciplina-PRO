@@ -2,7 +2,7 @@
 
 > Decisão operacional registrada em 23/08/2026. Esta fase não autoriza dados reais, domínio corporativo, billing corporativo nem considera staging oficial implantado.
 
-**Estado em 30/08/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
+**Estado em 01/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. A BX.4 está em andamento: Sentry frontend/backend, monitores Better Stack, backup diário R2 com heartbeat automático e worker contínuo de eventos foram comprovados; limpeza agendada de sessões, OpenTelemetry e runbook de incidente permanecem executáveis. E-mail real, Resend e canais corporativos continuam bloqueados até existir domínio/e-mail corporativo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
 
 ## Objetivo
 
@@ -60,7 +60,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 **Evidência de encerramento do recorte de laboratório em 30/08/2026:** frontend e API implantados, PostgreSQL Railway populado somente com seed fictício, job diário PostgreSQL → R2 ativo, bucket privado com Lifecycle Rule de 90 dias e primeiro artefato confirmado. O dump `disciplina-pro-20260830T142746Z.dump` e seu manifesto `.sha256` foram baixados, tiveram checksum validado e foram restaurados em PostgreSQL 18 descartável. O ensaio recuperou 33 tabelas, 11 migrations, 4 usuários fictícios, 1 tenant, 3 memberships, 3 enrollments e 30 comportamentos; o container foi removido após a validação.
 
-**Risco residual transferido:** o dump diário comprovado não atende sozinho ao RPO de 1 hora. PITR/WAL, restore em serviço Railway novo, corte manual, monitoramento de falha do backup e aceite formal da evidência continuam no PP-007/B10.3 e bloqueiam produção, mas não bloqueiam o início da BX.3.
+**Risco residual transferido:** o dump diário comprovado não atende sozinho ao RPO de 1 hora. PITR/WAL, restore em serviço Railway novo, corte manual e aceite formal da evidência continuam no PP-007/B10.3 e bloqueiam produção. O monitoramento de falha do backup foi comprovado posteriormente na BX.4 por heartbeat automático; isso não altera os riscos residuais de PITR e recuperação Railway.
 
 ### Seed de laboratório
 
@@ -80,26 +80,43 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 ## BX.4 — Observabilidade, jobs e e-mail
 
-- integrar OpenTelemetry, Sentry frontend/backend e Better Stack por variáveis configuráveis;
-- validar exceção sem PII, healthcheck, readiness, heartbeat e alerta para o Telegram privado;
-- agendar processamento de eventos, limpeza de sessões, backup e retry de convite;
-- preparar integração Resend e testar sandbox/remetente fictício;
-- implementar e testar retry após 30 minutos, bounce e notificação ao admin do tenant;
-- testar que token de convite não entra em logs, alertas ou interface.
+- [x] integrar Sentry frontend/backend por variáveis configuráveis;
+- [x] validar captura de `5xx`, descarte de `4xx` e ausência de PII, payloads e corpo de exceção; preservar somente metadados técnicos sanitizados e `requestId`;
+- [x] configurar Better Stack para backend, frontend e readiness pelo rewrite Vercel → Railway;
+- [x] comprovar alerta por e-mail no plano gratuito;
+- [x] agendar backup diário Railway → R2 e comprovar heartbeat automático somente após dump, checksum, upload e verificação;
+- [ ] integrar OpenTelemetry como camada de instrumentação;
+- [x] implantar o worker contínuo de processamento de eventos internos no Railway e comprovar conexão com PostgreSQL e efeito derivado de XP;
+- [ ] agendar limpeza de sessões e comprovar sua execução;
+- [ ] preparar e ensaiar o runbook de incidente;
+- [ ] preparar integração Resend e testar sandbox/remetente fictício — bloqueado por domínio/e-mail corporativo;
+- [ ] implementar e testar retry após 30 minutos, bounce e notificação ao admin do tenant — bloqueado pelo provedor real;
+- [x] testar que token de convite não entra em logs, alertas ou interface no recorte já implementado;
+- [ ] repetir as provas de token com transporte Resend e observabilidade de entrega quando o provedor estiver disponível.
 
 **Plataformas necessárias:** Sentry, Better Stack, Resend e Railway temporários.
 
-**Estado em 30/08/2026:** Sentry frontend/backend e Better Stack estão operacionais no laboratório. O Better Stack monitora backend direto, frontend e readiness pelo rewrite Vercel → Railway; o alerta por e-mail e o heartbeat manual foram aprovados. O heartbeat espera execução a cada 24 horas, aceita 5 horas de tolerância e abre incidente após 29 horas. O repositório passou a notificar o heartbeat somente depois de dump, checksum, upload e verificação no R2; falta implantar essa versão no serviço de backup e comprovar uma execução automática. OpenTelemetry, worker contínuo de eventos, limpeza agendada de sessões e runbook de incidente continuam executáveis; Resend, retry/bounce de convite e canal corporativo permanecem bloqueados pela ausência de e-mail/domínio corporativos.
+**Estado em 01/09/2026:** Sentry frontend/backend e Better Stack estão operacionais no laboratório. O Better Stack monitora backend direto, frontend e readiness pelo rewrite Vercel → Railway; o alerta do plano gratuito chega por e-mail. O heartbeat espera execução a cada 24 horas, aceita 5 horas de tolerância e abre incidente após 29 horas. Às 08:29 BRT, o job agendado criou `disciplina-pro-20260901T112923Z.dump`, enviou dump e manifesto `.sha256`, confirmou ambos no R2 e terminou com `Backup concluído e verificado`. Como o script chama o heartbeat somente depois dessas verificações e antes da mensagem final, a execução comprova também a notificação automática ao Better Stack. O worker contínuo iniciou no Railway, manteve tráfego TCP com o PostgreSQL e processou evento com mudança observável de XP. OpenTelemetry, limpeza agendada de sessões e runbook de incidente continuam executáveis; Resend, retry/bounce de convite e canal corporativo permanecem bloqueados pela ausência de e-mail/domínio corporativos. Telegram não é requisito do laboratório enquanto o plano disponível oferecer somente alerta por e-mail.
+
+### Evidência operacional do backup monitorado — 01/09/2026
+
+- início do container Railway: `08:29:24` BRT;
+- artefato UTC: `disciplina-pro-20260901T112923Z.dump` e respectivo `.sha256`;
+- término verificado: `08:29:30` BRT;
+- cadeia comprovada: agendamento Railway → `pg_dump` → upload de dois objetos → `head-object` de ambos → heartbeat HTTPS → log final de sucesso;
+- interpretação: a ausência de novos dados de negócio não invalida o ensaio, pois cada execução gera um novo artefato timestampado;
+- limite: a prova cobre backup lógico diário e detecção de ausência/falha do job, não PITR, RPO de 1 hora, restore Railway ou corte manual.
 
 ## BX.5 — Qualidade, staging tests e operação
 
-- adaptar Playwright para URL externa sem reset destrutivo;
-- criar smoke tests para login, refresh, tenant, Projeto 66, tracker, ritual, administração e convite;
-- cobrir timeout, 401, 403, 409, 429 e 5xx;
-- executar axe, Lighthouse, viewports e matriz de dispositivo/navegador;
-- preparar DAST/pentest com contas e dados fictícios;
-- configurar gates de CI/CD e criar runbooks de deploy, migration, rollback, backup/restore, incidente, rotação de secrets e falha de e-mail;
-- criar checklist de reprodução corporativa.
+- [ ] adaptar Playwright para URL externa sem reset destrutivo;
+- [ ] criar smoke tests para login, refresh, tenant, Projeto 66, tracker, ritual, administração e convite;
+- [ ] cobrir timeout, `401`, `403`, `409`, `429` e `5xx`;
+- [ ] executar axe, Lighthouse, viewports e matriz de dispositivo/navegador;
+- [ ] preparar DAST/pentest com contas e dados fictícios;
+- [ ] configurar gates de CI/CD para o candidato externo;
+- [ ] concluir e ensaiar runbooks de deploy, migration, rollback, backup/restore, incidente, rotação de secrets e falha de e-mail;
+- [ ] criar checklist de reprodução corporativa.
 
 **Plataformas necessárias:** Vercel, Railway, Sentry, Better Stack e GitHub/Sonar temporários.
 

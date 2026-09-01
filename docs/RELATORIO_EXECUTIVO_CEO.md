@@ -183,7 +183,7 @@ Sem metas e testes, um incidente pode causar perda de dados, indisponibilidade p
 
 **O que já foi feito**
 
-Foram aprovados RPO de 1 hora, RTO de 4 horas, retenção de backups por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação somente quando o schema permanecer compatível; nos demais casos, aplica-se forward-fix. Em 30/08/2026, o laboratório comprovou o job diário Railway → R2, checksum e restauração local descartável, com 33 tabelas e dados fictícios recuperados. Ainda faltam PITR e restore dentro do Railway, monitoramento de falha, ensaio de migration e aceite formal da evidência; os 90 dias dependem de validação jurídica.
+Foram aprovados RPO de 1 hora, RTO de 4 horas, retenção de backups por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação somente quando o schema permanecer compatível; nos demais casos, aplica-se forward-fix. Em 30/08/2026, o laboratório comprovou o job diário Railway → R2, checksum e restauração local descartável, com 33 tabelas e dados fictícios recuperados. Em 01/09/2026, uma execução agendada comprovou novo dump timestampado, verificação dos dois objetos no R2 e heartbeat automático aceito pelo Better Stack. Ainda faltam PITR e restore dentro do Railway, ensaio de migration e aceite formal da evidência; os 90 dias dependem de validação jurídica.
 
 **O que precisa ser decidido pelo CEO**
 
@@ -224,7 +224,7 @@ Falhas e ataques podem demorar a ser descobertos, clientes podem perceber o prob
 
 **O que já foi feito**
 
-OpenTelemetry foi definido para instrumentação; Sentry para exceções, stack traces e performance; BetterStack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. Também foram aprovados cobertura de segunda a sábado das 8h às 20h e reconhecimento em até 30 minutos. Permanecem pendentes contratação, implementação, configuração, testes, responsáveis, canal final, prazo para iniciar a resposta e runbook ensaiado.
+OpenTelemetry foi definido para instrumentação; Sentry para exceções, stack traces e performance; Better Stack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. No laboratório, Sentry frontend/backend, monitores de backend/frontend/rewrite, alerta por e-mail e heartbeat automático do backup estão operacionais. Também foram aprovados cobertura de segunda a sábado das 8h às 20h, reconhecimento em até 30 minutos e início da resposta em até 2 horas; Eduardo é o único responsável técnico atual. Permanecem pendentes OpenTelemetry, contas/canais corporativos e runbook de incidente ensaiado.
 
 **O que precisa ser decidido pelo CEO**
 
@@ -462,7 +462,7 @@ Pode haver adiamento de abertura quando faltarem evidências, mas a empresa pres
 | Acessos operacionais | aprovar privilégio mínimo e responsáveis administrativos | acessos separados e restritos | antes de staging privado | CEO/Direção | Desenvolvedor e operação |
 | Chaves e segredos | aprovar responsáveis e política de troca | implementar Railway Environment Variables | antes de staging privado | CEO/Direção | Desenvolvedor e operação |
 | Backup e recuperação | aprovar orçamento, validação dos 90 dias e evidências | comprovar RPO 1h/RTO 4h com Cloudflare R2 | antes de staging privado | CEO/Direção + Jurídico | Desenvolvedor e operação |
-| Incidentes | contratar BetterStack e aprovar prazo/canal final e responsáveis | implementar OpenTelemetry, Sentry, BetterStack e cobertura aprovada | antes de staging público | CEO/Direção | Desenvolvedor e operação |
+| Incidentes | autorizar contas corporativas e aprovar canal final e responsáveis | preservar a prova Sentry/Better Stack do laboratório, implementar OpenTelemetry e ensaiar o runbook | antes de staging público | CEO/Direção | Desenvolvedor e operação |
 | Acessibilidade | aprovar critério e avaliação humana | avaliar fluxos essenciais com usuários de tecnologia assistiva | antes do release | CEO/Direção | Especialista e Desenvolvedor |
 | Automação de segurança | contratar solução ou aceitar mitigação | comparar custo; documentar aceite se mantida a mitigação | antes do release | CEO/Direção | Desenvolvedor |
 | E-mail | registrar domínio, validar contrato e definir volume | piloto do Resend em staging | antes de staging com e-mail real | CEO/Direção + Jurídico | Desenvolvedor e operação |

@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 30/08/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos; BX.1–BX.3 comprovadas no recorte de laboratório
+> Atualizado em 01/09/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos; BX.1–BX.3 encerradas e BX.4 em andamento no laboratório
 
 ## 1. Visão geral do produto
 
@@ -405,13 +405,14 @@ Gate local atualizado em 06/08/2026:
 | Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
 | Dependências | gate controlado aprovado; auditoria bruta mantém 2 ocorrências altas do mesmo advisory RSC aceito estritamente no PP-016 |
 | Backup lógico externo | job diário Railway → Cloudflare R2 ativo; SHA-256 válido e restore local do artefato de 30/08 aprovado com 33 tabelas recuperadas |
+| Monitoramento do backup | execução agendada de 01/09 criou `disciplina-pro-20260901T112923Z.dump`, verificou dump/manifesto no R2 e notificou o heartbeat Better Stack antes do log final; janela 24h + 5h de tolerância |
 | Segurança BX.3 | contrato fail-fast, estágio lab sem SMTP fictício, chaves/peppers, proxy, Swagger, redação e Sentry aprovados; 44 suítes/142 testes unitários, 33 suítes/92 testes PostgreSQL e regressão focada posterior de 1 suíte/6 testes; prova Vercel/Railway aprovada |
 
 O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estático versionado. A presença de boundaries organizacionais no documento gerado é coberta por teste, mas não há teste automático comparando todas as rotas narrativas com todo o OpenAPI.
 
 ## 12. Próxima etapa e bloqueios
 
-A última fase funcional comprovadamente concluída é a B9. Na preparação pré-staging, BX.1, BX.2 e **BX.3 — segurança e configuração** foram concluídas no recorte de laboratório. A próxima etapa é a BX.4 — observabilidade, jobs e e-mail, respeitando o bloqueio conhecido do provedor de e-mail corporativo.
+A última fase funcional comprovadamente concluída é a B9. Na preparação pré-staging, BX.1, BX.2 e **BX.3 — segurança e configuração** foram concluídas; a **BX.4 — observabilidade, jobs e e-mail** está em andamento. Sentry frontend/backend, monitores Better Stack, heartbeat automático do backup e worker contínuo de eventos estão comprovados. A próxima execução técnica é a limpeza agendada de sessões, seguida de OpenTelemetry e ensaio do runbook de incidente. Resend, retry/bounce de convite e canais corporativos permanecem bloqueados pela ausência de domínio/e-mail corporativo.
 
 O desenvolvimento local pode continuar. Dados reais, staging público e produção continuam bloqueados pelos itens P0/P1 do relatório de problemas postergados. Em particular:
 
@@ -430,4 +431,4 @@ Para o PP-004, foram registradas as políticas aprovadas de retenção do tenant
 
 ## 14. Conclusão
 
-O repositório possui frontend React funcional e backend multi-tenant implementado até B9, incluindo eventos, gamificação, auditoria, reporting objetivo, administração e integração frontend–API reproduzível em navegador real. O laboratório também comprovou deploy, backup lógico diário externo, restauração local descartável e segurança/configuração da BX.3 em Vercel/Railway. Isso não equivale a prontidão de produção: BX.4–BX.5, PITR/restore Railway, B10 e os riscos explicitamente postergados permanecem necessários.
+O repositório possui frontend React funcional e backend multi-tenant implementado até B9, incluindo eventos, gamificação, auditoria, reporting objetivo, administração e integração frontend–API reproduzível em navegador real. O laboratório também comprovou deploy, backup lógico diário externo, restauração local descartável, monitoramento automático do backup, Sentry/Better Stack e segurança/configuração em Vercel/Railway. Isso não equivale a prontidão de produção: os itens restantes da BX.4, toda a BX.5, PITR/restore Railway, B10 e os riscos explicitamente postergados permanecem necessários.

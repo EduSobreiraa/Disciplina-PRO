@@ -1,6 +1,6 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 30/08/2026
+> Spark Inteligência Corporativa · Atualizado em 01/09/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado atual verificado
@@ -14,6 +14,7 @@
 - B7.1–B7.4 concluídas: reporting pessoal, por time e tenant com contratos e prova HTTP de privacidade;
 - B8.1–B8.4 e B9.1–B9.7 concluídas;
 - BX.1, BX.2 e BX.3 concluídas no recorte de laboratório, incluindo deploy, backup/restore e segurança/configuração externa;
+- BX.4 em andamento: Sentry, Better Stack, heartbeat automático do backup e worker contínuo de eventos comprovados; limpeza de sessões, OpenTelemetry e runbook ainda pendentes;
 - PITR e restore dentro da infraestrutura Railway permanecem como risco residual obrigatório antes do lançamento e não são substituídos pelo dump diário.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
@@ -44,6 +45,8 @@ B7 Reporting e privacidade
 B8 Integração do frontend
   ↓
 B9 Administração da plataforma
+  ↓
+BX Preparação pré-staging em laboratório
   ↓
 B10 Hardening, staging e release MVP
 ```
@@ -736,7 +739,7 @@ Para manter gates pequenos e não concentrar toda a administração em uma únic
 
 **Plano detalhado:** [`PLANO_BX_PRE_STAGING.md`](PLANO_BX_PRE_STAGING.md).
 
-**Estado em 30/08/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. O PostgreSQL Railway recebeu somente seed fictício; o backup lógico diário foi enviado ao R2 com retenção de 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável, recuperando 33 tabelas e dados coerentes. A segurança/configuração foi aprovada por 44 suítes/142 testes unitários, 33 suítes/92 testes PostgreSQL e uma regressão focada posterior de 1 suíte/6 testes. A prova externa Vercel → Railway confirmou readiness, rewrite, CORS/CSRF, headers, Swagger fechado, sanitização de caminhos, rate limit com resposta `429`, login, persistência da sessão, cookies `__Host-` e logout. O PITR/restore Railway permanece transferido explicitamente para PP-007/B10.3 antes do lançamento.
+**Estado em 01/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório; BX.4 em andamento. O PostgreSQL Railway recebeu somente seed fictício; o backup lógico diário foi enviado ao R2 com retenção de 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável, recuperando 33 tabelas e dados coerentes. Uma nova execução agendada em 01/09 criou `disciplina-pro-20260901T112923Z.dump`, verificou dump e manifesto no R2 e notificou o heartbeat Better Stack antes de registrar sucesso, encerrando a prova automática de monitoramento do backup no laboratório. Sentry frontend/backend e monitores Better Stack de backend, frontend e rewrite estão operacionais. O worker contínuo iniciou no Railway, manteve conexão com o PostgreSQL e processou evento com alteração observável de XP. A segurança/configuração foi aprovada por 44 suítes/142 testes unitários, 33 suítes/92 testes PostgreSQL e uma regressão focada posterior de 1 suíte/6 testes. A prova externa Vercel → Railway confirmou readiness, rewrite, CORS/CSRF, headers, Swagger fechado, sanitização de caminhos, rate limit com resposta `429`, login, persistência da sessão, cookies `__Host-` e logout. Permanecem na BX.4 a limpeza agendada de sessões, OpenTelemetry e runbook de incidente; Resend/e-mail aguardam domínio corporativo. O PITR/restore Railway permanece transferido explicitamente para PP-007/B10.3 antes do lançamento.
 
 ### B10 — Hardening, staging e release MVP
 

@@ -12,6 +12,8 @@ Crie um segundo serviço Railway a partir do mesmo repositório, sem domínio p�
 
 O worker é contínuo e é o mecanismo normal de produção. Ele processa lotes pelo caso de uso existente, usa leases e `SKIP LOCKED`, e aceita mais de uma réplica sem duplicar efeitos. Configure `OUTBOX_WORKER_POLL_INTERVAL_MS=1000` e `OUTBOX_WORKER_ERROR_DELAY_MS=5000` inicialmente. Use `node` diretamente no comando Railway para que `SIGTERM` alcance o worker e o encerramento seja gracioso.
 
+**Estado em 01/09/2026:** o serviço worker contínuo está implantado no Railway com `OUTBOX_WORKER_POLL_INTERVAL_MS=1000`, conexão recorrente com o PostgreSQL e processamento de evento com alteração de XP comprovados. As instruções abaixo permanecem como operação e recuperação do serviço ativo.
+
 O comando abaixo continua disponível apenas como contingência manual:
 
 ```bash
@@ -70,7 +72,7 @@ O reprocessamento é auditado. Não altere tabelas de outbox manualmente.
 | `maximumAttempts` | warning | >= 3 | Better Stack/Sentry |
 | `expiredProcessing` | warning | > 0 por 2 min | Better Stack |
 
-A integração Better Stack/Sentry/OpenTelemetry depende de contas e credenciais externas; até lá, o endpoint e os logs estruturados são os sinais operacionais.
+No laboratório, Sentry e Better Stack já possuem contas, credenciais e monitores ativos, e o worker está implantado. Alertas específicos da outbox e seus limiares ainda precisam ser ensaiados; OpenTelemetry continua pendente. Até essa prova, o endpoint de métricas, os logs estruturados e o estado do serviço worker no Railway são os sinais autoritativos da outbox.
 
 ## Backup PostgreSQL para R2
 
@@ -119,6 +121,17 @@ Registre duração do restore e idade do backup: ambos são a evidência para RT
 - descarte: container e banco temporários removidos após a conferência; artefato e manifesto permaneceram disponíveis para auditoria local.
 
 O ensaio comprova PostgreSQL → dump → R2 → verificação de checksum → restore → dados recuperáveis. Ele encerra o recorte de backup lógico da BX.2, mas não comprova PITR nem o RPO de 1 hora. Antes do lançamento, repetir o restore em infraestrutura Railway descartável e ensaiar PITR/corte manual.
+
+### Evidência de execução automática monitorada — 01/09/2026
+
+- o scheduler do Railway iniciou o container às `08:29:24` BRT;
+- o job criou `disciplina-pro-20260901T112923Z.dump` (`11:29:23Z`), enviou o dump e o manifesto `.sha256` ao prefixo configurado e encerrou às `08:29:30` BRT;
+- a mensagem `Backup concluído e verificado` só é emitida depois de `head-object` confirmar os dois objetos e de `curl --fail` notificar `BACKUP_HEARTBEAT_URL`;
+- portanto, o log final comprova uma execução automática completa e um heartbeat aceito, sem produzir falso sucesso quando dump, checksum, upload, verificação ou notificação falham;
+- o monitor Better Stack permanece configurado para periodicidade de 24 horas, tolerância de 5 horas e alerta por e-mail após 29 horas sem heartbeat;
+- a execução é válida mesmo sem mudança nos dados de negócio: o arquivo é um novo snapshot timestampado, enquanto o conteúdo lógico recuperável pode permanecer equivalente ao anterior.
+
+Essa evidência encerra no laboratório a pendência de implantação/prova do heartbeat automático. PITR, restauração dentro do Railway, corte manual e ensaio de falha de migration continuam no PP-007/B10.3.
 
 ## Rollback e forward-fix
 

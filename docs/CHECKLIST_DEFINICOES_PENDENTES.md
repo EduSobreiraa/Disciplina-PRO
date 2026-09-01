@@ -1,6 +1,6 @@
 # Checklist de definições pendentes
 
-> Disciplina PRO · Atualizado em 30/08/2026 · Reconciliado com o ADR 016
+> Disciplina PRO · Atualizado em 01/09/2026 · Reconciliado com o ADR 016 e as evidências BX.2–BX.4
 
 Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovador e a evidência no documento canônico indicado.
 
@@ -216,7 +216,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Frequência técnica de backup | **dump lógico diário para R2 — OPERACIONAL NO LAB; PITR contínuo para RPO de 1 hora — PENDENTE** | plano Railway com PITR | antes de produção | ADR-016/BX.2/PP-007 |
 | Procedimento de restauração | **DEFINIDO E ENSAIADO LOCALMENTE; repetir no Railway e validar PITR** | plano Railway adequado e critério formal de aceite | antes de produção | runbook/BX.2/PP-007 |
 | Procedimento para falha de atualização do banco | **A DEFINIR E ENSAIAR** | estratégia aprovada | antes de produção | PP-007 |
-| Monitoramento de falha de backup | **BETTER STACK CONFIGURADO NO LAB; heartbeat automático aguarda deploy/prova do job** | serviço de backup Railway | antes de produção | BX.4/PP-007 |
+| Monitoramento de falha de backup | **COMPROVADO NO LAB; heartbeat automático aceito após dump, upload e verificação R2 em 01/09/2026** | repetir no ambiente corporativo e manter acompanhamento | antes de produção | BX.4/PP-007 |
 
 ### Privacidade e retenção
 
@@ -288,7 +288,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Backups | Cloudflare R2, retenção de 90 dias e cópia externa | validar juridicamente e implementar |
 | Recuperação | RPO de 1 hora e RTO de 4 horas | implementar e ensaiar |
 | Segredos no MVP | Railway Environment Variables | implementar e ensaiar comprometimento |
-| Monitoramento do MVP | OpenTelemetry, Sentry e BetterStack, com responsabilidades separadas | contratar, implementar, testar e criar runbook |
+| Monitoramento do MVP | OpenTelemetry, Sentry e Better Stack, com responsabilidades separadas | Sentry/Better Stack comprovados no lab; implementar OpenTelemetry, reproduzir em contas corporativas e ensaiar runbook |
 | E-mail transacional | Resend; 1 reenvio após 30 minutos | validar contrato, registrar domínio e implementar |
 | Cobertura operacional | segunda a sábado, 8h–20h; reconhecimento em 30 minutos | definir responsáveis e início da resposta |
 | Suporte no MVP | e-mail da Spark; primeira resposta em até 2 dias úteis; sem SLA de disponibilidade | operar e revisar antes de cliente enterprise |
