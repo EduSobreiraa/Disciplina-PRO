@@ -127,6 +127,16 @@ export class PrismaGamificationRepository extends GamificationRepository<Transac
         where: { id: event.aggregateId, tenantId, membershipId, status: 'COMPLETED' },
         select: { id: true },
       })
+    } else if (event.type === 'tracker.mark.recorded.v1') {
+      source = await transaction.trackerBehavior.findFirst({
+        where: { id: event.aggregateId, tenantId, membershipId },
+        select: { id: true },
+      })
+    } else if (event.type === 'ritual.check.completed.v1') {
+      source = await transaction.ritualDay.findFirst({
+        where: { id: event.aggregateId, tenantId, membershipId },
+        select: { id: true },
+      })
     }
     if (!source) throw new Error('Fato de origem da gamificação não encontrado no tenant')
   }

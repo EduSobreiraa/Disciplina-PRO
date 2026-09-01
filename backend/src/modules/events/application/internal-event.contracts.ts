@@ -2,6 +2,8 @@ export const INTERNAL_EVENT_TYPES = {
   activityCompletionRecorded: 'execution.activity-completion.recorded.v1',
   dailyRecordSubmitted: 'execution.daily-record.submitted.v1',
   enrollmentCompleted: 'execution.enrollment.completed.v1',
+  trackerMarkRecorded: 'tracker.mark.recorded.v1',
+  ritualCheckCompleted: 'ritual.check.completed.v1',
 } as const
 
 export interface InternalEventDraft {

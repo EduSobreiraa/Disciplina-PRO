@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '../../../generated/prisma/client.js'
 import { PrismaService } from '../../../database/prisma.service.js'
+import { INTERNAL_EVENT_TYPES, InternalEventPublisher } from '../../events/application/internal-event.contracts.js'
 import type { CurrentTenantContext } from '../../organizations/application/organization-context.repository.js'
 import { RITUAL_TIMER_SECONDS, RITUAL_TOTAL_CYCLES } from '../domain/ritual-definition.js'
 import { RitualRepository, type RitualChangeResult, type RitualDayView } from '../application/ritual.repository.js'
@@ -10,7 +11,10 @@ type DayRecord = Prisma.RitualDayGetPayload<{ include: { checks: true } }>
 
 @Injectable()
 export class PrismaRitualRepository extends RitualRepository {
-  constructor(private readonly prisma: PrismaService) { super() }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly events: InternalEventPublisher<Transaction>,
+  ) { super() }
 
   findMine(context: CurrentTenantContext, range: { from: Date; to: Date }, now: Date): Promise<RitualDayView[] | null> {
     return this.prisma.$transaction(async (tx) => {
@@ -36,11 +40,36 @@ export class PrismaRitualRepository extends RitualRepository {
       const day = await this.settleTimer(tx, await this.ensureDay(tx, context, date), now)
       const key = { ritualDayId_sectionKey_itemKey: { ritualDayId: day.id, sectionKey, itemKey } }
       if (completed) {
+        const sourceKey = `ritual-check:${day.id}:${sectionKey}:${itemKey}`
+        const [existingCheck, existingEvent] = await Promise.all([
+          tx.ritualCheck.findUnique({ where: key, select: { ritualDayId: true } }),
+          tx.internalEvent.findUnique({
+            where: { type_sourceKey: { type: INTERNAL_EVENT_TYPES.ritualCheckCompleted, sourceKey } },
+            select: { id: true },
+          }),
+        ])
         await tx.ritualCheck.upsert({
           where: key,
           create: { ritualDayId: day.id, tenantId: context.tenantId, membershipId: context.membershipId, sectionKey, itemKey },
           update: {},
         })
+        if (!existingCheck && !existingEvent) {
+          await this.events.publish(tx, {
+            tenantId: context.tenantId,
+            type: INTERNAL_EVENT_TYPES.ritualCheckCompleted,
+            version: 1,
+            aggregateType: 'RitualDay',
+            aggregateId: day.id,
+            sourceKey,
+            payload: {
+              membershipId: context.membershipId,
+              ritualDate: date.toISOString().slice(0, 10),
+              sectionKey,
+              itemKey,
+            },
+            occurredAt: now,
+          })
+        }
       } else await tx.ritualCheck.deleteMany({ where: { ritualDayId: day.id, sectionKey, itemKey, tenantId: context.tenantId, membershipId: context.membershipId } })
       return { kind: 'changed', day: this.toView(await this.findDay(tx, day.id), now) }
     })

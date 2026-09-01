@@ -11,7 +11,7 @@ O frontend concluiu a migração funcional F0–F9 dos protótipos para React. O
 Já estão disponíveis:
 
 - shell mobile-first do Disciplina PRO;
-- catálogo visual de programas, ainda alimentado por mock no frontend;
+- catálogo empresarial integrado à API;
 - tracker mensal de comportamentos em “Minha evolução”;
 - ritual diário com abertura, execução, fechamento, revisão semanal e timer 30/30;
 - gamificação com ledger de XP, níveis, conquistas e histórico de transações;
@@ -20,11 +20,12 @@ Já estão disponíveis:
 - meditação, respiração, Novo Eu, modo crise e dia difícil;
 - sessão real com access token somente em memória e refresh por cookie;
 - ciclo e ferramentas privadas do Projeto 66 integrados à API;
-- repositories locais ainda usados pelo tracker e ritual; a gamificação consome a projeção da API.
+- tracker, ritual, gamificação e missões com fontes de verdade ou projeções server-side;
+- administração empresarial para CEO/Manager e administração global isolada para `SUPER_ADMIN`.
 
-O backend NestJS concluiu B0, as decisões B0.5 e B1–B7. Identity Access, organizações, convites, catálogo, execução, eventos internos, gamificação, auditoria e reporting objetivo possuem implementação e testes locais. A próxima etapa é B8, com a integração frontend remanescente.
+O backend NestJS concluiu B0, as decisões B0.5 e B1–B9. Identity Access, organizações, convites, catálogo, execução, eventos internos, gamificação, auditoria, reporting objetivo e administração possuem implementação e testes locais. A integração frontend–API está versionada e reproduzível.
 
-Esse estado foi validado localmente em 26/07/2026. Não constitui validação de staging ou produção; bloqueios vigentes estão em [Problemas postergados](docs/PROBLEMAS_POSTERGADOS.md).
+No laboratório BX, Vercel, Railway/PostgreSQL, Cloudflare R2, Sentry e Better Stack estão operacionais. Em 01/09/2026, uma execução agendada comprovou novamente o dump diário, upload e verificação dos objetos no R2 e heartbeat automático. O worker contínuo de eventos também está ativo no Railway e teve conexão com PostgreSQL e processamento de XP comprovados. A etapa atual é a BX.4, com limpeza agendada de sessões, OpenTelemetry e runbook de incidente ainda pendentes; e-mail real permanece bloqueado até existir domínio/e-mail corporativo. Esse estado não constitui staging ou produção e não autoriza dados reais; bloqueios vigentes estão em [Problemas postergados](docs/PROBLEMAS_POSTERGADOS.md).
 
 ## Arquitetura atual
 
@@ -157,7 +158,7 @@ Uma entrega em `FAILED` só volta à fila por ação explícita e auditada:
 npm run events:reprocess --workspace backend -- <uuid-da-entrega>
 ```
 
-Na B6.3, o consumidor `gamification` passou a conceder XP e conquistas a partir dos fatos objetivos registrados pelo servidor.
+Na B6.3, o consumidor `gamification` passou a conceder XP e conquistas a partir dos fatos objetivos registrados pelo servidor. Com tracker e ritual já server-side, a primeira marcação diária de cada comportamento e o primeiro check diário de cada item também entram no ledger pelo mesmo outbox, com 5 XP e proteção contra repetição.
 
 O worker, as métricas protegidas de plataforma, o reprocessamento, backup em R2 e o procedimento de restore estão no [runbook de outbox e recuperação](docs/OPERACAO_OUTBOX_E_RECUPERACAO.md).
 

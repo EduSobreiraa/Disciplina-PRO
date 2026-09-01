@@ -4,6 +4,7 @@ import request from 'supertest'
 import { AppModule } from '../src/app.module.js'
 import { PrismaService } from '../src/database/prisma.service.js'
 import { configureApp } from '../src/http/configure-app.js'
+import { ProcessInternalEventsUseCase } from '../src/modules/events/application/process-internal-events.use-case.js'
 import { CreateUserUseCase } from '../src/modules/identity-access/application/create-user.use-case.js'
 import { TrackerRepository } from '../src/modules/tracker/application/tracker.repository.js'
 import type { CurrentTenantContext } from '../src/modules/organizations/application/organization-context.repository.js'
@@ -78,6 +79,10 @@ describe('Personal tracker HTTP integration', () => {
     await authorized('put', `/api/tracker/behaviors/${behaviorId}/marks/${date}`)
       .send({ status: 'FAILED' })
       .expect(204)
+    await app.get(ProcessInternalEventsUseCase).execute({ batchSize: 100 })
+    expect(await prisma.xpTransaction.count({
+      where: { membershipId: contextA.membershipId, ruleKey: 'tracker.mark.v1' },
+    })).toBe(1)
     await authorized('put', `/api/tracker/behaviors/${behaviorId}/marks/${date}/justification`)
       .send({ text: '  Interrupção registrada apenas pelo titular.  ' })
       .expect(204)
@@ -97,6 +102,15 @@ describe('Personal tracker HTTP integration', () => {
       .expect(204)
     const completed = await authorized('get', `/api/tracker/me?from=${date}&to=${date}`).expect(200)
     expect((completed.body as TrackerStateBody).marks[0]).toMatchObject({ status: 'COMPLETED', justification: null })
+
+    await authorized('delete', `/api/tracker/behaviors/${behaviorId}/marks/${date}`).expect(204)
+    await authorized('put', `/api/tracker/behaviors/${behaviorId}/marks/${date}`)
+      .send({ status: 'COMPLETED' })
+      .expect(204)
+    await app.get(ProcessInternalEventsUseCase).execute({ batchSize: 100 })
+    expect(await prisma.xpTransaction.count({
+      where: { membershipId: contextA.membershipId, ruleKey: 'tracker.mark.v1' },
+    })).toBe(1)
 
     const foreignBehavior = await prisma.trackerBehavior.create({
       data: { tenantId: tenantB, membershipId: membershipB, name: 'Estrangeiro', normalizedName: 'estrangeiro', position: 0 },
@@ -156,7 +170,7 @@ describe('Personal tracker HTTP integration', () => {
     expect(await trackerRepository.exportBackup(contextA)).toEqual(before)
   })
 
-  function authorized(method: 'get' | 'post' | 'put', path: string) {
+  function authorized(method: 'delete' | 'get' | 'post' | 'put', path: string) {
     return request(app.getHttpServer() as Parameters<typeof request>[0])[method](path)
       .set('Origin', ORIGIN)
       .set('Authorization', `Bearer ${tokenA}`)

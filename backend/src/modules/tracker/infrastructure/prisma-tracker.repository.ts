@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { randomUUID } from 'node:crypto'
 import { Prisma, type TrackerMarkStatus } from '../../../generated/prisma/client.js'
 import { PrismaService } from '../../../database/prisma.service.js'
+import { INTERNAL_EVENT_TYPES, InternalEventPublisher } from '../../events/application/internal-event.contracts.js'
 import type { CurrentTenantContext } from '../../organizations/application/organization-context.repository.js'
 import { DEFAULT_TRACKER_BEHAVIORS } from '../domain/tracker-defaults.js'
 import { normalizeBehaviorName } from '../domain/tracker-policy.js'
@@ -20,7 +21,10 @@ type Transaction = Prisma.TransactionClient
 
 @Injectable()
 export class PrismaTrackerRepository extends TrackerRepository {
-  constructor(private readonly prisma: PrismaService) { super() }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly events: InternalEventPublisher<Transaction>,
+  ) { super() }
 
   async findMine(context: CurrentTenantContext, range: { from: Date; to: Date }): Promise<TrackerStateView | null> {
     return this.prisma.$transaction(async (tx) => {
@@ -147,11 +151,20 @@ export class PrismaTrackerRepository extends TrackerRepository {
 
   putMark(context: CurrentTenantContext, behaviorId: string, trackedOn: Date, status: TrackerMarkStatus): Promise<ChangeMarkResult> {
     return this.prisma.$transaction(async (tx) => {
+      await this.lockMembership(tx, context.membershipId)
       const membership = await this.activeMembership(tx, context)
       if (!membership) return 'context-not-found'
       if (trackedOn > this.currentDateIn(membership.tenant.timeZone)) return 'future-date'
       const scope = { tenantId: context.tenantId, membershipId: context.membershipId }
       if (!await tx.trackerBehavior.findFirst({ where: { id: behaviorId, ...scope, active: true }, select: { id: true } })) return 'behavior-not-found'
+      const sourceKey = `tracker-mark:${context.membershipId}:${behaviorId}:${trackedOn.toISOString().slice(0, 10)}`
+      const [existingMark, existingEvent] = await Promise.all([
+        tx.trackerMark.findUnique({ where: { behaviorId_trackedOn: { behaviorId, trackedOn } }, select: { id: true } }),
+        tx.internalEvent.findUnique({
+          where: { type_sourceKey: { type: INTERNAL_EVENT_TYPES.trackerMarkRecorded, sourceKey } },
+          select: { id: true },
+        }),
+      ])
       const mark = await tx.trackerMark.upsert({
         where: { behaviorId_trackedOn: { behaviorId, trackedOn } },
         create: { ...scope, behaviorId, trackedOn, status },
@@ -159,6 +172,23 @@ export class PrismaTrackerRepository extends TrackerRepository {
         select: { id: true },
       })
       if (status === 'COMPLETED') await tx.trackerJustification.deleteMany({ where: { trackerMarkId: mark.id, ...scope } })
+      if (!existingMark && !existingEvent) {
+        await this.events.publish(tx, {
+          tenantId: context.tenantId,
+          type: INTERNAL_EVENT_TYPES.trackerMarkRecorded,
+          version: 1,
+          aggregateType: 'TrackerBehavior',
+          aggregateId: behaviorId,
+          sourceKey,
+          payload: {
+            membershipId: context.membershipId,
+            behaviorId,
+            trackedOn: trackedOn.toISOString().slice(0, 10),
+            status,
+          },
+          occurredAt: new Date(),
+        })
+      }
       return 'changed'
     })
   }

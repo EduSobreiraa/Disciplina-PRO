@@ -26,6 +26,18 @@ export const XP_RULES: readonly XpRule[] = [
     amount: 500,
     description: 'Programa concluído',
   },
+  {
+    key: 'tracker.mark.v1',
+    eventType: INTERNAL_EVENT_TYPES.trackerMarkRecorded,
+    amount: 5,
+    description: 'Evolução diária registrada',
+  },
+  {
+    key: 'ritual.check.v1',
+    eventType: INTERNAL_EVENT_TYPES.ritualCheckCompleted,
+    amount: 5,
+    description: 'Item do ritual concluído',
+  },
 ]
 
 export const GAMIFICATION_LEVELS = [
@@ -66,4 +78,3 @@ export function summarizeLevel(total: number) {
     : 100
   return { balance, level, nextLevel, progress }
 }
-

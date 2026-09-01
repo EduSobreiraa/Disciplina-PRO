@@ -4,6 +4,7 @@ import request from 'supertest'
 import { AppModule } from '../src/app.module.js'
 import { PrismaService } from '../src/database/prisma.service.js'
 import { configureApp } from '../src/http/configure-app.js'
+import { ProcessInternalEventsUseCase } from '../src/modules/events/application/process-internal-events.use-case.js'
 import { CreateUserUseCase } from '../src/modules/identity-access/application/create-user.use-case.js'
 import { RitualClock } from '../src/modules/ritual/application/ritual-clock.js'
 
@@ -27,6 +28,7 @@ describe('Daily ritual HTTP integration', () => {
   let clock: MutableRitualClock
   let tenantA: string
   let tenantB: string
+  let membershipA: string
   let tokenA: string
   let tokenB: string
 
@@ -52,10 +54,11 @@ describe('Daily ritual HTTP integration', () => {
     ])
     tenantA = createdTenantA.id
     tenantB = createdTenantB.id
-    await Promise.all([
+    const [createdMembershipA] = await Promise.all([
       prisma.tenantMembership.create({ data: { tenantId: tenantA, userId: userA.id } }),
       prisma.tenantMembership.create({ data: { tenantId: tenantB, userId: userB.id } }),
     ])
+    membershipA = createdMembershipA.id
     ;[tokenA, tokenB] = await Promise.all([
       login(userA.email),
       login(userB.email),
@@ -82,6 +85,21 @@ describe('Daily ritual HTTP integration', () => {
       .expect(200)
     expect((repeated.body as RitualDayBody).checks).toEqual(firstBody.checks)
     expect(await prisma.ritualCheck.count({ where: { tenantId: tenantA } })).toBe(1)
+    await app.get(ProcessInternalEventsUseCase).execute({ batchSize: 100 })
+    expect(await prisma.xpTransaction.count({
+      where: { membershipId: membershipA, ruleKey: 'ritual.check.v1' },
+    })).toBe(1)
+
+    await authorized(tokenA, tenantA, 'put', `/api/ritual/me/${date}/checks/opening/review-panel`)
+      .send({ completed: false })
+      .expect(200)
+    await authorized(tokenA, tenantA, 'put', `/api/ritual/me/${date}/checks/opening/review-panel`)
+      .send({ completed: true })
+      .expect(200)
+    await app.get(ProcessInternalEventsUseCase).execute({ batchSize: 100 })
+    expect(await prisma.xpTransaction.count({
+      where: { membershipId: membershipA, ruleKey: 'ritual.check.v1' },
+    })).toBe(1)
 
     await authorized(tokenA, tenantA, 'put', '/api/ritual/me/2026-08-05/checks/opening/review-panel')
       .send({ completed: true })

@@ -120,6 +120,8 @@ unlockedAt
 
 A primeira migração cobrirá apenas regras sustentadas pelos fatos reais da B5: atividade concluída, registro diário/dia do programa, primeiro XP e patamares de XP. Regras do tracker, ritual e missões locais permanecem desativadas até seus fatos terem backend próprio; não serão simuladas no servidor.
 
+Após a conclusão dos fatos server-side de tracker e ritual na B8, o catálogo foi estendido com duas regras de participação: a primeira marcação de cada comportamento por data concede 5 XP, independentemente de sucesso ou falha, e o primeiro check de cada item do ritual por dia concede 5 XP. As chaves de origem incluem membership, item e data; editar, desmarcar ou remarcar não cria uma segunda recompensa. Restauração de backup, timer do ritual e projeções de missões não concedem XP por essas regras.
+
 ### Auditoria
 
 Auditoria de segurança e administração que hoje participa da transação principal continua síncrona. A outbox não será usada para criar uma janela em que uma alteração crítica exista sem seu registro de auditoria.

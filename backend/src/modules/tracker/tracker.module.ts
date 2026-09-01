@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { EventsModule } from '../events/events.module.js'
 import { TrackerRepository } from './application/tracker.repository.js'
 import {
   ArchiveTrackerBehaviorUseCase,
@@ -15,6 +16,7 @@ import { TrackerController } from './http/tracker.controller.js'
 import { PrismaTrackerRepository } from './infrastructure/prisma-tracker.repository.js'
 
 @Module({
+  imports: [EventsModule],
   controllers: [TrackerController],
   providers: [
     PrismaTrackerRepository,
