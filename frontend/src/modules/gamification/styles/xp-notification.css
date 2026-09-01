@@ -1,0 +1,63 @@
+.xp-gain-toast {
+  position: fixed;
+  z-index: 1000;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 190px;
+  padding: 12px 15px;
+  border: 1px solid rgba(240, 192, 64, .45);
+  border-left: 3px solid var(--ouro-claro);
+  border-radius: 5px;
+  background: rgba(18, 18, 21, .96);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .45), 0 0 18px rgba(212, 160, 23, .12);
+  pointer-events: none;
+  animation: xp-gain-enter 180ms ease-out both;
+}
+
+.xp-gain-toast > span {
+  color: var(--ouro-claro);
+  font-size: 15px;
+  text-shadow: 0 0 10px rgba(240, 192, 64, .5);
+}
+
+.xp-gain-toast strong,
+.xp-gain-toast small {
+  display: block;
+}
+
+.xp-gain-toast strong {
+  color: var(--ouro-claro);
+  font: 400 20px/1 Anton, sans-serif;
+  letter-spacing: .04em;
+}
+
+.xp-gain-toast small {
+  margin-top: 2px;
+  color: var(--cinza);
+  font: 600 8px/1.3 'IBM Plex Mono', monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+@keyframes xp-gain-enter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 700px) {
+  .xp-gain-toast {
+    top: auto;
+    right: 14px;
+    bottom: 16px;
+    left: 14px;
+    min-width: 0;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xp-gain-toast { animation: none; }
+}

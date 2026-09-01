@@ -12,3 +12,5 @@
 .tracker-add label{grid-column:1/-1;color:var(--cinza);font:600 10px 'IBM Plex Mono';text-transform:uppercase}
 .behavior-col>button{width:44px;height:44px}
 .tracker-state{display:grid;justify-items:start;gap:8px;margin-bottom:14px;padding:18px;background:var(--carvao);border:1px solid var(--linha);border-radius:6px;color:var(--cinza)}.tracker-state strong{color:var(--branco)}.tracker-state.error{border-color:rgba(224,48,48,.5)}.tracker-state .button{margin-top:4px}
+@media (hover:hover){.mark:not(:disabled):hover{background:#3a241f;box-shadow:inset 0 0 0 1px var(--ouro)}.mark.status-1:not(:disabled):hover{background:#24ca5a}.mark.status-2:not(:disabled):hover{background:#f04341}}.mark:not(:disabled):focus-visible{position:relative;z-index:1;outline:2px solid var(--ouro-claro);outline-offset:-3px}.mark:not(:disabled):active{filter:brightness(.9)}@media(prefers-reduced-motion:reduce){.mark{transition:none}}
+.mark{cursor:pointer;transition:background-color .16s ease,box-shadow .16s ease,filter .16s ease}
