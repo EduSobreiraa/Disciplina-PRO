@@ -444,8 +444,24 @@ export class PrismaExecutionRepository extends ExecutionLifecycleRepository impl
     }
   }
 
-  private current(tx: Transaction, enrollmentId: string) {
-    return tx.enrollment.findUniqueOrThrow({ where: { id: enrollmentId }, include: executionInclude })
+  private async current(tx: Transaction, enrollmentId: string): Promise<ExecutionRecord> {
+    const enrollment = await tx.enrollment.findUniqueOrThrow({ where: { id: enrollmentId } })
+    const programVersion = enrollment.programVersionId
+      ? await tx.programVersion.findUniqueOrThrow({
+          where: { id: enrollment.programVersionId },
+          select: { versionNumber: true, title: true, durationDays: true, executionConfiguration: true },
+        })
+      : null
+    const tenantProgram = await tx.tenantProgram.findUniqueOrThrow({
+      where: { id: enrollment.tenantProgramId },
+      select: { program: { select: { slug: true, name: true } } },
+    })
+    const pauses = await tx.enrollmentPause.findMany({
+      where: { enrollmentId },
+      select: { pauseStartsOn: true, resumedOn: true },
+      orderBy: { pausedAt: 'asc' },
+    })
+    return { ...enrollment, programVersion, tenantProgram, pauses }
   }
 
   private async activeOwned(tx: Transaction, context: CurrentTenantContext, enrollmentId: string, now: Date) {

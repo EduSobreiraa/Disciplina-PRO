@@ -24,7 +24,7 @@ test('keeps a private reflection outside objective execution, audit, reporting a
     expect((await startResponse).status()).toBe(201)
     await expect(recordLink).toBeVisible()
   }
-  await page.getByRole('link', { name: '+ Registrar', exact: true }).click()
+  await page.getByRole('link', { name: '+ Registro', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Registrar o dia' })).toBeVisible()
 
   const resultMission = page.getByRole('button', { name: /Resultado/ })
