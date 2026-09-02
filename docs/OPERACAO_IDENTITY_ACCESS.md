@@ -83,7 +83,9 @@ Executar periodicamente, inicialmente uma vez ao dia:
 npm run sessions:cleanup --workspace backend
 ```
 
-O comando revoga sessões vencidas e elimina famílias revogadas há pelo menos 90 dias. É idempotente, não remove auditoria e não imprime tokens ou hashes. A agenda gerenciada será definida junto da hospedagem.
+O comando revoga sessões vencidas e elimina famílias revogadas há pelo menos 90 dias. É idempotente, não remove auditoria e não imprime tokens ou hashes.
+
+No laboratório Railway, a limpeza roda em serviço isolado com build `npm run prisma:generate && npm run build`, start command `node backend/dist/src/cli/cleanup-sessions.js` e cron `0 6 * * *` (UTC; `03:00` BRT enquanto o fuso estiver em UTC−3). A execução comprovada em 02/09/2026 terminou com status `Completed` e informou `Sessões expiradas revogadas: 0; sessões eliminadas: 0`. O resultado zero é esperado quando não existem registros elegíveis e confirma a execução idempotente do ciclo.
 
 ## 7. Entrega local de convites
 

@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 01/09/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos; BX.1–BX.3 encerradas e BX.4 em andamento no laboratório
+> Atualizado em 02/09/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos; BX.1–BX.3 encerradas e BX.4 em andamento no laboratório
 
 ## 1. Visão geral do produto
 
@@ -412,7 +412,7 @@ O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estát
 
 ## 12. Próxima etapa e bloqueios
 
-A última fase funcional comprovadamente concluída é a B9. Na preparação pré-staging, BX.1, BX.2 e **BX.3 — segurança e configuração** foram concluídas; a **BX.4 — observabilidade, jobs e e-mail** está em andamento. Sentry frontend/backend, monitores Better Stack, heartbeat automático do backup e worker contínuo de eventos estão comprovados. A próxima execução técnica é a limpeza agendada de sessões, seguida de OpenTelemetry e ensaio do runbook de incidente. Resend, retry/bounce de convite e canais corporativos permanecem bloqueados pela ausência de domínio/e-mail corporativo.
+A última fase funcional comprovadamente concluída é a B9. Na preparação pré-staging, BX.1, BX.2 e **BX.3 — segurança e configuração** foram concluídas; a **BX.4 — observabilidade, jobs e e-mail** está em andamento. Sentry frontend/backend, monitores Better Stack, heartbeat automático do backup, worker contínuo de eventos e limpeza diária de sessões estão comprovados. OpenTelemetry está implementado e validado localmente; a próxima execução técnica é configurar o receptor OTLP, fazer redeploy e comprovar a exportação, seguida do ensaio do runbook de incidente. Resend, retry/bounce de convite e canais corporativos permanecem bloqueados pela ausência de domínio/e-mail corporativo.
 
 O desenvolvimento local pode continuar. Dados reais, staging público e produção continuam bloqueados pelos itens P0/P1 do relatório de problemas postergados. Em particular:
 
@@ -431,4 +431,4 @@ Para o PP-004, foram registradas as políticas aprovadas de retenção do tenant
 
 ## 14. Conclusão
 
-O repositório possui frontend React funcional e backend multi-tenant implementado até B9, incluindo eventos, gamificação, auditoria, reporting objetivo, administração e integração frontend–API reproduzível em navegador real. O laboratório também comprovou deploy, backup lógico diário externo, restauração local descartável, monitoramento automático do backup, Sentry/Better Stack e segurança/configuração em Vercel/Railway. Isso não equivale a prontidão de produção: os itens restantes da BX.4, toda a BX.5, PITR/restore Railway, B10 e os riscos explicitamente postergados permanecem necessários.
+O repositório possui frontend React funcional e backend multi-tenant implementado até B9, incluindo eventos, gamificação, auditoria, reporting objetivo, administração e integração frontend–API reproduzível em navegador real. O laboratório também comprovou deploy, backup lógico diário externo, restauração local descartável, monitoramento automático do backup, jobs contínuo e diário, Sentry/Better Stack e segurança/configuração em Vercel/Railway. Isso não equivale a prontidão de produção: os itens restantes da BX.4, toda a BX.5, PITR/restore Railway, B10 e os riscos explicitamente postergados permanecem necessários.

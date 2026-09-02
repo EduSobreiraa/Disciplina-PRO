@@ -11,6 +11,7 @@ interface TestSentryOptions {
     stackFrameVariables: boolean
   }
   beforeSend(event: Record<string, unknown>): Record<string, unknown>
+  beforeSendSpan(span: { data: Record<string, unknown>; description?: string; op?: string }): { data: Record<string, unknown>; description?: string; op?: string }
   [key: string]: unknown
 }
 
@@ -52,5 +53,16 @@ describe('Sentry instrumentation', () => {
       exception: { values: [{ type: 'Error', value: 'Unhandled server error' }] },
     })
     expect(JSON.stringify(sanitized)).not.toMatch(/Bearer secret|session=secret|password=secret|token=secret|accessToken/)
+
+    const sanitizedSpan = options.beforeSendSpan({
+      op: 'db.sql.query',
+      description: 'SELECT * FROM users WHERE email = secret@example.test',
+      data: { 'db.query.text': 'SELECT secret', 'url.full': 'https://api.example.test/users?token=secret' },
+    })
+    expect(sanitizedSpan).toEqual({
+      op: 'db.sql.query',
+      description: 'database operation',
+      data: { 'url.full': 'https://api.example.test/users' },
+    })
   })
 })

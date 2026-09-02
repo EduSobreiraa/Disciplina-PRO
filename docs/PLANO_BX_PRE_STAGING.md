@@ -2,7 +2,7 @@
 
 > Decisão operacional registrada em 23/08/2026. Esta fase não autoriza dados reais, domínio corporativo, billing corporativo nem considera staging oficial implantado.
 
-**Estado em 01/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. A BX.4 está em andamento: Sentry frontend/backend, monitores Better Stack, backup diário R2 com heartbeat automático e worker contínuo de eventos foram comprovados; limpeza agendada de sessões, OpenTelemetry e runbook de incidente permanecem executáveis. E-mail real, Resend e canais corporativos continuam bloqueados até existir domínio/e-mail corporativo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
+**Estado em 02/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. A BX.4 está em andamento: Sentry frontend/backend, monitores Better Stack, backup diário R2 com heartbeat automático, worker contínuo de eventos e limpeza diária de sessões foram comprovados. A integração OpenTelemetry do backend está pronta e validada localmente, aguardando receptor OTLP, redeploy e prova externa; o runbook de incidente permanece executável. E-mail real, Resend e canais corporativos continuam bloqueados até existir domínio/e-mail corporativo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
 
 ## Objetivo
 
@@ -87,7 +87,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - [x] agendar backup diário Railway → R2 e comprovar heartbeat automático somente após dump, checksum, upload e verificação;
 - [ ] integrar OpenTelemetry como camada de instrumentação;
 - [x] implantar o worker contínuo de processamento de eventos internos no Railway e comprovar conexão com PostgreSQL e efeito derivado de XP;
-- [ ] agendar limpeza de sessões e comprovar sua execução;
+- [x] agendar limpeza de sessões e comprovar sua execução;
 - [ ] preparar e ensaiar o runbook de incidente;
 - [ ] preparar integração Resend e testar sandbox/remetente fictício — bloqueado por domínio/e-mail corporativo;
 - [ ] implementar e testar retry após 30 minutos, bounce e notificação ao admin do tenant — bloqueado pelo provedor real;
@@ -96,7 +96,17 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 **Plataformas necessárias:** Sentry, Better Stack, Resend e Railway temporários.
 
-**Estado em 01/09/2026:** Sentry frontend/backend e Better Stack estão operacionais no laboratório. O Better Stack monitora backend direto, frontend e readiness pelo rewrite Vercel → Railway; o alerta do plano gratuito chega por e-mail. O heartbeat espera execução a cada 24 horas, aceita 5 horas de tolerância e abre incidente após 29 horas. Às 08:29 BRT, o job agendado criou `disciplina-pro-20260901T112923Z.dump`, enviou dump e manifesto `.sha256`, confirmou ambos no R2 e terminou com `Backup concluído e verificado`. Como o script chama o heartbeat somente depois dessas verificações e antes da mensagem final, a execução comprova também a notificação automática ao Better Stack. O worker contínuo iniciou no Railway, manteve tráfego TCP com o PostgreSQL e processou evento com mudança observável de XP. OpenTelemetry, limpeza agendada de sessões e runbook de incidente continuam executáveis; Resend, retry/bounce de convite e canal corporativo permanecem bloqueados pela ausência de e-mail/domínio corporativos. Telegram não é requisito do laboratório enquanto o plano disponível oferecer somente alerta por e-mail.
+**Estado em 02/09/2026:** Sentry frontend/backend e Better Stack estão operacionais no laboratório. O Better Stack monitora backend direto, frontend e readiness pelo rewrite Vercel → Railway; o alerta do plano gratuito chega por e-mail. O heartbeat espera execução a cada 24 horas, aceita 5 horas de tolerância e abre incidente após 29 horas. Às 08:29 BRT de 01/09, o job agendado criou `disciplina-pro-20260901T112923Z.dump`, enviou dump e manifesto `.sha256`, confirmou ambos no R2 e terminou com `Backup concluído e verificado`. Como o script chama o heartbeat somente depois dessas verificações e antes da mensagem final, a execução comprova também a notificação automática ao Better Stack. O worker contínuo iniciou no Railway, manteve tráfego TCP com o PostgreSQL e processou evento com mudança observável de XP. Em 02/09, o serviço cron de limpeza de sessões concluiu sua primeira execução comprovada. A integração OpenTelemetry/OTLP do backend foi implementada com amostragem, fail-fast e sanitização, reutilizando o provider do Sentry; falta configurar um receptor, fazer redeploy e comprovar traces externos. O runbook de incidente continua executável; Resend, retry/bounce de convite e canal corporativo permanecem bloqueados pela ausência de e-mail/domínio corporativos. Telegram não é requisito do laboratório enquanto o plano disponível oferecer somente alerta por e-mail.
+
+### OpenTelemetry — implementação local em 02/09/2026
+
+- exportação de traces OTLP/HTTP habilitada somente por `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`;
+- provider compartilhado com o SDK Sentry, sem segundo provider global;
+- amostragem configurável por `OTEL_TRACES_SAMPLER_ARG`, com padrão de laboratório `0.1`;
+- HTTPS obrigatório em produção e validação antecipada de endpoint/amostragem;
+- sanitização de SQL, headers, corpos, credenciais, identificadores de usuário, IPs, exceções e query strings antes do envio;
+- gates locais aprovados: testes focados, typecheck, lint e builds frontend/backend;
+- operação e prova externa: [`OPERACAO_OBSERVABILIDADE.md`](OPERACAO_OBSERVABILIDADE.md).
 
 ### Evidência operacional do backup monitorado — 01/09/2026
 
@@ -106,6 +116,16 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - cadeia comprovada: agendamento Railway → `pg_dump` → upload de dois objetos → `head-object` de ambos → heartbeat HTTPS → log final de sucesso;
 - interpretação: a ausência de novos dados de negócio não invalida o ensaio, pois cada execução gera um novo artefato timestampado;
 - limite: a prova cobre backup lógico diário e detecção de ausência/falha do job, não PITR, RPO de 1 hora, restore Railway ou corte manual.
+
+### Evidência operacional da limpeza de sessões — 02/09/2026
+
+- serviço Railway isolado do worker contínuo e da API;
+- build: `npm run prisma:generate && npm run build`;
+- start command: `node backend/dist/src/cli/cleanup-sessions.js`;
+- cron: `0 6 * * *` em UTC, equivalente a `03:00` BRT enquanto o fuso estiver em UTC−3;
+- execução observada às `19:39` BRT: status `Completed` e log `Sessões expiradas revogadas: 0; sessões eliminadas: 0`;
+- interpretação: zero alterações é sucesso idempotente quando não existem sessões elegíveis; o job conectou ao banco, executou a política e encerrou normalmente;
+- política: revogar sessões vencidas e eliminar famílias revogadas há pelo menos 90 dias, sem remover auditoria nem imprimir tokens ou hashes.
 
 ## BX.5 — Qualidade, staging tests e operação
 

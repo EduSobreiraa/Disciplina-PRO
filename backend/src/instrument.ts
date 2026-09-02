@@ -1,11 +1,20 @@
 import * as Sentry from '@sentry/nestjs'
+import { createOpenTelemetryOptions, sanitizeTelemetryAttributes } from './telemetry.js'
 
 const dsn = process.env.SENTRY_DSN?.trim()
+const openTelemetry = createOpenTelemetryOptions()
 
 Sentry.init({
   dsn: dsn || undefined,
   enabled: Boolean(dsn),
   environment: process.env.SENTRY_ENVIRONMENT?.trim() || process.env.DEPLOYMENT_STAGE?.trim() || process.env.NODE_ENV,
+  tracesSampleRate: openTelemetry.tracesSampleRate,
+  openTelemetrySpanProcessors: openTelemetry.spanProcessors,
+  beforeSendSpan(span) {
+    sanitizeTelemetryAttributes(span.data)
+    if (span.op?.startsWith('db')) span.description = 'database operation'
+    return span
+  },
   sendDefaultPii: false,
   dataCollection: {
     userInfo: false,
