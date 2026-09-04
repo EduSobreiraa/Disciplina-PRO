@@ -17,8 +17,8 @@ async function expectTrackerGreen(page, day, mutate) {
   await page.getByRole('link', { name: 'Minha evolução' }).click()
   const mark = page.getByRole('button', { name: new RegExp(`Meta batida, dia ${day}:`) })
   await expect(mark).toBeVisible()
-  if (mutate && (await mark.getAttribute('aria-label')).endsWith('vazio')) await mark.click()
-  await expect(mark).toHaveAttribute('aria-label', new RegExp(`dia ${day}: verde$`))
+  if (mutate && (await mark.getAttribute('aria-label')).includes(`dia ${day}: sem marcação.`)) await mark.click()
+  await expect(mark).toHaveAttribute('aria-label', new RegExp(`dia ${day}: cumprido\\.`))
 }
 
 async function expectOpeningComplete(page, mutate) {
