@@ -224,7 +224,7 @@ Falhas e ataques podem demorar a ser descobertos, clientes podem perceber o prob
 
 **O que já foi feito**
 
-OpenTelemetry foi definido para instrumentação; Sentry para exceções, stack traces e performance; Better Stack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. No laboratório, Sentry frontend/backend, monitores de backend/frontend/rewrite, alerta por e-mail e heartbeat automático do backup estão operacionais. Também foram aprovados cobertura de segunda a sábado das 8h às 20h, reconhecimento em até 30 minutos e início da resposta em até 2 horas; Eduardo é o único responsável técnico atual. Permanecem pendentes OpenTelemetry, contas/canais corporativos e runbook de incidente ensaiado.
+OpenTelemetry foi definido para instrumentação; Sentry para exceções, stack traces e performance; Better Stack para uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais. No laboratório, todos esses componentes estão operacionais. Em 03/09/2026, um drill controlado comprovou detecção de HTTP `404`, criação do incidente, alerta por e-mail, reconhecimento, diagnóstico e recuperação automática, sem interromper o sistema real nem expor dados sensíveis. Também foram aprovados cobertura de segunda a sábado das 8h às 20h, reconhecimento em até 30 minutos e início da resposta em até 2 horas; Eduardo é o único responsável técnico atual. Permanecem pendentes contas/canais corporativos e repetição do ensaio no staging oficial.
 
 **O que precisa ser decidido pelo CEO**
 

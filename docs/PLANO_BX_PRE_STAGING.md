@@ -2,7 +2,7 @@
 
 > Decisão operacional registrada em 23/08/2026. Esta fase não autoriza dados reais, domínio corporativo, billing corporativo nem considera staging oficial implantado.
 
-**Estado em 02/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. A BX.4 está em andamento: Sentry frontend/backend, monitores Better Stack, backup diário R2 com heartbeat automático, worker contínuo de eventos e limpeza diária de sessões foram comprovados. A integração OpenTelemetry do backend está pronta e validada localmente, aguardando receptor OTLP, redeploy e prova externa; o runbook de incidente permanece executável. E-mail real, Resend e canais corporativos continuam bloqueados até existir domínio/e-mail corporativo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
+**Estado em 03/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. Na BX.4, Sentry frontend/backend, monitores Better Stack, backup diário R2 com heartbeat automático, worker contínuo de eventos, limpeza diária de sessões, OpenTelemetry externo e runbook de incidente foram comprovados. Um drill controlado abriu incidente por HTTP `404`, enviou alerta por e-mail, foi reconhecido, diagnosticado e recuperado automaticamente sem indisponibilidade real. A BX.4 permanece aberta somente nos itens de Resend, retry/bounce e canal corporativo bloqueados até existir domínio/e-mail corporativo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
 
 ## Objetivo
 
@@ -85,10 +85,10 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - [x] configurar Better Stack para backend, frontend e readiness pelo rewrite Vercel → Railway;
 - [x] comprovar alerta por e-mail no plano gratuito;
 - [x] agendar backup diário Railway → R2 e comprovar heartbeat automático somente após dump, checksum, upload e verificação;
-- [ ] integrar OpenTelemetry como camada de instrumentação;
+- [x] integrar OpenTelemetry como camada de instrumentação;
 - [x] implantar o worker contínuo de processamento de eventos internos no Railway e comprovar conexão com PostgreSQL e efeito derivado de XP;
 - [x] agendar limpeza de sessões e comprovar sua execução;
-- [ ] preparar e ensaiar o runbook de incidente;
+- [x] preparar e ensaiar o runbook de incidente;
 - [ ] preparar integração Resend e testar sandbox/remetente fictício — bloqueado por domínio/e-mail corporativo;
 - [ ] implementar e testar retry após 30 minutos, bounce e notificação ao admin do tenant — bloqueado pelo provedor real;
 - [x] testar que token de convite não entra em logs, alertas ou interface no recorte já implementado;
@@ -96,7 +96,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 **Plataformas necessárias:** Sentry, Better Stack, Resend e Railway temporários.
 
-**Estado em 02/09/2026:** Sentry frontend/backend e Better Stack estão operacionais no laboratório. O Better Stack monitora backend direto, frontend e readiness pelo rewrite Vercel → Railway; o alerta do plano gratuito chega por e-mail. O heartbeat espera execução a cada 24 horas, aceita 5 horas de tolerância e abre incidente após 29 horas. Às 08:29 BRT de 01/09, o job agendado criou `disciplina-pro-20260901T112923Z.dump`, enviou dump e manifesto `.sha256`, confirmou ambos no R2 e terminou com `Backup concluído e verificado`. Como o script chama o heartbeat somente depois dessas verificações e antes da mensagem final, a execução comprova também a notificação automática ao Better Stack. O worker contínuo iniciou no Railway, manteve tráfego TCP com o PostgreSQL e processou evento com mudança observável de XP. Em 02/09, o serviço cron de limpeza de sessões concluiu sua primeira execução comprovada. A integração OpenTelemetry/OTLP do backend foi implementada com amostragem, fail-fast e sanitização, reutilizando o provider do Sentry; falta configurar um receptor, fazer redeploy e comprovar traces externos. O runbook de incidente continua executável; Resend, retry/bounce de convite e canal corporativo permanecem bloqueados pela ausência de e-mail/domínio corporativos. Telegram não é requisito do laboratório enquanto o plano disponível oferecer somente alerta por e-mail.
+**Estado em 03/09/2026:** Sentry frontend/backend e Better Stack estão operacionais no laboratório. O Better Stack monitora backend direto, frontend e readiness pelo rewrite Vercel → Railway; o alerta do plano gratuito chega por e-mail. O heartbeat espera execução a cada 24 horas, aceita 5 horas de tolerância e abre incidente após 29 horas. Às 08:29 BRT de 01/09, o job agendado criou `disciplina-pro-20260901T112923Z.dump`, enviou dump e manifesto `.sha256`, confirmou ambos no R2 e terminou com `Backup concluído e verificado`. Como o script chama o heartbeat somente depois dessas verificações e antes da mensagem final, a execução comprova também a notificação automática ao Better Stack. O worker contínuo iniciou no Railway, manteve tráfego TCP com o PostgreSQL e processou evento com mudança observável de XP. Em 02/09, o serviço cron de limpeza de sessões concluiu sua primeira execução comprovada e a API exportou traces OTLP sanitizados para o Better Stack, incluindo spans HTTP e PostgreSQL. Em 03/09, um monitor temporário contra `/api/health/incident-drill` detectou `404`, abriu incidente, enviou alerta por e-mail e foi reconhecido às `20:54 BRT`; após apontá-lo para `/api/health/ready`, o Better Stack detectou a recuperação automaticamente e enviou a notificação correspondente. A readiness real permaneceu `200`, sem indisponibilidade. Resend, retry/bounce de convite e canal corporativo permanecem bloqueados pela ausência de e-mail/domínio corporativos. Telegram não é requisito do laboratório enquanto o plano disponível oferecer somente alerta por e-mail.
 
 ### OpenTelemetry — implementação local em 02/09/2026
 

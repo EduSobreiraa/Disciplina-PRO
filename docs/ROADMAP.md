@@ -1,6 +1,6 @@
 # Roadmap do Disciplina PRO
 
-> Spark Inteligência Corporativa · Atualizado em 02/09/2026
+> Spark Inteligência Corporativa · Atualizado em 03/09/2026
 > Escopo: conclusão do MVP B2B SaaS multi-tenant, do estado atual até o primeiro release controlado.
 
 ## 1. Estado atual verificado
@@ -14,7 +14,7 @@
 - B7.1–B7.4 concluídas: reporting pessoal, por time e tenant com contratos e prova HTTP de privacidade;
 - B8.1–B8.4 e B9.1–B9.7 concluídas;
 - BX.1, BX.2 e BX.3 concluídas no recorte de laboratório, incluindo deploy, backup/restore e segurança/configuração externa;
-- BX.4 em andamento: Sentry, Better Stack, heartbeat automático do backup, worker contínuo de eventos e limpeza diária de sessões comprovados; OpenTelemetry pronto localmente e aguardando prova externa; runbook ainda pendente;
+- BX.4 concluída no recorte técnico possível sem conta corporativa: Sentry, Better Stack, heartbeat do backup, worker, limpeza de sessões, OpenTelemetry externo e drill de incidente comprovados; permanecem bloqueados somente Resend, retry/bounce e canais corporativos;
 - PITR e restore dentro da infraestrutura Railway permanecem como risco residual obrigatório antes do lançamento e não são substituídos pelo dump diário.
 
 O roadmap é sequencial por dependência, não uma promessa de datas. Uma fase só é encerrada quando seus critérios de saída estiverem atendidos, testados e documentados.
@@ -739,7 +739,7 @@ Para manter gates pequenos e não concentrar toda a administração em uma únic
 
 **Plano detalhado:** [`PLANO_BX_PRE_STAGING.md`](PLANO_BX_PRE_STAGING.md).
 
-**Estado em 02/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório; BX.4 em andamento. O PostgreSQL Railway recebeu somente seed fictício; o backup lógico diário foi enviado ao R2 com retenção de 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável, recuperando 33 tabelas e dados coerentes. Uma nova execução agendada em 01/09 criou `disciplina-pro-20260901T112923Z.dump`, verificou dump e manifesto no R2 e notificou o heartbeat Better Stack antes de registrar sucesso, encerrando a prova automática de monitoramento do backup no laboratório. Sentry frontend/backend e monitores Better Stack de backend, frontend e rewrite estão operacionais. O worker contínuo iniciou no Railway, manteve conexão com o PostgreSQL e processou evento com alteração observável de XP. A limpeza diária de sessões também foi comprovada no Railway em 02/09: o cron `0 6 * * *` executou o CLI compilado, terminou com status `Completed` e reportou zero sessões elegíveis. OpenTelemetry foi integrado localmente ao provider já administrado pelo Sentry, com OTLP/HTTP, amostragem, fail-fast e sanitização; ainda falta configurar o receptor e comprovar os traces após redeploy. A segurança/configuração foi aprovada por 44 suítes/142 testes unitários, 33 suítes/92 testes PostgreSQL e uma regressão focada posterior de 1 suíte/6 testes. A prova externa Vercel → Railway confirmou readiness, rewrite, CORS/CSRF, headers, Swagger fechado, sanitização de caminhos, rate limit com resposta `429`, login, persistência da sessão, cookies `__Host-` e logout. Permanecem na BX.4 a prova externa OpenTelemetry e o runbook de incidente; Resend/e-mail aguardam domínio corporativo. O PITR/restore Railway permanece transferido explicitamente para PP-007/B10.3 antes do lançamento.
+**Estado em 03/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório; o recorte técnico da BX.4 possível sem conta corporativa também foi concluído. O PostgreSQL Railway recebeu somente seed fictício; o backup lógico diário foi enviado ao R2 com retenção de 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável, recuperando 33 tabelas e dados coerentes. Uma nova execução agendada em 01/09 criou `disciplina-pro-20260901T112923Z.dump`, verificou dump e manifesto no R2 e notificou o heartbeat Better Stack antes de registrar sucesso. Sentry frontend/backend e monitores Better Stack estão operacionais. Worker e limpeza de sessões foram comprovados no Railway. Em 02/09, a API passou a exportar traces OTLP sanitizados para o Better Stack, com spans HTTP e PostgreSQL. Em 03/09, um drill contra uma rota sintética `404` comprovou criação automática do incidente, alerta por e-mail, reconhecimento às `20:54 BRT`, diagnóstico e recuperação automática após restaurar a readiness; a API e o banco permaneceram disponíveis. A prova externa Vercel → Railway também confirmou readiness, rewrite, CORS/CSRF, headers, Swagger fechado, sanitização de caminhos, `429`, login, cookies de sessão e logout. Resend, retry/bounce e canais corporativos continuam bloqueados por domínio/e-mail corporativo. O PITR/restore Railway permanece transferido explicitamente para PP-007/B10.3 antes do lançamento. A próxima execução é a BX.5.
 
 ### B10 — Hardening, staging e release MVP
 

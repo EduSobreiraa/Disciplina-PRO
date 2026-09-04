@@ -49,7 +49,7 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 | Serviço de banco de dados | **PostgreSQL via Railway — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016 |
 | Serviço de armazenamento de backups | **Cloudflare R2 — DEFINIDO E OPERACIONAL NO LABORATÓRIO** | proprietário do projeto | recriar/validar no ambiente corporativo antes de dados reais | ADR-016/BX.2/PP-007 |
 | Serviço de gestão de segredos | **Railway Environment Variables no MVP — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/PP-006 |
-| Instrumentação | **OpenTelemetry — DEFINIDO; implementação pendente** | proprietário do projeto | implementar antes de staging público | ADR-016/PP-008 |
+| Instrumentação | **OpenTelemetry — IMPLEMENTADO E COMPROVADO NO LAB** | proprietário do projeto | reproduzir em staging corporativo | ADR-016/PP-008/BX.4 |
 | Exceções, stack traces e performance | **Sentry — OPERACIONAL NO LAB FRONTEND/BACKEND** | proprietário do projeto | recriar na conta corporativa antes de dados reais | ADR-016/BX.4/PP-008 |
 | Uptime, heartbeats, disponibilidade, incidentes, status page e alertas operacionais | **Better Stack — OPERACIONAL NO LAB; alerta por e-mail** | proprietário do projeto | recriar e definir canal corporativo antes de dados reais | ADR-016/BX.4/PP-008 |
 | Provedor de e-mail transacional | **Resend — DEFINIDO; contrato pendente de validação** | proprietário + Jurídico | antes de staging com e-mail real | ADR-016/PP-015 |
@@ -238,7 +238,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Eventos que geram alerta | **A DEFINIR** | cobertura aprovada | antes de staging público | PP-008 |
 | Limites de disparo dos alertas | **A DEFINIR** | cobertura aprovada | antes de staging público | PP-008 |
 | Campos proibidos em logs e monitoramento | **A DEFINIR E VALIDAR** | matriz jurídica validada | antes de staging público | PP-008/PP-004 |
-| Procedimento técnico de incidente | **A DEFINIR E ENSAIAR** | responsáveis aprovados | antes de produção | PP-008 |
+| Procedimento técnico de incidente | **DEFINIDO E ENSAIADO NO LAB EM 03/09/2026** | Eduardo; contas/canais corporativos pendentes | repetir no staging oficial | PP-008/BX.4 |
 | Política técnica de novas tentativas de e-mail | **1 reenvio após 30 minutos — DEFINIDA; implementar e testar** | ADR aprovado | antes do primeiro cliente | ADR-016/PP-015 |
 | Tratamento técnico de e-mail devolvido | **após nova falha, notificar admin do tenant — DEFINIDO; implementar e testar** | ADR aprovado | antes do primeiro cliente | ADR-016/PP-015 |
 | Monitoramento de falhas de entrega | **A DEFINIR E TESTAR** | provedor aprovado | antes do primeiro cliente | PP-015 |

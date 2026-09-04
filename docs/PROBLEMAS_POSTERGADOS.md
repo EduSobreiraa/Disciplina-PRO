@@ -98,15 +98,15 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Critério de encerramento:** RPO/RTO definidos, backup verificado, restauração e rollback/forward-fix ensaiados.
 - **Decisões operacionais de 03/08/2026, atualizadas em 01/09/2026:** RPO de 1 hora, RTO de 4 horas, backups retidos por 90 dias, cópia externa no Cloudflare R2 e rollback da aplicação apenas quando o schema for compatível; caso contrário, aplica-se forward-fix. Em 30/08, o job diário Railway → R2, o checksum e o restore local descartável do artefato `disciplina-pro-20260830T142746Z.dump` foram aprovados, recuperando 33 tabelas e os dados fictícios esperados. Em 01/09, a execução agendada criou `disciplina-pro-20260901T112923Z.dump`, verificou dump e manifesto no R2 e notificou o heartbeat Better Stack antes do log final de sucesso. A retenção depende de validação jurídica; PITR/restore Railway, aceite formal e ensaio de falha de migration continuam pendentes antes da produção.
 
-### PP-008 — Observabilidade externa ainda não implantada
+### PP-008 — Observabilidade externa implantada no laboratório; reprodução corporativa pendente
 
-- **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 30/08/2026
-- **Problema:** logging estruturado, redação de dados sensíveis, Sentry frontend/backend e Better Stack foram implementados e ensaiados no laboratório, mas OpenTelemetry, alertas/canais corporativos e runbook de incidente ainda não foram concluídos.
+- **Prioridade/status:** P1 · MITIGADO NO LABORATÓRIO EM 03/09/2026; ABERTO PARA STAGING CORPORATIVO
+- **Problema:** logging estruturado, redação de dados sensíveis, Sentry frontend/backend, Better Stack, OpenTelemetry e runbook foram implementados e ensaiados no laboratório; faltam contas e canais corporativos e a reprodução no staging oficial.
 - **Impacto:** falhas e ataques podem não ser detectados ou diagnosticados em tempo adequado.
 - **Motivo do adiamento:** serviço externo não é necessário para desenvolvimento local.
 - **Retomada:** B10, antes de staging público.
 - **Critério de encerramento:** alertas testados, redação de dados sensíveis confirmada e runbook com responsáveis.
-- **Decisões operacionais de 03/08/2026, 21/08/2026, 30/08/2026 e 01/09/2026:** OpenTelemetry permanece como camada de instrumentação; Sentry frontend/backend está ativo no laboratório, captura `5xx`, ignora `4xx` e preserva somente metadados técnicos sanitizados e `requestId`. Better Stack monitora backend, frontend, rewrite Vercel/Railway e heartbeat do backup; o heartbeat usa período de 24 horas, tolerância de 5 horas e alerta após 29 horas. O alerta por e-mail do plano gratuito foi recebido e a primeira execução automática pós-implantação do heartbeat foi comprovada em 01/09. Telegram fica adiado até existir plano/canal compatível. Cobertura: segunda a sábado, 8h–20h; reconhecimento em até 30 minutos e início da resposta em até 2 horas. Permanecem pendentes OpenTelemetry, canais corporativos e runbook de incidente ensaiado.
+- **Decisões operacionais de 03/08/2026 a 03/09/2026:** OpenTelemetry exporta traces sanitizados da API para o Better Stack; Sentry frontend/backend captura `5xx`, ignora `4xx` e preserva somente metadados técnicos sanitizados e `requestId`. Better Stack monitora backend, frontend, rewrite Vercel/Railway e heartbeat do backup; o heartbeat usa período de 24 horas, tolerância de 5 horas e alerta após 29 horas. Em 03/09, o drill `DRILL BX.4 — readiness API` detectou HTTP `404`, abriu incidente, enviou e-mail, foi reconhecido às `20:54 BRT`, diagnosticado e recuperado automaticamente sem indisponibilidade real ou dados sensíveis. Telegram fica adiado até existir plano/canal compatível. Cobertura: segunda a sábado, 8h–20h; reconhecimento em até 30 minutos e início da resposta em até 2 horas. Permanecem pendentes contas/canais corporativos e repetição do ensaio no staging oficial.
 
 ### PP-009 — E2E frontend versionado insuficiente — ENCERRADO
 

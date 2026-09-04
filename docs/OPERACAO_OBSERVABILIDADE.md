@@ -48,4 +48,32 @@ Após cadastrar as variáveis e fazer redeploy da API:
 5. confirmar que um erro `5xx` continua chegando ao Sentry e que `4xx` continua descartado;
 6. registrar data, ambiente, receptor e evidência no plano BX, sem copiar credenciais.
 
-Até essa prova externa, a implementação é considerada pronta localmente, mas o item OpenTelemetry da BX.4 permanece aberto.
+### Evidência externa — 02/09/2026
+
+A API Railway exportou traces para a source do Better Stack com o serviço `disciplina-pro-api` e ambiente `lab`. Foram observados spans HTTP e spans filhos do Prisma/PostgreSQL, incluindo conexão, serialização, compilação, operação, transação e commit. Login, logout e tentativa de login inexistente produziram telemetria sem interromper a API. A inspeção confirmou que queries, credenciais, cookies, corpos, e-mails e demais dados sensíveis não foram enviados. Essa prova encerra o item OpenTelemetry da BX.4 no laboratório.
+
+## Runbook de incidente de disponibilidade
+
+1. confirmar `GET /api/health/ready` com HTTP `200`, `status=ready` e `database=up`;
+2. reconhecer o alerta e registrar horário, monitor, causa e `requestId`, sem copiar payloads sensíveis;
+3. comparar a rota apontada pelo monitor com a readiness real e consultar Better Stack, Railway, Sentry e traces OTLP;
+4. conter ou corrigir a causa sem ocultar o incidente;
+5. aguardar a recuperação automática do monitor, confirmar o e-mail de recuperação e verificar novamente a readiness;
+6. registrar detecção, reconhecimento, diagnóstico, correção e recuperação. Eduardo é o responsável técnico atual e deve iniciar a resposta em até duas horas após o reconhecimento.
+
+Não resolver manualmente um incidente antes de comprovar a recuperação automática. Em drills, usar somente rotas fictícias e dados de laboratório; não derrubar API, banco ou frontend.
+
+### Ensaio controlado — 03/09/2026
+
+- monitor temporário: `DRILL BX.4 — readiness API`;
+- falha sintética: `GET https://disciplina-pro-frontend.vercel.app/api/health/incident-drill`;
+- detecção: HTTP `404`, com incidente aberto automaticamente pelo Better Stack;
+- reconhecimento: Eduardo, em 03/09/2026 às `20:54 BRT`;
+- diagnóstico: a rota sintética retornava `404`, enquanto `/api/health/ready` continuava `200` com banco disponível;
+- recuperação: URL do monitor alterada para `/api/health/ready`, sem resolução manual;
+- resultado: recuperação automática e notificações de abertura e recuperação por e-mail confirmadas;
+- privacidade: resposta observada continha somente metadados técnicos sanitizados (`statusCode`, código, mensagem técnica, `requestId`, timestamp e path);
+- impacto: nenhum serviço real foi interrompido e nenhum dado real foi utilizado;
+- evidência detalhada: tabela de tempos e capturas preservada localmente pelo responsável operacional.
+
+O ensaio comprova a cadeia `detecção → incidente → alerta → reconhecimento → diagnóstico → recuperação automática` e encerra o item de runbook de incidente da BX.4 no laboratório.

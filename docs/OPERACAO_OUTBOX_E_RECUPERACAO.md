@@ -72,7 +72,7 @@ O reprocessamento é auditado. Não altere tabelas de outbox manualmente.
 | `maximumAttempts` | warning | >= 3 | Better Stack/Sentry |
 | `expiredProcessing` | warning | > 0 por 2 min | Better Stack |
 
-No laboratório, Sentry e Better Stack já possuem contas, credenciais e monitores ativos, e o worker está implantado. Alertas específicos da outbox e seus limiares ainda precisam ser ensaiados; OpenTelemetry continua pendente. Até essa prova, o endpoint de métricas, os logs estruturados e o estado do serviço worker no Railway são os sinais autoritativos da outbox.
+No laboratório, Sentry e Better Stack possuem contas, credenciais e monitores ativos, o worker está implantado e a API exporta traces OpenTelemetry sanitizados. Alertas específicos da outbox e seus limiares ainda precisam ser ensaiados. Até essa prova específica, o endpoint de métricas, os logs estruturados, os traces e o estado do serviço worker no Railway são os sinais autoritativos da outbox.
 
 ## Backup PostgreSQL para R2
 
