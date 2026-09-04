@@ -11,6 +11,7 @@ export default defineConfig({
   reporter: process.env.CI ? [['line'], ['html', { open: 'never' }]] : 'line',
   use: {
     baseURL: 'http://localhost:5173',
+    timezoneId: 'America/Bahia',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },

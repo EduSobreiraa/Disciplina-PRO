@@ -1,5 +1,11 @@
 import { expect, test } from './authenticated-test.js'
 
+const E2E_TENANT_TIME_ZONE = 'America/Bahia'
+
+function currentTenantDay() {
+  return Number(new Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: E2E_TENANT_TIME_ZONE }).format(new Date()))
+}
+
 async function observeLocalStorage(context) {
   await context.addInitScript(() => {
     window.__dpLocalStorageAccesses = []
@@ -40,7 +46,7 @@ test('reconstructs tracker and ritual in a separate browser context and projects
   await observeLocalStorage(context)
   await page.goto('/app')
   await expect(page).toHaveURL(/\/app$/)
-  const day = new Date().getDate()
+  const day = currentTenantDay()
 
   await expectTrackerGreen(page, day, true)
   await expectOpeningComplete(page, true)
