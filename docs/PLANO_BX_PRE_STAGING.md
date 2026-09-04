@@ -129,7 +129,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 ## BX.5 — Qualidade, staging tests e operação
 
-- [ ] adaptar Playwright para URL externa sem reset destrutivo;
+- [x] adaptar Playwright para URL externa sem reset destrutivo;
 - [ ] criar smoke tests para login, refresh, tenant, Projeto 66, tracker, ritual, administração e convite;
 - [ ] cobrir timeout, `401`, `403`, `409`, `429` e `5xx`;
 - [ ] executar axe, Lighthouse, viewports e matriz de dispositivo/navegador;
@@ -141,6 +141,8 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 **Plataformas necessárias:** Vercel, Railway, Sentry, Better Stack e GitHub/Sonar temporários.
 
 **Evidência parcial da BX.5 em 03/09/2026:** o workflow do commit `226782b` concluiu com sucesso no [GitHub Actions](https://github.com/EduSobreiraa/Disciplina-PRO/actions/runs/33826943847). A instalação limpa passou a resolver o Playwright pelo workspace do frontend, executar `prisma generate` antes de migrations e build e evitar a auditoria duplicada do `npm ci`. O runner aprovou migrations, lint, typecheck, cobertura, 20 testes E2E backend, 23 execuções Playwright com 1 skip intencional, 93 integrações, builds, auditoria e análise SonarQube Cloud. O teste de tracker foi alinhado ao timezone `America/Bahia`, eliminando a tentativa de registrar uma data futura quando o runner UTC já estava no dia seguinte. Overrides compatíveis atualizaram `browserslist`, `deepmerge-ts`, `mysql2` e `qs`; o Dependabot confirmou zero alertas abertos. O disparo manual `workflow_dispatch` também ficou disponível para revalidações operacionais.
+
+**Evidência do Playwright externo em 04/09/2026:** uma configuração independente passou a aceitar somente `E2E_EXTERNAL_BASE_URL` em HTTPS, sem executar `globalSetup`, seed, reset de banco ou servidores locais. Contra `https://disciplina-pro-frontend.vercel.app`, as duas execuções do primeiro cenário público passaram em Chromium desktop e Pixel 7, validando a tela de login, o rewrite `/api/health/ready`, a API `ready` e o PostgreSQL `up`. O cenário é somente leitura e falha caso observe método HTTP mutável. O procedimento e seus limites estão em `docs/OPERACAO_SMOKE_TEST_EXTERNO.md`; fluxos autenticados continuam separados até existirem contas fictícias dedicadas e limpeza idempotente.
 
 ## Gate de saída BX
 
