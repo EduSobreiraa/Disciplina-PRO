@@ -107,8 +107,8 @@ test('Projeto 66 shows an initial read error and retries against the real API', 
   }
   await page.route('**/*', failInitialEnrollmentRead)
   await page.goto('/app/programas/projeto-66')
-  expect(failedEnrollmentRead).toBeGreaterThan(0)
   await expect(page.getByText('Indisponibilidade E2E controlada')).toBeVisible()
+  expect(failedEnrollmentRead).toBeGreaterThan(0)
   await page.unroute('**/*', failInitialEnrollmentRead)
   await page.getByRole('button', { name: 'Tentar novamente' }).click()
   await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
