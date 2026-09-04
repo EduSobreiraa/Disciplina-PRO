@@ -22,6 +22,7 @@
     "test:e2e": "npm run test:e2e:backend && npm run test:e2e:frontend",
     "test:e2e:backend": "npm run test:e2e --workspace backend",
     "test:e2e:external": "npm run test:e2e:external --workspace frontend",
+    "test:e2e:external:authenticated": "npm run test:e2e:external:authenticated --workspace frontend",
     "test:e2e:frontend": "npm run test:e2e --workspace frontend",
     "test:integration": "npm run test:integration --workspace backend",
     "typecheck": "npm run typecheck --workspaces --if-present",

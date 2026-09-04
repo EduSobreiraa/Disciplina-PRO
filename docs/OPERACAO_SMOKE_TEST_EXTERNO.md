@@ -36,6 +36,33 @@ O teste roda em Chromium desktop e mobile e comprova:
 4. estado `ready` da API e `up` do PostgreSQL;
 5. ausência de requisições mutáveis durante o cenário.
 
+## Smoke autenticado somente leitura
+
+Use exclusivamente as identidades fictícias materializadas pela seed de laboratório. A senha deve ser informada no ambiente do processo e nunca registrada no terminal, no repositório ou no relatório do Playwright.
+
+As identidades padrão são `lab-user@disciplina.test` para os fluxos de participante e `lab-ceo@disciplina.test` para administração. Para substituí-las, use `E2E_EXTERNAL_PARTICIPANT_EMAIL` e `E2E_EXTERNAL_ADMIN_EMAIL`.
+
+Com uma senha comum às duas identidades:
+
+```bash
+E2E_EXTERNAL_BASE_URL=https://disciplina-pro-frontend.vercel.app \
+E2E_EXTERNAL_PASSWORD='<senha obtida do cofre>' \
+  npm run test:e2e:external:authenticated
+```
+
+Se as contas tiverem senhas distintas, omita `E2E_EXTERNAL_PASSWORD` e use `E2E_EXTERNAL_PARTICIPANT_PASSWORD` e `E2E_EXTERNAL_ADMIN_PASSWORD`. A suíte falha antes de abrir o navegador quando alguma senha obrigatória estiver ausente.
+
+As seis execuções — três cenários em desktop e mobile — validam:
+
+1. login pela interface, cookie de sessão, refresh após reload e logout;
+2. identidade e contexto do tenant;
+3. projeção do Projeto 66;
+4. projeções do tracker e do ritual diário;
+5. administração do tenant e listagem de convites para CEO/MANAGER;
+6. ausência de `POST`, `PUT`, `PATCH` ou `DELETE` de negócio.
+
+Somente `/api/auth/login`, `/api/auth/refresh` e `/api/auth/logout` podem usar métodos mutáveis. O teste não preenche nem envia formulários de tracker, ritual, programa, administração ou convite.
+
 ## Limite desta etapa
 
-Este smoke é anônimo e somente leitura. Login, refresh e fluxos de negócio externos exigirão contas fictícias dedicadas, política de limpeza e testes idempotentes; eles pertencem ao próximo item da BX.5 e não devem reutilizar o reset do ambiente local.
+O smoke autenticado cobre disponibilidade, autorização, sessão e leitura das projeções principais. Operações de escrita externas exigirão dados descartáveis, limpeza idempotente e contrato explícito por cenário; elas não reutilizarão o reset do ambiente local.

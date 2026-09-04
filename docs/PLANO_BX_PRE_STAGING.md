@@ -130,7 +130,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 ## BX.5 — Qualidade, staging tests e operação
 
 - [x] adaptar Playwright para URL externa sem reset destrutivo;
-- [ ] criar smoke tests para login, refresh, tenant, Projeto 66, tracker, ritual, administração e convite;
+- [ ] criar smoke tests para login, refresh, tenant, Projeto 66, tracker, ritual, administração e convite — suíte somente leitura implementada; prova externa autenticada pendente;
 - [ ] cobrir timeout, `401`, `403`, `409`, `429` e `5xx`;
 - [ ] executar axe, Lighthouse, viewports e matriz de dispositivo/navegador;
 - [ ] preparar DAST/pentest com contas e dados fictícios;

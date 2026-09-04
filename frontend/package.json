@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "test": "node --test src/**/*.test.js src/**/**/*.test.js",
     "test:e2e": "playwright test",
-    "test:e2e:external": "playwright test --config playwright.external.config.js",
+    "test:e2e:external": "playwright test --config playwright.external.config.js public-readiness.spec.js",
+    "test:e2e:external:authenticated": "playwright test --config playwright.external.config.js authenticated-readonly.spec.js",
     "test:coverage": "c8 --all --check-coverage --statements=19 --branches=60 --functions=40 --lines=19 --reporter=lcov --reporter=text-summary --reports-dir=coverage --include='src/**/*.js' --include='src/**/*.jsx' --exclude='src/**/*.test.js' node --test src/**/*.test.js src/**/**/*.test.js",
     "preview": "vite preview"
   },
