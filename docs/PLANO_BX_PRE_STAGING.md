@@ -2,7 +2,7 @@
 
 > Decisão operacional registrada em 23/08/2026. Esta fase não autoriza dados reais, domínio corporativo, billing corporativo nem considera staging oficial implantado.
 
-**Estado em 03/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. Na BX.4, Sentry frontend/backend, monitores Better Stack, backup diário R2 com heartbeat automático, worker contínuo de eventos, limpeza diária de sessões, OpenTelemetry externo e runbook de incidente foram comprovados. Um drill controlado abriu incidente por HTTP `404`, enviou alerta por e-mail, foi reconhecido, diagnosticado e recuperado automaticamente sem indisponibilidade real. A BX.4 permanece aberta somente nos itens de Resend, retry/bounce e canal corporativo bloqueados até existir domínio/e-mail corporativo. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
+**Estado em 03/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório. Na BX.4, Sentry frontend/backend, monitores Better Stack, backup diário R2 com heartbeat automático, worker contínuo de eventos, limpeza diária de sessões, OpenTelemetry externo e runbook de incidente foram comprovados. Um drill controlado abriu incidente por HTTP `404`, enviou alerta por e-mail, foi reconhecido, diagnosticado e recuperado automaticamente sem indisponibilidade real. A BX.4 permanece aberta somente nos itens de Resend, retry/bounce e canal corporativo bloqueados até existir domínio/e-mail corporativo. A BX.5 foi iniciada: o pipeline CI/CD voltou a ficar integralmente verde, incluindo Playwright, Prisma, cobertura, integração, build, auditoria sem alertas e SonarQube Cloud. O PITR Railway e o ensaio de recuperação dentro da infraestrutura Railway permanecem obrigatórios antes do lançamento, quando o plano contratado permitir.
 
 ## Objetivo
 
@@ -134,11 +134,13 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - [ ] cobrir timeout, `401`, `403`, `409`, `429` e `5xx`;
 - [ ] executar axe, Lighthouse, viewports e matriz de dispositivo/navegador;
 - [ ] preparar DAST/pentest com contas e dados fictícios;
-- [ ] configurar gates de CI/CD para o candidato externo;
+- [x] configurar gates de CI/CD para o candidato externo;
 - [ ] concluir e ensaiar runbooks de deploy, migration, rollback, backup/restore, incidente, rotação de secrets e falha de e-mail;
 - [ ] criar checklist de reprodução corporativa.
 
 **Plataformas necessárias:** Vercel, Railway, Sentry, Better Stack e GitHub/Sonar temporários.
+
+**Evidência parcial da BX.5 em 03/09/2026:** o workflow do commit `226782b` concluiu com sucesso no [GitHub Actions](https://github.com/EduSobreiraa/Disciplina-PRO/actions/runs/33826943847). A instalação limpa passou a resolver o Playwright pelo workspace do frontend, executar `prisma generate` antes de migrations e build e evitar a auditoria duplicada do `npm ci`. O runner aprovou migrations, lint, typecheck, cobertura, 20 testes E2E backend, 23 execuções Playwright com 1 skip intencional, 93 integrações, builds, auditoria e análise SonarQube Cloud. O teste de tracker foi alinhado ao timezone `America/Bahia`, eliminando a tentativa de registrar uma data futura quando o runner UTC já estava no dia seguinte. Overrides compatíveis atualizaram `browserslist`, `deepmerge-ts`, `mysql2` e `qs`; o Dependabot confirmou zero alertas abertos. O disparo manual `workflow_dispatch` também ficou disponível para revalidações operacionais.
 
 ## Gate de saída BX
 

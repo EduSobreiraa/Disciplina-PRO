@@ -171,14 +171,13 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 - **Retomada:** registrar domínio, validar o fornecedor, integrar envio, retry e bounce antes de staging com e-mail real.
 - **Critério de encerramento:** envio, expiração, retry, bounce e não exposição de token cobertos por testes/observabilidade.
 
-### PP-016 — Advisories publicados após o baseline B1
+### PP-016 — Advisories publicados após o baseline B1 — ENCERRADO
 
-- **Prioridade/status:** P1 · PARCIALMENTE MITIGADO EM 03/08/2026
-- **Problema:** a auditoria bruta atual registra duas ocorrências altas (`react-router` e `react-router-dom`) do mesmo `GHSA-qwww-vcr4-c8h2`. O advisory afeta o modo RSC, não habilitado por esta SPA Vite/`BrowserRouter`; o npm propõe um downgrade incompatível como correção automática.
-- **Impacto:** `npm audit --workspaces --audit-level=high` permanece não zero, embora o vetor RSC não exista na aplicação atual.
-- **Mitigação imediata:** Prisma 7.9.1 eliminou os achados de `@prisma/dev`, `find-my-way` e `valibot`; versões corrigidas de `brace-expansion` eliminaram os achados de Jest/Nest CLI. `fast-uri` 3.1.4 e `postcss` 8.5.23 permanecem fixados por overrides compatíveis. O gate versionado aceita exclusivamente o GHSA conhecido nos dois pacotes afetados, confirma a ausência de RSC e reprova qualquer advisory alto novo.
-- **Retomada:** atualizar React Router para uma versão corrigida compatível, com teste de regressão, assim que disponível; não aceitar downgrade automático ou override incompatível.
-- **Critério de encerramento:** auditoria volta a zero sem reduzir versões de segurança ou quebrar os gates.
+- **Prioridade/status:** P1 · ENCERRADO em 03/09/2026
+- **Problema histórico:** advisories transitivos impediam a auditoria bruta de zerar sem atualizações compatíveis.
+- **Resolução:** React Router já está em versão corrigida; overrides compatíveis fixaram `browserslist` 4.28.8, `deepmerge-ts` 8.0.2, `mysql2` 3.22.0 e `qs` 6.16.0 sem adotar Prisma prerelease ou reduzir versões de segurança.
+- **Evidência:** Prisma generate/validate, migrations, lint, typecheck, cobertura, E2E backend, Playwright desktop/mobile, 93 integrações e builds foram aprovados. O gate `audit:dependencies` e o SonarQube Cloud passaram no run `33826943847`; a API do Dependabot confirmou zero alertas abertos.
+- **Critério de encerramento:** atendido; auditoria sem achados no nível configurado, Dependabot sem alertas e gates sem regressão.
 
 ### PP-017 — Allowlist CORS não inclui PUT — ENCERRADO
 
@@ -230,13 +229,13 @@ Esta matriz integra cada registro `PP-*`. “Aprova” identifica quem deve acei
 | PP-013 | Desenvolvedor | governança de CI aprovada | Desenvolvedor | gate técnico | encerrado: action fixada por SHA |
 | PP-014 | Desenvolvedor + Spark | Spark decide plano/serviço e aceita risco residual | Desenvolvedor configura automação | Spark no gate de release | CodeQL/Dependabot ou equivalente validado |
 | PP-015 | Spark + Jurídico + Desenvolvedor | Spark seleciona/contrata provedor e define SLA; Jurídico valida contrato/tratamento | Desenvolvedor integra retry, bounce e observabilidade | Spark e validação jurídica contratual | provedor contratado; envio, retry, bounce e privacidade testados |
-| PP-016 | Desenvolvedor + Spark | Desenvolvedor propõe atualização segura; Spark aceita eventual risco empresarial residual | Desenvolvedor | gate técnico e Spark no release | auditoria sem achados no nível configurado |
+| PP-016 | Desenvolvedor | atualização segura compatível | Desenvolvedor | gate técnico | encerrado: auditoria e Dependabot sem achados |
 | PP-017 | Desenvolvedor | contrato técnico aprovado | Desenvolvedor | gate técnico | encerrado: preflight real e allowlist reconciliada |
 
 Classificação consolidada:
 
-- **exclusivamente solucionáveis pelo Desenvolvedor:** PP-001, PP-002, PP-003, PP-009, PP-011, PP-012, PP-013 e PP-017;
-- **exigem decisão ou aprovação da Spark:** PP-004, PP-005, PP-006, PP-007, PP-008, PP-010, PP-014, PP-015 e PP-016;
+- **exclusivamente solucionáveis pelo Desenvolvedor:** PP-001, PP-002, PP-003, PP-009, PP-011, PP-012, PP-013, PP-016 e PP-017;
+- **exigem decisão ou aprovação da Spark:** PP-004, PP-005, PP-006, PP-007, PP-008, PP-010, PP-014 e PP-015;
 - **exigem validação jurídica:** PP-004 e PP-015. Outros PP deverão ser reclassificados se surgir impacto jurídico documentado, sem presunção pelo Desenvolvedor.
 
 ## 9. Revisões preventivas
@@ -277,6 +276,13 @@ Classificação consolidada:
 - Prisma, `brace-expansion` e seus transitivos vulneráveis foram atualizados sem `--force`; a auditoria bruta caiu para duas ocorrências altas do mesmo advisory RSC não aplicável à SPA atual;
 - o gate `audit:dependencies` registra a exceção pelo identificador exato, limitada a `react-router` e `react-router-dom`, e continua reprovando qualquer vulnerabilidade alta nova;
 - instalação limpa, nove migrations em banco vazio, 82 testes de integração e 20 E2E foram aprovados após a atualização; o PP-016 permanece aberto até a auditoria bruta zerar.
+
+### 03/09/2026 — Encerramento do PP-016 e estabilização do CI
+
+- versões transitivas corrigidas foram fixadas por overrides compatíveis, sem Prisma prerelease ou downgrade;
+- o Dependabot confirmou zero alertas abertos;
+- o run `33826943847` aprovou instalação limpa, Playwright, Prisma/migrations, lint, typecheck, cobertura, E2E, integração, build, auditoria e SonarQube Cloud;
+- o Playwright passou a respeitar o timezone do tenant de teste e o `npm ci` deixou de repetir a auditoria executada pelo gate dedicado.
 
 ### 26/07/2026 — Encerramento da B6.1
 

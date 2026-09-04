@@ -100,10 +100,10 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 
 | Definição | Valor | Decide/aprova | Limite | Fonte |
 |---|---|---|---|---|
-| Aceite temporário dos alertas de segurança para staging privado | **A DEFINIR** | Direção da Spark | antes de staging privado | PP-016 |
-| Limite e condições do aceite temporário | **A DEFINIR** | Direção da Spark | junto do aceite | PP-016 |
-| Data de revisão do aceite temporário | **A DEFINIR** | Direção da Spark | junto do aceite | PP-016 |
-| Exceção formal para produção caso restem alertas | **A DEFINIR** | Direção da Spark | antes do release | PP-016 |
+| Aceite temporário dos alertas de segurança para staging privado | **NÃO NECESSÁRIO — PP-016 ENCERRADO** | — | atendido em 03/09/2026 | PP-016 |
+| Limite e condições do aceite temporário | **NÃO APLICÁVEL — ZERO ALERTAS ABERTOS** | — | atendido em 03/09/2026 | PP-016 |
+| Data de revisão do aceite temporário | **NÃO APLICÁVEL** | — | atendido em 03/09/2026 | PP-016 |
+| Exceção formal para produção caso restem alertas | **NÃO NECESSÁRIA NO BASELINE ATUAL** | reavaliar se surgir novo alerta | antes do release | PP-016 |
 | Aceite do risco residual da automação de segurança atual | **A DEFINIR** | Direção da Spark | antes do release | PP-014 |
 | Data de revisão do risco da automação de segurança | **A DEFINIR** | Direção da Spark | junto do aceite | PP-014 |
 | Fluxos obrigatórios na validação de acessibilidade | **A DEFINIR** | Direção da Spark | durante staging | PP-010 |
@@ -243,7 +243,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Tratamento técnico de e-mail devolvido | **após nova falha, notificar admin do tenant — DEFINIDO; implementar e testar** | ADR aprovado | antes do primeiro cliente | ADR-016/PP-015 |
 | Monitoramento de falhas de entrega | **A DEFINIR E TESTAR** | provedor aprovado | antes do primeiro cliente | PP-015 |
 | Solução para automação adicional de segurança | **A DEFINIR OU DOCUMENTAR MITIGAÇÃO** | decisão da Spark | antes do release | PP-014 |
-| Plano compatível para eliminar alertas de dependências | **A DEFINIR QUANDO HOUVER VERSÕES SEGURAS** | disponibilidade dos fornecedores | antes do release, salvo aceite formal | PP-016 |
+| Plano compatível para eliminar alertas de dependências | **EXECUTADO; ZERO ALERTAS EM 03/09/2026** | manutenção contínua pelo Desenvolvedor | revalidar em todo release | PP-016 |
 | Escopo final dos testes de interface em staging | **A DEFINIR E VERSIONAR** | ambiente disponível | antes do release | PP-009/B10.4 |
 | Matriz técnica de dispositivos e navegadores | **A DEFINIR** | escopo de acessibilidade aprovado | antes do release | PP-010 |
 

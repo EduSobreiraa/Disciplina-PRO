@@ -382,7 +382,7 @@ Entregas:
 
 **Estado:** concluído em 25/07/2026. A matriz E2E percorre criação, entrega capturada no port SMTP e aceitação pela API; comprova primeiro CEO e ativação do tenant, identidades nova e existente, preservação de senha, consumo concorrente único, atribuição de time, escopo de Manager, rotação, revogação e expiração. O banco descartável foi reconstruído pelas três migrations e todas as suítes de integração e E2E passaram.
 
-**Estado da fase B3:** concluída em 25/07/2026. O gate funcional está satisfeito; riscos externos de provedor SMTP e advisories de tooling continuam governados por `PP-015` e `PP-016`, sem autorização para staging enquanto o P1 permanecer aberto.
+**Estado da fase B3:** concluída em 25/07/2026. O gate funcional está satisfeito; o risco externo do provedor SMTP continua governado por `PP-015`. O `PP-016`, ainda aberto naquela data, foi encerrado posteriormente na BX.5.
 
 ### B4 — Catálogo e habilitação de programas
 
@@ -739,7 +739,7 @@ Para manter gates pequenos e não concentrar toda a administração em uma únic
 
 **Plano detalhado:** [`PLANO_BX_PRE_STAGING.md`](PLANO_BX_PRE_STAGING.md).
 
-**Estado em 03/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório; o recorte técnico da BX.4 possível sem conta corporativa também foi concluído. O PostgreSQL Railway recebeu somente seed fictício; o backup lógico diário foi enviado ao R2 com retenção de 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável, recuperando 33 tabelas e dados coerentes. Uma nova execução agendada em 01/09 criou `disciplina-pro-20260901T112923Z.dump`, verificou dump e manifesto no R2 e notificou o heartbeat Better Stack antes de registrar sucesso. Sentry frontend/backend e monitores Better Stack estão operacionais. Worker e limpeza de sessões foram comprovados no Railway. Em 02/09, a API passou a exportar traces OTLP sanitizados para o Better Stack, com spans HTTP e PostgreSQL. Em 03/09, um drill contra uma rota sintética `404` comprovou criação automática do incidente, alerta por e-mail, reconhecimento às `20:54 BRT`, diagnóstico e recuperação automática após restaurar a readiness; a API e o banco permaneceram disponíveis. A prova externa Vercel → Railway também confirmou readiness, rewrite, CORS/CSRF, headers, Swagger fechado, sanitização de caminhos, `429`, login, cookies de sessão e logout. Resend, retry/bounce e canais corporativos continuam bloqueados por domínio/e-mail corporativo. O PITR/restore Railway permanece transferido explicitamente para PP-007/B10.3 antes do lançamento. A próxima execução é a BX.5.
+**Estado em 03/09/2026:** BX.1, BX.2 e BX.3 concluídas no recorte de laboratório; o recorte técnico da BX.4 possível sem conta corporativa também foi concluído. O PostgreSQL Railway recebeu somente seed fictício; o backup lógico diário foi enviado ao R2 com retenção de 90 dias, checksum válido e restore local aprovado em PostgreSQL 18 descartável, recuperando 33 tabelas e dados coerentes. Uma nova execução agendada em 01/09 criou `disciplina-pro-20260901T112923Z.dump`, verificou dump e manifesto no R2 e notificou o heartbeat Better Stack antes de registrar sucesso. Sentry frontend/backend e monitores Better Stack estão operacionais. Worker e limpeza de sessões foram comprovados no Railway. Em 02/09, a API passou a exportar traces OTLP sanitizados para o Better Stack, com spans HTTP e PostgreSQL. Em 03/09, um drill contra uma rota sintética `404` comprovou criação automática do incidente, alerta por e-mail, reconhecimento às `20:54 BRT`, diagnóstico e recuperação automática após restaurar a readiness; a API e o banco permaneceram disponíveis. A prova externa Vercel → Railway também confirmou readiness, rewrite, CORS/CSRF, headers, Swagger fechado, sanitização de caminhos, `429`, login, cookies de sessão e logout. A BX.5 foi iniciada com CI/CD integralmente verde no run `33826943847`, Sonar aprovado e zero alertas no Dependabot; PP-016 foi encerrado. Resend, retry/bounce e canais corporativos continuam bloqueados por domínio/e-mail corporativo. O PITR/restore Railway permanece transferido explicitamente para PP-007/B10.3 antes do lançamento.
 
 ### B10 — Hardening, staging e release MVP
 
@@ -764,7 +764,7 @@ Problemas incorporados:
 - `PP-010`: validar teclado, leitor de tela e dispositivos físicos;
 - `PP-014`: restaurar CodeQL/Dependabot ou automação equivalente validada;
 - `PP-015`: selecionar e validar provedor transacional, retry e bounce;
-- `PP-016`: zerar a auditoria no nível configurado sem downgrade ou override incompatível;
+- `PP-016`: encerrado em 03/09/2026 com auditoria e Dependabot zerados, sem downgrade ou override incompatível;
 - ampliar o Playwright iniciado no `PP-009` para os fluxos críticos em staging.
 
 **Gate de saída:** deploy reproduzível, restauração ensaiada e fluxos críticos aprovados em staging; nenhum `PP-*` P0/P1 permanece aberto e `PP-014`/`PP-015` também atendem seus critérios de encerramento.
@@ -807,7 +807,7 @@ Problemas incorporados:
 
 **Objetivo:** executar gates independentes sobre o candidato a release.
 
-**Problemas proprietários:** `PP-010`, `PP-014` e `PP-016`; ampliação do `PP-009`.
+**Problemas proprietários:** `PP-010` e `PP-014`; ampliação do `PP-009`. O `PP-016` já foi encerrado na BX.5.
 
 **Gate:** auditoria de dependências aprovada, automação de segurança equivalente validada, Playwright executado em staging e fluxos críticos aprovados com tecnologia assistiva e dispositivos físicos.
 
@@ -835,7 +835,7 @@ Esta matriz vincula dívida a uma entrega e impede que o item fique apenas no re
 | PP-010 — acessibilidade real | B10.4 | validação assistiva e dispositivos físicos |
 | PP-014 — automação de segurança | B10.4 | CodeQL/Dependabot ou equivalente validado |
 | PP-015 — e-mail transacional | B10.3 | envio, retry e bounce pelo provedor escolhido |
-| PP-016 — advisories | B10.4 | `npm audit` no nível configurado sem achados |
+| PP-016 — advisories | BX.5 — encerrado em 03/09/2026 | auditoria, Dependabot e CI sem achados |
 | PP-017 — CORS/PUT | B6.1 — encerrado em 26/07/2026 | teste de preflight real e allowlist reconciliada |
 
 Nenhuma fase pode declarar atendido um desses gates somente por atualização documental. O critério de encerramento canônico permanece em [`PROBLEMAS_POSTERGADOS.md`](PROBLEMAS_POSTERGADOS.md).

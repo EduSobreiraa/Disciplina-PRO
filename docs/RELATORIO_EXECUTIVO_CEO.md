@@ -372,44 +372,44 @@ Haverá custo recorrente e dependência externa, mas o fluxo de entrada de clien
 - **Jurídico ou especialista externo:** validar contrato, compartilhamento e tratamento de dados.
 - **Operação futura:** acompanhar entregas, falhas, reputação do domínio e suporte.
 
-### Alertas de segurança ainda sem correção compatível — PP-016
+### Alertas de dependências — PP-016 encerrado
 
 **O que é**
 
-Existem alertas publicados sobre componentes usados no projeto. Parte deles está nas ferramentas de desenvolvimento, e algumas correções automáticas sugeridas poderiam causar regressão ou reduzir proteções existentes.
+O item acompanhava alertas publicados sobre componentes usados no projeto e bloqueava a auditoria bruta.
 
 **Por que este problema existe**
 
-Os fornecedores ainda não disponibilizaram uma combinação compatível que elimine todos os alertas sem comprometer o funcionamento e as verificações atuais.
+O problema foi resolvido em 03/09/2026 com versões transitivas corrigidas e compatíveis, sem downgrade nem adoção de Prisma prerelease.
 
 **Qual é o risco para a Spark**
 
-Uma vulnerabilidade pode afetar o produto ou seu processo de entrega. Também há risco em aplicar uma correção precipitada que torne o sistema instável ou menos seguro.
+Novos advisories continuam sendo um risco recorrente normal e permanecem cobertos pelo CI e pelo Dependabot.
 
 **O que já foi feito**
 
-Componentes diretamente corrigíveis foram atualizados. Ferramentas de desenvolvimento não ficam expostas como parte do serviço, e o recurso específico associado a um alerta do frontend não é usado. A auditoria, porém, continua reprovada e o risco não está encerrado.
+React Router e dependências transitivas foram atualizados; auditoria, testes e Sonar passaram no CI, e o Dependabot confirmou zero alertas abertos.
 
 **O que precisa ser decidido pelo CEO**
 
-Decidir se aceita temporariamente o risco residual para staging restrito e determinar que produção somente ocorrerá após nova avaliação, com correção compatível ou exceção formal, limitada e documentada.
+Nenhuma aceitação temporária é necessária no baseline atual. A decisão volta a ser exigida apenas se surgir alerta sem correção compatível antes de um release.
 
 **Recomendação**
 
-Manter o bloqueio de produção, acompanhar atualizações seguras e não aplicar redução de versão apenas para eliminar o alerta do relatório. Toda exceção deve ter justificativa, prazo de revisão e aprovação expressa.
+Manter auditoria e Dependabot ativos em todo candidato e bloquear o release se surgir novo achado no nível configurado.
 
 **Consequência da decisão**
 
-Aguardar correções pode afetar o cronograma. Aceitar temporariamente o risco permite staging restrito, mas exige acompanhamento e não equivale a autorização de produção.
+O PP-016 não bloqueia mais staging ou produção; os demais gates continuam obrigatórios.
 
 **Prazo de decisão**
 
-**Antes de staging privado** para eventual aceite temporário e novamente **antes do release**.
+Revalidar automaticamente em cada CI e conferir o estado antes do release.
 
 **Responsabilidade após aprovação**
 
-- **Direção da Spark:** aceitar ou rejeitar o risco residual e definir o limite dessa aceitação.
-- **Desenvolvedor:** acompanhar correções, atualizar com segurança, executar testes e apresentar nova avaliação.
+- **Direção da Spark:** decidir apenas se surgir risco residual futuro sem correção compatível.
+- **Desenvolvedor:** manter auditoria, Dependabot, atualizações seguras e testes.
 - **Jurídico ou especialista externo:** avaliar reflexos contratuais ou regulatórios quando aplicável.
 - **Operação futura:** impedir release fora das condições aprovadas e acompanhar a data de revisão.
 
@@ -501,7 +501,7 @@ O Desenvolvedor pode preparar mecanismos, inventários técnicos e evidências. 
 ## 8. Ordem recomendada de aprovação
 
 1. **Decisões que bloqueiam dados reais:** formalizar PP-004, designar o responsável por privacidade e encaminhar documentos ao Jurídico.
-2. **Decisões para staging privado:** aprovar acessos, orçamento, responsáveis por segredos, validação da retenção de backup e eventual aceite temporário do PP-016.
+2. **Decisões para staging privado:** aprovar acessos, orçamento, responsáveis por segredos e validação da retenção de backup.
 3. **Decisões para staging público:** contratar BetterStack, definir canal, aprovar responsáveis por incidentes, validar o Resend, registrar domínio e definir critérios formais de abertura.
 4. **Decisões para produção:** aprovar evidências de recuperação, acessibilidade, segurança, contratos, operação e decisão final de release.
 5. **Após o MVP:** reavaliar automações adicionais que tenham recebido aceite formal de risco e melhorias de acessibilidade classificadas como não bloqueantes. Obrigações jurídicas e controles essenciais não devem ser transferidos para pós-MVP.
@@ -514,7 +514,7 @@ O Desenvolvedor pode preparar mecanismos, inventários técnicos e evidências. 
 - validar/contratar Railway, Cloudflare R2, Sentry, BetterStack e Resend;
 - aprovar quem terá acessos administrativos e quem responderá por incidentes;
 - decidir o critério e o orçamento para validação humana de acessibilidade;
-- aceitar ou rejeitar formalmente os riscos residuais dos PP-014 e PP-016;
+- aceitar ou rejeitar formalmente o risco residual do PP-014;
 - aprovar um checklist executivo para staging público e outro para produção;
 - registrar separadamente cada autorização de staging e release.
 
@@ -523,13 +523,13 @@ O Desenvolvedor pode preparar mecanismos, inventários técnicos e evidências. 
 ### Problemas incluídos
 
 - PP-004, PP-005, PP-006, PP-007, PP-008;
-- PP-010, PP-014, PP-015 e PP-016;
+- PP-010, PP-014 e PP-015;
 - autorização de staging público e produção, registrada na governança e no roadmap.
 
 ### Problemas excluídos por serem exclusivamente técnicos
 
 - PP-001, PP-002, PP-003 e PP-009;
-- PP-011, PP-012, PP-013 e PP-017.
+- PP-011, PP-012, PP-013, PP-016 e PP-017.
 
 Os problemas encerrados foram excluídos mesmo quando seu histórico contém risco. O PP-002 e o PP-009 permanecem abertos, mas sua resolução não exige decisão empresarial segundo a matriz de responsabilidades atual.
 

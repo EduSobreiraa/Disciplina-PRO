@@ -114,7 +114,7 @@ npm run build
 npm audit --workspaces --audit-level=high
 ```
 
-Executar migrations e integrações em banco vazio descartável. O deploy não prossegue se o CI ou o Quality Gate falhar. Em 26/07/2026, o gate local de dependências permanece reprovado pelo PP-016; portanto esta lista não comprova prontidão de deploy.
+Executar migrations e integrações em banco vazio descartável. O deploy não prossegue se o CI ou o Quality Gate falhar. O bloqueio histórico do PP-016 foi encerrado em 03/09/2026 com auditoria e Dependabot sem alertas, mas esta lista isolada não comprova prontidão de deploy.
 
 ## 9. Evidência do laboratório BX.3 — 30/08/2026
 

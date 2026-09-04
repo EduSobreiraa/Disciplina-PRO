@@ -1,7 +1,7 @@
 # Relatório técnico de progresso
 
 > Disciplina PRO · Spark Inteligência Corporativa
-> Atualizado em 03/09/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos; BX.1–BX.3 e recorte técnico disponível da BX.4 encerrados no laboratório; BX.5 é a próxima etapa
+> Atualizado em 03/09/2026 · Estado: frontend F0–F9; backend B0, B0.5 e B1–B9 concluídos; BX.1–BX.3 e recorte técnico disponível da BX.4 encerrados no laboratório; BX.5 iniciada com CI/CD integralmente verde
 
 ## 1. Visão geral do produto
 
@@ -400,10 +400,10 @@ Gate local atualizado em 06/08/2026:
 | Backend unitário | 34 suítes, 106 testes aprovados |
 | Integração PostgreSQL | 33 suítes, 90 testes aprovados |
 | E2E backend/Supertest | 5 suítes, 20 testes aprovados |
-| E2E frontend/Playwright | 8 cenários, 15 execuções aprovadas e 1 skip funcional intencional em projetos Chromium desktop/mobile |
+| E2E frontend/Playwright | 23 execuções aprovadas e 1 skip funcional intencional em projetos Chromium desktop/mobile no CI |
 | SMTP local/Mailpit | 1 suíte, 1 teste aprovado |
 | Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
-| Dependências | gate controlado aprovado; auditoria bruta mantém 2 ocorrências altas do mesmo advisory RSC aceito estritamente no PP-016 |
+| Dependências | auditoria aprovada e Dependabot com zero alertas abertos; PP-016 encerrado |
 | Backup lógico externo | job diário Railway → Cloudflare R2 ativo; SHA-256 válido e restore local do artefato de 30/08 aprovado com 33 tabelas recuperadas |
 | Monitoramento do backup | execução agendada de 01/09 criou `disciplina-pro-20260901T112923Z.dump`, verificou dump/manifesto no R2 e notificou o heartbeat Better Stack antes do log final; janela 24h + 5h de tolerância |
 | Segurança BX.3 | contrato fail-fast, estágio lab sem SMTP fictício, chaves/peppers, proxy, Swagger, redação e Sentry aprovados; 44 suítes/142 testes unitários, 33 suítes/92 testes PostgreSQL e regressão focada posterior de 1 suíte/6 testes; prova Vercel/Railway aprovada |
@@ -412,14 +412,14 @@ O Swagger é gerado dinamicamente em `/docs`; não existe arquivo OpenAPI estát
 
 ## 12. Próxima etapa e bloqueios
 
-A última fase funcional comprovadamente concluída é a B9. Na preparação pré-staging, BX.1, BX.2 e **BX.3 — segurança e configuração** foram concluídas; em 03/09, o recorte técnico da **BX.4 — observabilidade, jobs e e-mail** possível sem conta corporativa também foi concluído. Sentry frontend/backend, monitores Better Stack, heartbeat automático do backup, worker contínuo, limpeza diária de sessões, traces OpenTelemetry externos e o runbook de incidente estão comprovados. O drill detectou uma rota sintética `404`, enviou alerta por e-mail, foi reconhecido às `20:54 BRT` e recuperou automaticamente sem interromper os serviços reais. Resend, retry/bounce de convite e canais corporativos permanecem bloqueados pela ausência de domínio/e-mail corporativo. A próxima execução técnica é a BX.5.
+A última fase funcional comprovadamente concluída é a B9. Na preparação pré-staging, BX.1, BX.2 e **BX.3 — segurança e configuração** foram concluídas; em 03/09, o recorte técnico da **BX.4 — observabilidade, jobs e e-mail** possível sem conta corporativa também foi concluído. Sentry frontend/backend, monitores Better Stack, heartbeat automático do backup, worker contínuo, limpeza diária de sessões, traces OpenTelemetry externos e o runbook de incidente estão comprovados. O drill detectou uma rota sintética `404`, enviou alerta por e-mail, foi reconhecido às `20:54 BRT` e recuperou automaticamente sem interromper os serviços reais. A BX.5 foi iniciada e seu gate de CI/CD foi aprovado integralmente no run `33826943847`, incluindo Sonar e auditoria sem alertas. Resend, retry/bounce de convite e canais corporativos permanecem bloqueados pela ausência de domínio/e-mail corporativo.
 
 O desenvolvimento local pode continuar. Dados reais, staging público e produção continuam bloqueados pelos itens P0/P1 do relatório de problemas postergados. Em particular:
 
 - PP-002 e PP-009: encerrados localmente na B8.4 por adapters HTTP e suíte Playwright versionada; a ampliação em staging permanece no B10 sem reabrir esses critérios locais;
 - PP-004: políticas centrais aprovadas pela Spark, com implementação, matriz definitiva, contratos e validação jurídica ainda pendentes;
 - PP-005–PP-010: ADR 016 fechou fornecedores e parâmetros parciais de PP-006–PP-008, incluindo BetterStack para uptime e alertas; acessos, responsáveis, contratação, implementação, validação jurídica e ensaios continuam pendentes;
-- PP-016: mitigado para duas ocorrências do mesmo advisory exclusivo de RSC; o gate controlado está verde, mas a auditoria bruta ainda não zerou;
+- PP-016: encerrado em 03/09/2026 após atualizações compatíveis, auditoria aprovada e confirmação de zero alertas abertos no Dependabot;
 
 O PP-017 está encerrado e não integra os bloqueios remanescentes.
 
@@ -431,4 +431,4 @@ Para o PP-004, foram registradas as políticas aprovadas de retenção do tenant
 
 ## 14. Conclusão
 
-O repositório possui frontend React funcional e backend multi-tenant implementado até B9, incluindo eventos, gamificação, auditoria, reporting objetivo, administração e integração frontend–API reproduzível em navegador real. O laboratório também comprovou deploy, backup lógico diário externo, restauração local descartável, monitoramento automático do backup, jobs contínuo e diário, Sentry/Better Stack e segurança/configuração em Vercel/Railway. Isso não equivale a prontidão de produção: os itens restantes da BX.4, toda a BX.5, PITR/restore Railway, B10 e os riscos explicitamente postergados permanecem necessários.
+O repositório possui frontend React funcional e backend multi-tenant implementado até B9, incluindo eventos, gamificação, auditoria, reporting objetivo, administração e integração frontend–API reproduzível em navegador real. O laboratório também comprovou deploy, backup lógico diário externo, restauração local descartável, monitoramento automático do backup, jobs contínuo e diário, Sentry/Better Stack, segurança/configuração em Vercel/Railway e CI/CD integralmente verde. Isso não equivale a prontidão de produção: os itens restantes da BX.4 e BX.5, PITR/restore Railway, B10 e os riscos explicitamente postergados permanecem necessários.
