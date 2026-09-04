@@ -43,7 +43,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm ci
+      - run: npm ci --no-audit --fund=false
       - name: Install Playwright browser
         run: npm exec --workspace frontend -- playwright install --with-deps chromium
       - run: npm run prisma:generate
