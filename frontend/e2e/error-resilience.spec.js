@@ -53,6 +53,7 @@ test('shows and recovers from a transport timeout while loading the catalog', as
   await page.route('**/*', timeoutCatalog)
   await page.goto('/app/programas')
 
-  expect(intercepted).toBeGreaterThan(0)
+  // Navigation may finish before session restoration starts the catalog read.
+  await expect.poll(() => intercepted).toBeGreaterThan(0)
   await expectCatalogRecovery(page, timeoutCatalog)
 })
