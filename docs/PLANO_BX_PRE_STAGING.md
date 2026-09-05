@@ -140,8 +140,11 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - [x] repetir o smoke autenticado externo do candidato `b775bed` em desktop/mobile: 6 testes aprovados em 22,9 s;
 - [ ] ampliar Lighthouse e performance às demais páginas autenticadas, incluindo o ambiente externo, e validar dispositivos físicos/tecnologias assistivas;
 - [x] corrigir localmente as listas inválidas no tracker e o contraste no ritual: regressões reproduzidas antes da correção; 18 testes de acessibilidade/responsividade aprovados após a correção, em 42,7 s. Detalhes e escopo em [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md#correções-locais-dos-dois-achados).
-- [ ] publicar e retestar externamente as correções de listas/contraste; investigar separadamente os deslocamentos de layout do tracker.
-- [ ] resolver o achado adicional `scrollable-region-focusable` da tabela do tracker sem comportamentos, identificado no teste local; separado da correção das listas de ranking.
+- [x] publicar e retestar externamente as correções de listas/contraste: candidato `8802a6e`; axe de página inteira sem violações nas quatro combinações tracker/ritual desktop/mobile, sem escrita de negócio.
+- [x] revalidar o candidato `8802a6e`: seis smokes autenticados externos aprovados em 23,2 s e [CI completo](https://github.com/EduSobreiraa/Disciplina-PRO/actions/runs/33991042818) aprovado em 7min45s, incluindo Firefox/WebKit e SonarQube Cloud.
+- [x] investigar os deslocamentos do tracker: remoção do loading deslocava o conteúdo 72px e a inserção das linhas expandia a tabela. Corrigido localmente com estado de carregamento separado das projeções; regressão da transição aprovada.
+- [x] resolver localmente `scrollable-region-focusable` da tabela sem comportamentos: região nomeada e focável, contorno visível, axe de página inteira e Tab/ArrowRight aprovados em desktop/mobile.
+- [ ] publicar e retestar externamente foco e carregamento do tracker, incluindo nova medição de estabilidade visual. Validação local: 22 testes de acessibilidade/projeções aprovados em 51,1 s; detalhes em [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md#tracker-foco-e-carregamento--correção-local-em-05092026).
 - [x] preparar [DAST/pentest com contas e dados fictícios](PLANO_DAST_PENTEST.md), com matriz, procedimento, evidências e critérios de aceite; execução independente permanece pendente;
 - [x] configurar gates de CI/CD para o candidato externo;
 - [ ] concluir e ensaiar runbooks de deploy, migration, rollback, backup/restore, incidente, rotação de secrets e falha de e-mail;

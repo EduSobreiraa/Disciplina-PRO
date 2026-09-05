@@ -75,6 +75,8 @@ A prova cobre login pela interface, contexto de tenant, refresh, logout, leitura
 
 ## Limite desta etapa
 
+Reteste pós-correções em 05/09/2026: candidato `8802a6e`, **6 testes autenticados aprovados em 23,2 segundos**, desktop/mobile, com `--trace=off`. Login, refresh, logout e leitura das projeções preservados, sem escrita de negócio. Assets observados: `index-EmuVhANx.js` e `index-CWTNIk89.css`.
+
 O smoke autenticado cobre disponibilidade, autorização, sessão e leitura das projeções principais. Operações de escrita externas exigirão dados descartáveis, limpeza idempotente e contrato explícito por cenário; elas não reutilizarão o reset do ambiente local.
 
 ## Matriz local de resiliência

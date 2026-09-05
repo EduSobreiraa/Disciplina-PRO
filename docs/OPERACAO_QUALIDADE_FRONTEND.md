@@ -1,5 +1,13 @@
 # Qualidade frontend — BX.5
 
+## Tracker: foco e carregamento — correção local em 05/09/2026
+
+A região `.tracker-scroll` recebeu `tabIndex={0}`, `role="region"`, nome acessível e contorno de foco visível. O teste da página totalmente vazia voltou a executar axe na página inteira, além de verificar Tab a partir do último botão de mês e rolagem com ArrowRight.
+
+Validação: `accessibility.spec.js` e `server-projections.spec.js` aprovaram **22 testes em 51,1 s**, Chromium desktop/mobile, no banco local descartável `disciplina_pro_e2e`. Lint, build e 15 testes unitários do frontend também passaram. Build: `index-BEgdOr3X.js` e `index-DsVVi-uw.css`.
+
+Durante `loading`, o tracker renderiza somente o título e um estado de carregamento com espaço mínimo de 60vh. KPIs, tabela e rankings aparecem apenas após a resposta, evitando exibir uma projeção vazia provisória e depois reposicionar seus elementos. A regressão controla a resposta de leitura, confirma ausência das projeções durante a espera, chegada do comportamento e posição inalterada do título após carregar as fontes. Não é uma medição de CLS de campo; publicação e nova medição externa continuam necessárias.
+
 ## Auditoria autenticada externa com axe — 05/09/2026
 
 ### Correções locais dos dois achados
@@ -9,6 +17,14 @@ O estado vazio de `TrackerInsights` passa a renderizar o parágrafo fora de list
 O teste de ranking vazio audita somente `.tracker-insights`; o teste de ritual aplica axe na página carregada. Uma primeira auditoria de página inteira com `behaviors: []` e `marks: []` revelou adicionalmente `scrollable-region-focusable` na tabela vazia do tracker, em ambos os viewports. Esse achado é independente das listas e permanece pendente; limitar a regressão ao componente não equivale a aprovar a página inteira nesse estado. Publicação e reteste externo das duas correções continuam pendentes.
 
 Validação local concluída: **18 testes de acessibilidade/responsividade aprovados em 42,7 s**, incluindo as duas regressões em desktop/mobile; lint, build e 15 testes unitários do frontend aprovados. Banco usado: `disciplina_pro_e2e`, local e descartável. Nenhuma credencial ou banco externo foi usado nesta prova. Build resultante: `index-DNsFkNYf.js` e `index-CWTNIk89.css`.
+
+### Reteste publicado — `8802a6e`
+
+O [CI 33991042818](https://github.com/EduSobreiraa/Disciplina-PRO/actions/runs/33991042818) concluiu com sucesso em **7min45s**, incluindo E2E, integrações, Firefox/WebKit, build, auditoria de dependências e SonarQube Cloud. O aviso de verificação GPG ignorada permanece registrado na execução. Os seis smokes autenticados externos também passaram em **23,2 segundos**, sem traces ou escrita de negócio.
+
+Em 05/09/2026, o deploy Vercel do commit `8802a6eb567c18eec11979629d91906e23538d76` foi confirmado. Assets publicados: `index-EmuVhANx.js` e `index-CWTNIk89.css`. Axe de página inteira no tracker e ritual aprovou as **4 combinações** das duas rotas nos viewports `1440×900` e `375×812`, sem violações detectadas. Não houve overflow horizontal, exceção JavaScript (`pageerror`) ou tentativa de escrita de negócio; os contextos foram encerrados após logout. Isso comprova as duas correções no estado atual das contas fictícias, não o estado adicional de tabela sem comportamentos.
+
+Artefato temporário: `/tmp/disciplina-bx5-auth-audit-8802a6e-results.json`. A soma observada de deslocamentos sem interação do tracker continuou em 0,208 desktop e 0,327 mobile; a correção de listas não encerra a investigação de estabilidade visual nem equivale a uma medição oficial de CLS.
 
 ### Evidência anterior à correção
 

@@ -56,8 +56,36 @@ authenticatedTest('keeps empty tracker rankings accessible', async ({ page }) =>
   await page.goto('/app/minha-evolucao')
   await expect(page.getByText('Marque alguns dias para formar o ranking.')).toHaveCount(2)
   await expect(page.locator('.tracker-insights ol > p')).toHaveCount(0)
-  const results = await new AxeBuilder({ page }).include('.tracker-insights').analyze()
-  expect(results.violations).toEqual([])
+  await expectAccessible(page)
+  const scroll = page.getByRole('region', { name: 'Tabela de comportamentos por dia' })
+  await page.getByRole('button', { name: 'Dez', exact: true }).focus()
+  await page.keyboard.press('Tab')
+  await expect(scroll).toBeFocused()
+  await page.keyboard.press('ArrowRight')
+  await expect.poll(() => scroll.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+})
+
+authenticatedTest('does not render empty tracker projections while loading', async ({ page }) => {
+  let release
+  const responseGate = new Promise((resolve) => { release = resolve })
+  await page.route('**/api/tracker/me?*', async (route) => {
+    await responseGate
+    await route.fulfill({ json: { behaviors: [{ id: 'a11y-behavior', name: 'Comportamento de teste', active: true, position: 0 }], marks: [] } })
+  })
+  try {
+    await page.goto('/app/minha-evolucao')
+    await expect(page.getByRole('status')).toHaveText('Carregando tracker…')
+    await expect(page.locator('.tracker-panel, .tracker-kpis, .tracker-insights')).toHaveCount(0)
+    await page.evaluate(() => document.fonts.ready)
+    const heading = await page.getByRole('heading', { name: 'Minha evolução' }).boundingBox()
+    release()
+    await expect(page.getByLabel('Comportamento Comportamento de teste', { exact: true })).toBeVisible()
+    await expect(page.getByText('Carregando tracker…')).toHaveCount(0)
+    expect(await page.getByRole('heading', { name: 'Minha evolução' }).boundingBox()).toEqual(heading)
+    await expectAccessible(page)
+  } finally {
+    release()
+  }
 })
 
 authenticatedTest('keeps ritual section labels accessible', async ({ page }) => {
