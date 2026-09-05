@@ -241,6 +241,8 @@ model Invitation {
   createdByMembership       TenantMembership? @relation("InvitationCreatorMembership", fields: [createdByMembershipId, tenantId], references: [id, tenantId], onDelete: Restrict)
   createdByPlatformAccess   PlatformAccess?   @relation(fields: [createdByPlatformAccessId], references: [id], onDelete: Restrict)
   teams                     InvitationTeam[]
+  resendMessages            ResendInvitationMessage[]
+  emailRetries              InvitationEmailRetry[]
 
   @@unique([id, tenantId])
   @@index([tenantId, status, createdAt])
@@ -260,6 +262,50 @@ model InvitationTeam {
   @@id([invitationId, teamId])
   @@index([tenantId, teamId])
   @@map("invitation_teams")
+}
+
+model ResendInvitationMessage {
+  providerEmailId String     @id @map("provider_email_id") @db.Uuid
+  invitationId    String     @map("invitation_id") @db.Uuid
+  status          String     @default("SENT") @db.VarChar(24)
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+  invitation      Invitation @relation(fields: [invitationId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@index([invitationId, status])
+  @@map("resend_invitation_messages")
+}
+
+// Events can arrive before the send response; deliberately no FK to message.
+model ResendEmailEvent {
+  eventId         String   @id @map("event_id") @db.VarChar(160)
+  providerEmailId String   @map("provider_email_id") @db.Uuid
+  status          String   @db.VarChar(24)
+  occurredAt      DateTime @map("occurred_at") @db.Timestamptz(3)
+  receivedAt      DateTime @default(now()) @map("received_at") @db.Timestamptz(3)
+
+  @@index([providerEmailId, occurredAt])
+  @@map("resend_email_events")
+}
+
+model InvitationEmailRetry {
+  id                String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  invitationId      String     @map("invitation_id") @db.Uuid
+  expectedTokenHash String     @map("expected_token_hash") @db.Char(64)
+  noticeStatus      String     @default("PENDING") @map("notice_status") @db.VarChar(16)
+  noticeClaimedAt   DateTime?  @map("notice_claimed_at") @db.Timestamptz(3)
+  status            String     @default("PENDING") @db.VarChar(16)
+  reason            String     @db.VarChar(32)
+  dueAt             DateTime   @map("due_at") @db.Timestamptz(3)
+  claimedAt         DateTime?  @map("claimed_at") @db.Timestamptz(3)
+  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+  invitation        Invitation @relation(fields: [invitationId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@unique([invitationId, expectedTokenHash])
+  @@index([status, noticeStatus])
+  @@index([status, dueAt])
+  @@map("invitation_email_retries")
 }
 
 model Program {

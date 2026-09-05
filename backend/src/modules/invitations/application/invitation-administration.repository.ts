@@ -16,6 +16,7 @@ export interface InvitationRecord {
   createdAt: Date
   updatedAt: Date
   teams: Array<{ teamId: string; role: 'MEMBER' | 'MANAGER' }>
+  deliveryReview?: { reason: string; noticeStatus: string } | null
 }
 
 export abstract class InvitationAdministrationRepository {

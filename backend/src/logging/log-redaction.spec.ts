@@ -3,6 +3,9 @@ import pino from 'pino'
 import { LOG_REDACTION_PATHS, sanitizeLoggedRequest } from './log-redaction.js'
 
 describe('log redaction', () => {
+  it('omits webhook bodies entirely from serialized requests', () => {
+    expect(sanitizeLoggedRequest({ url: '/api/webhooks/resend', body: { to: 'private@example.test' }, rawBody: Buffer.from('private') })).toEqual({ url: '/api/webhooks/resend' })
+  })
   it('removes credentials, cookies, CSRF and query parameters', () => {
     let output = ''
     const destination = new Writable({

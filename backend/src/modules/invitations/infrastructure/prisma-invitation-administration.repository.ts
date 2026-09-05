@@ -17,10 +17,13 @@ export class PrismaInvitationAdministrationRepository extends InvitationAdminist
           tenantId: input.tenantId,
           ...(actor.role === 'MANAGER' ? { createdByMembershipId: actor.id } : {}),
         },
-        include: { teams: { select: { teamId: true, role: true }, orderBy: { teamId: 'asc' } } },
+        include: {
+          teams: { select: { teamId: true, role: true }, orderBy: { teamId: 'asc' } },
+          emailRetries: { where: { status: 'REVIEW' }, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], take: 1, select: { reason: true, noticeStatus: true } },
+        },
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       })
-      return invitations satisfies InvitationRecord[]
+      return invitations.map(({ emailRetries, ...invitation }) => ({ ...invitation, deliveryReview: emailRetries[0] ?? null })) satisfies InvitationRecord[]
     })
   }
 

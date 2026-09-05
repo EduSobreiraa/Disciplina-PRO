@@ -1,4 +1,10 @@
 import { type INestApplication } from '@nestjs/common'
+import { jest } from '@jest/globals'
+import { ConfigService } from '@nestjs/config'
+import { ResendInvitationDelivery } from '../src/modules/invitations/infrastructure/resend-invitation-delivery.js'
+import { ResendDeliveryRepository } from '../src/modules/invitations/application/resend-delivery.repository.js'
+import { InvitationTokenService } from '../src/modules/invitations/application/invitation-token.js'
+import { randomUUID } from 'node:crypto'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { AppModule } from '../src/app.module.js'
@@ -14,7 +20,7 @@ const ORIGIN = 'http://localhost:5173'
 const PASSWORD = 'uma frase e2e de convite segura'
 const NEW_PASSWORD = 'outra frase e2e de convite segura'
 
-describe('Invitation lifecycle E2E matrix', () => {
+describe.each(['stub', 'resend'] as const)('Invitation lifecycle E2E matrix (%s)', (transport) => {
   let app: INestApplication
   let prisma: PrismaService
   let tenantId: string
@@ -32,8 +38,21 @@ describe('Invitation lifecycle E2E matrix', () => {
   const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`
 
   beforeAll(async () => {
+    const resendConfig = new ConfigService({
+      DEPLOYMENT_STAGE: 'staging', SMTP_DELIVERY_ENABLED: true, RESEND_API_KEY: 're_test-not-real',
+      RESEND_FROM: 'no-reply@example.test', INVITATION_ACCEPTANCE_URL: 'https://app.example.test/convites/aceitar',
+    })
+    if (transport === 'resend') jest.spyOn(globalThis, 'fetch').mockImplementation((url, options) => {
+      if (url !== 'https://api.resend.com/emails') throw new Error('Unexpected external request in E2E')
+      const body = JSON.parse(options?.body as string) as { to: string; text: string }
+      const token = body.text.match(/#token=([A-Za-z0-9_-]+)/)?.[1]
+      if (!token) throw new Error('Invitation link missing its fragment token')
+      deliveries.push({ invitationId: 'captured-at-http-boundary', email: body.to, token, expiresAt: new Date() })
+      return Promise.resolve(new Response(JSON.stringify({ id: randomUUID() }), { status: 200 }))
+    })
     const delivery: Pick<InvitationDelivery, 'send'> = {
       send: (message) => {
+        if (transport === 'resend') return resend.send(message)
         deliveries.push(message)
         return Promise.resolve('SENT')
       },
@@ -42,6 +61,7 @@ describe('Invitation lifecycle E2E matrix', () => {
       .overrideProvider(InvitationDelivery)
       .useValue(delivery)
       .compile()
+    const resend = new ResendInvitationDelivery(resendConfig as never, moduleRef.get(ResendDeliveryRepository), moduleRef.get(InvitationTokenService))
     app = moduleRef.createNestApplication()
     configureApp(app)
     await app.init()
@@ -88,7 +108,7 @@ describe('Invitation lifecycle E2E matrix', () => {
     ])
   })
 
-  afterAll(async () => app.close())
+  afterAll(async () => { await app.close(); jest.restoreAllMocks() })
 
   function email(label: string) {
     return `e2e-invitation-${label}-${suffix}@disciplina.test`

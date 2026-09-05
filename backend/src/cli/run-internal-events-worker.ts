@@ -4,6 +4,8 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from '../app.module.js'
 import type { Environment } from '../config/environment.js'
 import { ProcessInternalEventsUseCase } from '../modules/events/application/process-internal-events.use-case.js'
+import { ProcessInvitationRetriesUseCase } from '../modules/invitations/application/process-invitation-retries.use-case.js'
+import { ProcessInvitationNoticesUseCase } from '../modules/invitations/application/process-invitation-notices.use-case.js'
 
 const logger = new Logger('InternalEventsWorker')
 let stopping = false
@@ -36,6 +38,8 @@ async function run() {
       app = await NestFactory.createApplicationContext(AppModule)
       const config = app.get<ConfigService<Environment, true>>(ConfigService)
       const processor = app.get(ProcessInternalEventsUseCase)
+      const emailRetries = app.get(ProcessInvitationRetriesUseCase)
+      const emailNotices = app.get(ProcessInvitationNoticesUseCase)
       const pollInterval = config.get('OUTBOX_WORKER_POLL_INTERVAL_MS', { infer: true })
       const errorDelay = config.get('OUTBOX_WORKER_ERROR_DELAY_MS', { infer: true })
       logger.log({ worker: 'internal-events', pollInterval }, 'Worker de eventos internos iniciado')
@@ -43,6 +47,10 @@ async function run() {
       while (!stopping) {
         try {
           const result = await processor.execute()
+          const emailResult = await emailRetries.execute()
+          const noticeResult = await emailNotices.execute()
+          if (noticeResult.processed) logger.log({ worker: 'invitation-notices', ...noticeResult }, 'Ciclo de avisos concluído')
+          if (emailResult.sent || emailResult.reviewed || emailResult.cancelled) logger.log({ worker: 'invitation-retries', ...emailResult }, 'Ciclo de reenvios concluído')
           if (result.claimed > 0 || result.failed > 0 || result.leaseLost > 0) {
             logger.log({ worker: 'internal-events', ...result }, 'Ciclo do worker de eventos concluído')
           }

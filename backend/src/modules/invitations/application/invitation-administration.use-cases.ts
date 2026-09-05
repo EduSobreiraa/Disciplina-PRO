@@ -18,6 +18,7 @@ function publicInvitation(invitation: InvitationRecord, deliveryStatus?: 'SENT' 
     createdAt: invitation.createdAt,
     updatedAt: invitation.updatedAt,
     teams: invitation.teams,
+    deliveryReview: invitation.deliveryReview ?? null,
     ...(deliveryStatus ? { deliveryStatus } : {}),
   }
 }

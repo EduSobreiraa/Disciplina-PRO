@@ -1,6 +1,25 @@
 import { validateEnvironment } from './environment.js'
 
 describe('validateEnvironment', () => {
+  it('keeps SMTP as default even when a Resend key is present', () => {
+    expect(validateEnvironment({ RESEND_API_KEY: 're_test' }).INVITATION_EMAIL_PROVIDER).toBe('smtp')
+  })
+
+  it('requires an explicit single test recipient and key for live local Resend', () => {
+    const base = { INVITATION_EMAIL_PROVIDER: 'resend', SMTP_DELIVERY_ENABLED: 'true' }
+    expect(() => validateEnvironment(base)).toThrow('RESEND_API_KEY')
+    expect(() => validateEnvironment({ ...base, RESEND_API_KEY: 're_test' })).toThrow('RESEND_TEST_RECIPIENT')
+    expect(() => validateEnvironment({ ...base, RESEND_API_KEY: 're_test', RESEND_TEST_RECIPIENT: 'a@example.test,b@example.test' })).toThrow('RESEND_TEST_RECIPIENT')
+    expect(validateEnvironment({ ...base, RESEND_API_KEY: 're_test', RESEND_TEST_RECIPIENT: 'owner@example.test' })).toMatchObject({ INVITATION_EMAIL_PROVIDER: 'resend', RESEND_FROM: 'onboarding@resend.dev' })
+  })
+
+  it('does not require Resend credentials when delivery is disabled', () => {
+    expect(validateEnvironment({ INVITATION_EMAIL_PROVIDER: 'resend', SMTP_DELIVERY_ENABLED: 'false' }).SMTP_DELIVERY_ENABLED).toBe(false)
+  })
+
+  it('rejects the Resend test domain for official staging', () => {
+    expect(() => validateEnvironment({ NODE_ENV: 'production', DEPLOYMENT_STAGE: 'staging', INVITATION_EMAIL_PROVIDER: 'resend', RESEND_API_KEY: 're_test', RESEND_FROM: 'onboarding@resend.dev' })).toThrow('domínio corporativo')
+  })
   it('normalizes a valid environment', () => {
     const environment = validateEnvironment({ PORT: '4000', NODE_ENV: 'test', DATABASE_POOL_MAX: '7' })
     expect(environment.PORT).toBe(4000)

@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import type { Environment } from '../../../config/environment.js'
 import { InvitationDelivery, type InvitationDeliveryMessage } from '../application/invitation-delivery.js'
 import { SmtpClient } from '../application/smtp-client.js'
+import { invitationEmail } from './invitation-email.js'
 
 @Injectable()
 export class SmtpInvitationDelivery extends InvitationDelivery {
@@ -23,23 +24,8 @@ export class SmtpInvitationDelivery extends InvitationDelivery {
       this.logger.warn({ invitationId: message.invitationId }, 'Entrega de convite desabilitada neste ambiente')
       return 'FAILED' as const
     }
-    const link = `${this.acceptanceUrl}#token=${encodeURIComponent(message.token)}`
     try {
-      await this.smtp.send({
-        from: this.from,
-        to: message.email,
-        subject: 'Seu convite para o Disciplina PRO',
-        text: [
-          'Você recebeu um convite para o Disciplina PRO.',
-          `Abra o link: ${link}`,
-          `Este convite expira em ${message.expiresAt.toISOString()}.`,
-        ].join('\n\n'),
-        html: [
-          '<p>Você recebeu um convite para o Disciplina PRO.</p>',
-          `<p><a href="${link}">Aceitar convite</a></p>`,
-          `<p>Este convite expira em ${message.expiresAt.toISOString()}.</p>`,
-        ].join(''),
-      })
+      await this.smtp.send(invitationEmail(message, this.acceptanceUrl, this.from))
       return 'SENT' as const
     } catch {
       this.logger.warn({ invitationId: message.invitationId }, 'Falha ao entregar convite por SMTP')

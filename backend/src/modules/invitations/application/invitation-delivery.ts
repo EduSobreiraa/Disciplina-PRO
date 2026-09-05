@@ -3,6 +3,7 @@ export interface InvitationDeliveryMessage {
   email: string
   token: string
   expiresAt: Date
+  retryJobId?: string
 }
 
 export abstract class InvitationDelivery {

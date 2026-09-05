@@ -32,6 +32,11 @@ export interface Environment {
   SMTP_AUTH_USER?: string
   SMTP_AUTH_PASSWORD?: string
   SMTP_FROM: string
+  INVITATION_EMAIL_PROVIDER: 'smtp' | 'resend'
+  RESEND_API_KEY?: string
+  RESEND_WEBHOOK_SECRET?: string
+  RESEND_FROM: string
+  RESEND_TEST_RECIPIENT?: string
   SWAGGER_ENABLED: boolean
   OUTBOX_WORKER_POLL_INTERVAL_MS: number
   OUTBOX_WORKER_ERROR_DELAY_MS: number
@@ -114,6 +119,18 @@ export function validateEnvironment(raw: Record<string, unknown>): Environment {
   const swaggerEnabled = parseBoolean(raw.SWAGGER_ENABLED, nodeEnvironment !== 'production', 'SWAGGER_ENABLED')
   const trustProxyHops = parseInteger(raw.TRUST_PROXY_HOPS, 0, 'TRUST_PROXY_HOPS', 0)
   const smtpDeliveryEnabled = parseBoolean(raw.SMTP_DELIVERY_ENABLED, deploymentStage !== 'lab', 'SMTP_DELIVERY_ENABLED')
+  const invitationEmailProvider = parseChoice(raw.INVITATION_EMAIL_PROVIDER, 'smtp', ['smtp', 'resend'] as const, 'INVITATION_EMAIL_PROVIDER')
+  const resendApiKey = raw.RESEND_API_KEY ? parseNonEmptyString(raw.RESEND_API_KEY, '', 'RESEND_API_KEY') : undefined
+  const resendFrom = parseNonEmptyString(raw.RESEND_FROM, 'onboarding@resend.dev', 'RESEND_FROM')
+  const resendTestRecipient = raw.RESEND_TEST_RECIPIENT ? parseNonEmptyString(raw.RESEND_TEST_RECIPIENT, '', 'RESEND_TEST_RECIPIENT') : undefined
+  if (invitationEmailProvider === 'resend' && smtpDeliveryEnabled) {
+    if (!resendApiKey?.startsWith('re_')) throw new Error('RESEND_API_KEY é obrigatória para Resend')
+    if ((deploymentStage === 'local' || deploymentStage === 'lab') && (!resendTestRecipient || !/^[^\s@<> ,;]+@[^\s@<> ,;]+\.[^\s@<> ,;]+$/.test(resendTestRecipient))) throw new Error('RESEND_TEST_RECIPIENT deve identificar um único destinatário de teste')
+    if (deploymentStage === 'staging' || deploymentStage === 'production') {
+      requireProductionValue(raw, 'RESEND_FROM')
+      if (/@resend\.dev\b/i.test(resendFrom)) throw new Error('RESEND_FROM deve usar domínio corporativo em staging/produção')
+    }
+  }
 
   if (nodeEnvironment !== 'production' && (deploymentStage === 'staging' || deploymentStage === 'production')) {
     throw new Error('DEPLOYMENT_STAGE staging/production exige NODE_ENV=production')
@@ -130,7 +147,7 @@ export function validateEnvironment(raw: Record<string, unknown>): Environment {
     if ((deploymentStage === 'staging' || deploymentStage === 'production') && !smtpDeliveryEnabled) {
       throw new Error('SMTP_DELIVERY_ENABLED deve ser true em staging/produção')
     }
-    if (smtpDeliveryEnabled) {
+    if (smtpDeliveryEnabled && invitationEmailProvider === 'smtp') {
       requireProductionValue(raw, 'SMTP_HOST')
       requireProductionValue(raw, 'SMTP_AUTH_USER')
       requireProductionValue(raw, 'SMTP_AUTH_PASSWORD')
@@ -184,6 +201,11 @@ export function validateEnvironment(raw: Record<string, unknown>): Environment {
     SMTP_AUTH_USER: raw.SMTP_AUTH_USER ? parseString(raw.SMTP_AUTH_USER, '', 'SMTP_AUTH_USER') : undefined,
     SMTP_AUTH_PASSWORD: raw.SMTP_AUTH_PASSWORD ? parseString(raw.SMTP_AUTH_PASSWORD, '', 'SMTP_AUTH_PASSWORD') : undefined,
     SMTP_FROM: parseString(raw.SMTP_FROM, 'Disciplina PRO <no-reply@disciplina.local>', 'SMTP_FROM'),
+    INVITATION_EMAIL_PROVIDER: invitationEmailProvider,
+    RESEND_API_KEY: resendApiKey,
+    RESEND_WEBHOOK_SECRET: raw.RESEND_WEBHOOK_SECRET ? parseNonEmptyString(raw.RESEND_WEBHOOK_SECRET, '', 'RESEND_WEBHOOK_SECRET') : undefined,
+    RESEND_FROM: resendFrom,
+    RESEND_TEST_RECIPIENT: resendTestRecipient,
     SWAGGER_ENABLED: swaggerEnabled,
     OUTBOX_WORKER_POLL_INTERVAL_MS: parseInteger(raw.OUTBOX_WORKER_POLL_INTERVAL_MS, 1_000, 'OUTBOX_WORKER_POLL_INTERVAL_MS', 250),
     OUTBOX_WORKER_ERROR_DELAY_MS: parseInteger(raw.OUTBOX_WORKER_ERROR_DELAY_MS, 5_000, 'OUTBOX_WORKER_ERROR_DELAY_MS', 250),

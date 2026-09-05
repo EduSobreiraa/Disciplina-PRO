@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import type { INestApplication } from '@nestjs/common'
-import { json, urlencoded } from 'express'
+import { json, raw, urlencoded } from 'express'
 import helmet from 'helmet'
 import type { Environment } from '../config/environment.js'
 import { HttpExceptionFilter } from './http-exception.filter.js'
@@ -19,6 +19,7 @@ export function configureApp(app: INestApplication) {
 
   app.use(requestIdMiddleware)
   app.use(helmet())
+  app.use('/api/webhooks/resend', raw({ type: 'application/json', limit: bodyLimit }))
   app.use('/api/tracker/backup', json({ limit: '25mb' }))
   app.use(json({ limit: bodyLimit }))
   app.use(urlencoded({ extended: true, limit: bodyLimit }))

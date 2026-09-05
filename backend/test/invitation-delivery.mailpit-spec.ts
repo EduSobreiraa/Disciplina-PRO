@@ -20,6 +20,8 @@ describe('Mailpit invitation delivery', () => {
       SMTP_HOST: '127.0.0.1',
       SMTP_PORT: 1025,
       SMTP_SECURE: false,
+      SMTP_REQUIRE_TLS: false,
+      SMTP_DELIVERY_ENABLED: true,
       SMTP_FROM: 'Disciplina PRO <no-reply@disciplina.local>',
       INVITATION_ACCEPTANCE_URL: 'http://localhost:5173/convites/aceitar',
     } as Environment)

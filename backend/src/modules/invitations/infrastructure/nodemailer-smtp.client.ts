@@ -16,6 +16,9 @@ export class NodemailerSmtpClient extends SmtpClient {
       port: config.get('SMTP_PORT', { infer: true }),
       secure: config.get('SMTP_SECURE', { infer: true }),
       requireTLS: config.get('SMTP_REQUIRE_TLS', { infer: true }),
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 30_000,
       auth: config.get('SMTP_AUTH_USER', { infer: true }) && config.get('SMTP_AUTH_PASSWORD', { infer: true })
         ? {
             user: config.get('SMTP_AUTH_USER', { infer: true }),
@@ -27,6 +30,11 @@ export class NodemailerSmtpClient extends SmtpClient {
   }
 
   async send(message: SmtpMessage) {
-    await this.transporter.sendMail(message)
+    const result = await this.transporter.sendMail(message)
+    // SMTP acceptance is not proof of inbox delivery. Never report success
+    // when the transport accepted nobody or rejected any recipient.
+    if (!result.accepted?.length || result.rejected?.length) {
+      throw new Error('SMTP_RECIPIENT_NOT_ACCEPTED')
+    }
   }
 }
