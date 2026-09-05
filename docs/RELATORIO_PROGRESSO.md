@@ -400,7 +400,7 @@ Gate local atualizado em 06/08/2026:
 | Backend unitário | 34 suítes, 106 testes aprovados |
 | Integração PostgreSQL | 33 suítes, 90 testes aprovados |
 | E2E backend/Supertest | 5 suítes, 20 testes aprovados |
-| E2E frontend/Playwright | 23 execuções aprovadas e 1 skip funcional intencional em projetos Chromium desktop/mobile no CI |
+| E2E frontend/Playwright | 35 execuções aprovadas e 1 skip funcional intencional em projetos Chromium desktop/mobile; inclui matriz de timeout, `401`, `403`, `409`, `429` e `503` |
 | SMTP local/Mailpit | 1 suíte, 1 teste aprovado |
 | Qualidade | lint, typecheck, builds e pisos de cobertura aprovados |
 | Dependências | auditoria aprovada e Dependabot com zero alertas abertos; PP-016 encerrado |

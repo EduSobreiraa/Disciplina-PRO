@@ -131,7 +131,7 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 - [x] adaptar Playwright para URL externa sem reset destrutivo;
 - [x] criar smoke tests para login, refresh, tenant, Projeto 66, tracker, ritual, administração e convite;
-- [ ] cobrir timeout, `401`, `403`, `409`, `429` e `5xx`;
+- [x] cobrir timeout, `401`, `403`, `409`, `429` e `5xx`;
 - [ ] executar axe, Lighthouse, viewports e matriz de dispositivo/navegador;
 - [ ] preparar DAST/pentest com contas e dados fictícios;
 - [x] configurar gates de CI/CD para o candidato externo;
@@ -145,6 +145,8 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 **Evidência do Playwright externo público em 04/09/2026:** uma configuração independente passou a aceitar somente `E2E_EXTERNAL_BASE_URL` em HTTPS, sem executar `globalSetup`, seed, reset de banco ou servidores locais. Contra `https://disciplina-pro-frontend.vercel.app`, as duas execuções do cenário público passaram em Chromium desktop e Pixel 7, validando a tela de login, o rewrite `/api/health/ready`, a API `ready` e o PostgreSQL `up`. O cenário é somente leitura e falha caso observe método HTTP mutável.
 
 **Evidência do Playwright externo autenticado em 05/09/2026:** a suíte foi executada contra `https://disciplina-pro-frontend.vercel.app` com as identidades fictícias dedicadas de participante e CEO. As seis execuções passaram em `26,1 s`, cobrindo três cenários em Chromium desktop e mobile: login, contexto da sessão e tenant, refresh após reload, logout, Projeto 66, tracker, ritual, administração e convites. Somente login, refresh e logout realizaram mutações; não houve seed, reset do banco nem escrita de negócio. O procedimento, as garantias e os limites estão em `docs/OPERACAO_SMOKE_TEST_EXTERNO.md`.
+
+**Evidência da matriz de resiliência em 05/09/2026:** uma suíte Playwright local intercepta exclusivamente `GET /api/programs` e simula timeout de transporte e respostas `401`, `403`, `409`, `429` e `503`, sem produzir falhas reais no candidato implantado. Em todos os casos, a interface encerra o loading, apresenta um alerta compreensível e recupera o catálogo real pela ação `Tentar novamente`; no `401`, a prova também exige a tentativa automática de refresh antes de expor a falha persistente. A matriz focada aprovou 12 execuções em desktop/mobile, e a suíte Playwright completa aprovou 35 execuções com 1 skip funcional intencional.
 
 ## Gate de saída BX
 

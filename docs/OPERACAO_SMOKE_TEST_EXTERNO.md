@@ -70,3 +70,13 @@ Em 05/09/2026, o comando autenticado foi executado contra `https://disciplina-pr
 ## Limite desta etapa
 
 O smoke autenticado cobre disponibilidade, autorização, sessão e leitura das projeções principais. Operações de escrita externas exigirão dados descartáveis, limpeza idempotente e contrato explícito por cenário; elas não reutilizarão o reset do ambiente local.
+
+## Matriz local de resiliência
+
+Timeout e respostas sintéticas de erro não devem ser provocados no ambiente implantado. A suíte local intercepta somente a leitura de `/api/programs`, cobre timeout de transporte, `401`, `403`, `409`, `429` e `503` e confirma que o usuário recebe um alerta e consegue recuperar a tela por retry:
+
+```bash
+npm run test:e2e --workspace frontend -- error-resilience.spec.js
+```
+
+Esse comando usa o `globalSetup` destrutivo protegido do Playwright e, portanto, exige `NODE_ENV=test`, a confirmação interna da fixture e `DATABASE_URL` apontando exclusivamente para `disciplina_pro_test`, `disciplina_pro_e2e` ou `disciplina_pro_validation`. Nunca o execute contra Railway, staging ou produção.
