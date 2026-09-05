@@ -51,6 +51,22 @@ authenticatedTest('keeps the Projeto 66 navigation accessible', async ({ page })
   await expectTouchTargets(page)
 })
 
+authenticatedTest('keeps empty tracker rankings accessible', async ({ page }) => {
+  await page.route('**/api/tracker/me?*', (route) => route.fulfill({ json: { behaviors: [], marks: [] } }))
+  await page.goto('/app/minha-evolucao')
+  await expect(page.getByText('Marque alguns dias para formar o ranking.')).toHaveCount(2)
+  await expect(page.locator('.tracker-insights ol > p')).toHaveCount(0)
+  const results = await new AxeBuilder({ page }).include('.tracker-insights').analyze()
+  expect(results.violations).toEqual([])
+})
+
+authenticatedTest('keeps ritual section labels accessible', async ({ page }) => {
+  await page.goto('/app/ritual')
+  await expect(page.getByText('Carregando ritual…')).toHaveCount(0)
+  await expect(page.locator('.ritual-section.red > header > span')).toBeVisible()
+  await expectAccessible(page)
+})
+
 for (const viewport of requiredViewports) {
   authenticatedTest(`avoids horizontal overflow at ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize(viewport)

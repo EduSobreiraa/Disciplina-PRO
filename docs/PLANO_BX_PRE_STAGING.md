@@ -136,7 +136,12 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - [x] executar Lighthouse desktop/mobile no login do build local;
 - [x] medir o login externo com Lighthouse desktop/mobile e trace de carregamento;
 - [x] validar a matriz de sessão, catálogo e acessibilidade nos motores Chromium, Firefox e WebKit (45 casos em duas execuções complementares);
-- [ ] ampliar Lighthouse e performance às páginas autenticadas, repetir a prova externa após publicar as correções e validar dispositivos físicos/tecnologias assistivas;
+- [x] publicar as correções de contraste e repetir Lighthouse e smoke público externo em desktop/mobile (candidato `b775bed`);
+- [x] repetir o smoke autenticado externo do candidato `b775bed` em desktop/mobile: 6 testes aprovados em 22,9 s;
+- [ ] ampliar Lighthouse e performance às demais páginas autenticadas, incluindo o ambiente externo, e validar dispositivos físicos/tecnologias assistivas;
+- [x] corrigir localmente as listas inválidas no tracker e o contraste no ritual: regressões reproduzidas antes da correção; 18 testes de acessibilidade/responsividade aprovados após a correção, em 42,7 s. Detalhes e escopo em [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md#correções-locais-dos-dois-achados).
+- [ ] publicar e retestar externamente as correções de listas/contraste; investigar separadamente os deslocamentos de layout do tracker.
+- [ ] resolver o achado adicional `scrollable-region-focusable` da tabela do tracker sem comportamentos, identificado no teste local; separado da correção das listas de ranking.
 - [x] preparar [DAST/pentest com contas e dados fictícios](PLANO_DAST_PENTEST.md), com matriz, procedimento, evidências e critérios de aceite; execução independente permanece pendente;
 - [x] configurar gates de CI/CD para o candidato externo;
 - [ ] concluir e ensaiar runbooks de deploy, migration, rollback, backup/restore, incidente, rotação de secrets e falha de e-mail;
@@ -164,7 +169,13 @@ BX encerra quando todo item possível sem contas corporativas estiver implementa
 
 **Auditoria autenticada e preparação de segurança em 05/09/2026:** snapshots Lighthouse no build local autenticado aprovaram catálogo desktop e visão geral do Projeto 66 em viewport móvel verificado, ambos com acessibilidade/boas práticas `100`. O trace local desktop do Projeto 66 registrou LCP `119 ms` e CLS `0,01`, sem throttling. O plano DAST/pentest foi preparado e seu baseline de sessão/CSRF/isolamento aprovou 17 testes existentes. A prova não cobre todas as telas autenticadas e não equivale à execução de scanner externo ou pentest independente.
 
+**Reteste público do candidato `b775bed` em 05/09/2026:** deploy Vercel confirmado; login externo com acessibilidade/boas práticas Lighthouse 100 em desktop e mobile, e smoke público com 2 testes aprovados em 4,3 s. Trace sem throttling: LCP 229 ms, TTFB 34 ms e CLS 0,01. Evidências e limites em [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md#reteste-após-publicação-de-b775bed). O reteste autenticado exige disponibilizar as credenciais fictícias no ambiente local; nenhuma senha foi alterada para realizar esta prova.
+
+**CI do candidato `b775bed`:** [execução 33989734961](https://github.com/EduSobreiraa/Disciplina-PRO/actions/runs/33989734961) concluída com sucesso em 9min14s, incluindo a nova matriz Firefox/WebKit e SonarQube Cloud. A publicação e a prova pública corrigida estão encerradas neste recorte; os demais itens desmarcados da BX permanecem abertos.
+
 ## BY — Reprodução corporativa e staging oficial
+
+Antes da transição, o reteste autenticado do candidato `b775bed` foi concluído em 05/09/2026: **6 testes aprovados em 22,9 s**, desktop/mobile, sem escrita de negócio. A credencial fictícia foi disponibilizada no `.env` local e carregada sem exposição; traces desativados. Isso resolve a dependência de credencial para o smoke mencionada no registro anterior, mas não encerra Lighthouse/performance autenticados, dispositivos físicos ou tecnologias assistivas. Procedimento e evidência em [Smoke externo](OPERACAO_SMOKE_TEST_EXTERNO.md#reteste-do-candidato-b775bed--05092026).
 
 Após criação do e-mail corporativo:
 

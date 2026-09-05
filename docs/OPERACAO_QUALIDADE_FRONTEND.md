@@ -1,5 +1,39 @@
 # Qualidade frontend — BX.5
 
+## Auditoria autenticada externa com axe — 05/09/2026
+
+### Correções locais dos dois achados
+
+O estado vazio de `TrackerInsights` passa a renderizar o parágrafo fora de listas; rankings com itens continuam usando `ol > li`. No ritual, somente `.ritual-section.red header>span` passa a usar o token existente `--vermelho-texto`, preservando bordas, barras e demais tons. As novas regressões reproduziram os dois defeitos antes da correção em desktop/mobile (4 falhas esperadas).
+
+O teste de ranking vazio audita somente `.tracker-insights`; o teste de ritual aplica axe na página carregada. Uma primeira auditoria de página inteira com `behaviors: []` e `marks: []` revelou adicionalmente `scrollable-region-focusable` na tabela vazia do tracker, em ambos os viewports. Esse achado é independente das listas e permanece pendente; limitar a regressão ao componente não equivale a aprovar a página inteira nesse estado. Publicação e reteste externo das duas correções continuam pendentes.
+
+Validação local concluída: **18 testes de acessibilidade/responsividade aprovados em 42,7 s**, incluindo as duas regressões em desktop/mobile; lint, build e 15 testes unitários do frontend aprovados. Banco usado: `disciplina_pro_e2e`, local e descartável. Nenhuma credencial ou banco externo foi usado nesta prova. Build resultante: `index-DNsFkNYf.js` e `index-CWTNIk89.css`.
+
+### Evidência anterior à correção
+
+Candidato `b775bed`, asset publicado `index-q5MOUuyA.js`. Foram auditadas seis rotas em Chromium, nos viewports `1440×900` e `375×812` (12 combinações). Contas fictícias de participante e CEO, senha carregada do `.env` sem impressão, sem traces ou screenshots. A navegação bloqueava qualquer método mutável de negócio na origem; nenhuma tentativa foi observada. Logout e fechamento dos contextos concluídos.
+
+| Rota | axe desktop/mobile | LCP observado desktop/mobile (ms) | Soma de deslocamentos sem interação desktop/mobile |
+|---|---|---|---|
+| `/app` | sem violações detectadas | 1332 / 880 | 0,056 / 0,138 |
+| `/app/programas` | sem violações detectadas | 732 / 916 | 0,023 / 0,069 |
+| `/app/programas/projeto-66` | sem violações detectadas | 776 / 1364 | 0,028 / 0,023 |
+| `/app/minha-evolucao` | regra `list`: 2 elementos em cada viewport | 1064 / 1184 | 0,208 / 0,378 |
+| `/app/ritual` | regra `color-contrast`: 1 elemento em cada viewport | 812 / 884 | 0,068 / 0,114 |
+| `/app/administracao` | sem violações detectadas | 1056 / 996 | 0,022 / 0,025 |
+
+Achados reproduzidos nos dois viewports, classificados como `serious` pelo axe:
+
+- Tracker: `article:nth-child(1) > ol` e `article:nth-child(2) > ol` contêm `p` como filho direto, inválido para a estrutura de lista. Corrigir o estado vazio/markup e adicionar regressão antes do reteste externo.
+- Ritual: `.red > header > span` apresenta contraste 3,32:1 (`#c62828` sobre `#121215`, texto de 9px). Corrigir o token/estilo no escopo responsável, preservando a identidade visual, e adicionar regressão.
+
+Não houve overflow horizontal nem exceção JavaScript (`pageerror`) nas 12 combinações. Isso não comprova ausência de todos os erros HTTP/console, estados alternativos, teclado ou tecnologias assistivas.
+
+Medições via `PerformanceObserver`, sem throttling e sem controle explícito de cold cache; uma observação por rota/viewport. LCP é o último candidato observado até a coleta, não dado de campo. A coluna de deslocamentos soma entradas sem interação: **não implementa a janela de sessão do CLS oficial**, portanto é apenas um sinal para investigação, principalmente no tracker. Não houve medição de INP, nota Lighthouse de Performance ou auditoria Lighthouse autenticada nesta rodada. O axe passou em 8 das 12 combinações; quatro combinações precisam de correção, não de aceite automático.
+
+Artefatos temporários locais: `/tmp/disciplina-bx5-auth-audit.mjs` e `/tmp/disciplina-bx5-auth-audit-results.json`. O JSON contém somente rotas, seletores, métricas e achados, sem credenciais ou respostas da API.
+
 ## Matriz reproduzível
 
 `npm run test:e2e:compatibility --workspace frontend` executa os cenários de sessão anônima, sessão autenticada/catálogo e acessibilidade em Chromium desktop/Pixel 7, Firefox desktop e WebKit desktop/iPhone 13 emulado. Os viewports adicionais são `320×568`, `375×812`, `768×1024` e `1440×900`, na visão geral do Projeto 66. A emulação não comprova uso em dispositivos físicos nem uso assistivo.
@@ -69,6 +103,20 @@ Artefatos desta sessão, temporários e não versionados:
 Para repetir, gere o build, inicie o preview, navegue para `/login` no DevTools MCP, execute `lighthouse_audit` em desktop e mobile e `performance_start_trace` com reload. Registre o commit/estado do candidato e as condições de CPU/rede. O gate externo e as páginas autenticadas ainda precisam de medição própria; esta prova não encerra a BX.5 nem o PP-010.
 
 ## Candidato externo — 05/09/2026
+
+### Reteste após publicação de `b775bed`
+
+O deploy Vercel do candidato `b775bed3c398be2050d4da37f6783eb9ffd4c59a` foi confirmado pelo status do commit no GitHub. O login publicado passou a referenciar `index-q5MOUuyA.js` e `index-CdP7b5e3.css`, incluindo as correções de contraste. Lighthouse em modo navigation registrou **acessibilidade 100 e boas práticas 100, em desktop e mobile**; SEO permaneceu 82 e Agentic Browsing 67. Isso substitui a pendência de contraste do login externo registrada abaixo, sem encerrar validação autenticada, dispositivos físicos ou tecnologias assistivas.
+
+O smoke público externo aprovou **2 testes em 4,3 segundos**, desktop/mobile, confirmando login, rewrite, API ready e PostgreSQL up, sem escrita de negócio. A primeira tentativa não iniciou o Chromium por restrição do sandbox; a execução autorizada fora dessa restrição passou.
+
+O [CI do candidato](https://github.com/EduSobreiraa/Disciplina-PRO/actions/runs/33989734961) concluiu com sucesso em **9min14s**, incluindo instalação dos três motores, geração Prisma, migrations, lint, typecheck, cobertura, E2E, integrações, matriz Firefox/WebKit, builds, auditoria de dependências e SonarQube Cloud. Assim, o novo passo de compatibilidade está comprovado também no GitHub. A execução apresentou aviso de verificação GPG ignorada; não foi falha do gate. O verificador documental local continuou apontando os dez links inexistentes nas skills locais `.agents/`, não incluídas no candidato.
+
+Trace separado do login externo: **LCP 229 ms, TTFB 34 ms e CLS 0,01**, CPU 1×, sem throttling de rede ou limpeza explícita de cache. Sem INP ou dados de campo. Não é nota de Performance do Lighthouse nem prova de primeira visita.
+
+Artefatos temporários: `/tmp/disciplina-bx5-b775bed-desktop/`, `/tmp/disciplina-bx5-b775bed-mobile/` (relatórios JSON/HTML) e `/tmp/disciplina-bx5-b775bed-login-trace.json.gz`.
+
+### Histórico anterior à publicação
 
 Auditoria pública de `https://disciplina-pro-frontend.vercel.app/login`, sem login ou escrita de negócio. O HTML observado referencia `index-DLZuAfvq.js` e `index-Cdjxe-VH.css`; ele não contém as correções locais de contraste. Não foi identificado um commit de deploy pela auditoria.
 

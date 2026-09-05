@@ -67,6 +67,12 @@ Somente `/api/auth/login`, `/api/auth/refresh` e `/api/auth/logout` podem usar m
 
 Em 05/09/2026, o comando autenticado foi executado contra `https://disciplina-pro-frontend.vercel.app` usando as identidades fictícias dedicadas. As seis execuções passaram em `26,1 s`: os três cenários foram aprovados tanto no Chromium desktop quanto no viewport mobile. Nenhuma operação de seed, reset de banco ou escrita de negócio foi realizada.
 
+### Reteste do candidato `b775bed` — 05/09/2026
+
+As **6 execuções autenticadas passaram em 22,9 segundos**, nos projetos Chromium desktop e mobile. Os assets publicados foram confirmados como `index-q5MOUuyA.js` e `index-CdP7b5e3.css`, os mesmos do candidato auditado. A senha foi carregada do `.env` local ignorado pelo Git, sem impressão; `DATABASE_URL` foi removida do ambiente do processo de teste e os traces foram desativados com `--trace=off` para não persistir credenciais de login nos artefatos de rede.
+
+A prova cobre login pela interface, contexto de tenant, refresh, logout, leitura do Projeto 66, tracker, ritual, administração e convites, sem seed, reset ou escrita de negócio. Não substitui auditoria de acessibilidade/performance das páginas autenticadas.
+
 ## Limite desta etapa
 
 O smoke autenticado cobre disponibilidade, autorização, sessão e leitura das projeções principais. Operações de escrita externas exigirão dados descartáveis, limpeza idempotente e contrato explícito por cenário; elas não reutilizarão o reset do ambiente local.
