@@ -132,11 +132,15 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 - [x] adaptar Playwright para URL externa sem reset destrutivo;
 - [x] criar smoke tests para login, refresh, tenant, Projeto 66, tracker, ritual, administração e convite;
 - [x] cobrir timeout, `401`, `403`, `409`, `429` e `5xx`;
-- [ ] executar axe, Lighthouse, viewports e matriz de dispositivo/navegador;
-- [ ] preparar DAST/pentest com contas e dados fictícios;
+- [x] executar axe em login, catálogo e visão geral do Projeto 66; validar os quatro viewports na visão geral do Projeto 66 em Chromium desktop/mobile;
+- [x] executar Lighthouse desktop/mobile no login do build local;
+- [x] medir o login externo com Lighthouse desktop/mobile e trace de carregamento;
+- [x] validar a matriz de sessão, catálogo e acessibilidade nos motores Chromium, Firefox e WebKit (45 casos em duas execuções complementares);
+- [ ] ampliar Lighthouse e performance às páginas autenticadas, repetir a prova externa após publicar as correções e validar dispositivos físicos/tecnologias assistivas;
+- [x] preparar [DAST/pentest com contas e dados fictícios](PLANO_DAST_PENTEST.md), com matriz, procedimento, evidências e critérios de aceite; execução independente permanece pendente;
 - [x] configurar gates de CI/CD para o candidato externo;
 - [ ] concluir e ensaiar runbooks de deploy, migration, rollback, backup/restore, incidente, rotação de secrets e falha de e-mail;
-- [ ] criar checklist de reprodução corporativa.
+- [x] criar [checklist de reprodução corporativa](CHECKLIST_REPRODUCAO_CORPORATIVA.md); execução futura permanece na BY.
 
 **Plataformas necessárias:** Vercel, Railway, Sentry, Better Stack e GitHub/Sonar temporários.
 
@@ -148,9 +152,17 @@ O dump diário no R2 é uma camada independente de disaster recovery; ele não s
 
 **Evidência da matriz de resiliência em 05/09/2026:** uma suíte Playwright local intercepta exclusivamente `GET /api/programs` e simula timeout de transporte e respostas `401`, `403`, `409`, `429` e `503`, sem produzir falhas reais no candidato implantado. Em todos os casos, a interface encerra o loading, apresenta um alerta compreensível e recupera o catálogo real pela ação `Tentar novamente`; no `401`, a prova também exige a tentativa automática de refresh antes de expor a falha persistente. A matriz focada aprovou 12 execuções em desktop/mobile, e a suíte Playwright completa aprovou 35 execuções com 1 skip funcional intencional.
 
+**Evidência de acessibilidade e responsividade em 05/09/2026:** a suíte `npm run test:e2e:a11y --workspace frontend` passou em 14 execuções Chromium desktop/mobile contra banco E2E descartável. Ela usa axe nos fluxos de login, catálogo autenticado e navegação do Projeto 66, rejeitando qualquer violação; também confirma ausência de overflow horizontal e alvos interativos com pelo menos 44px nos viewports `320×568`, `375×812`, `768×1024` e `1440×900`. A correção elevou o contraste de rótulos e textos secundários sem alterar as identidades visuais da Sala de Guerra e do Projeto 66. Lighthouse e a matriz em outros navegadores/dispositivos continuam necessários.
+
 ## Gate de saída BX
 
+**Continuação em 05/09/2026:** Lighthouse `13.4.1` no login do build local registrou acessibilidade e boas práticas `100` em desktop/mobile, SEO `82` e Agentic Browsing `67`. O MCP não inclui nota de Performance; um trace separado, sem throttling, mediu LCP `64 ms` e CLS `0,01` localmente. A configuração `playwright.compatibility.config.js` acrescenta Firefox e WebKit: Chromium desktop/mobile e Firefox aprovaram 27 testes; os 18 casos WebKit não iniciaram por dependências ausentes no Fedora 44. Procedimento, achados, artefatos temporários e limites estão em [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md). WebKit, dispositivos físicos, validação assistiva e medição externa continuam pendentes.
+
 BX encerra quando todo item possível sem contas corporativas estiver implementado e provado em laboratório, com configuração reproduzível documentada. BX não encerra PP de staging/produção nem libera dados reais.
+
+**Reteste WebKit e prova externa em 05/09/2026:** o servidor oficial Playwright em Docker resolveu a incompatibilidade do Fedora; os 18 casos WebKit desktop/mobile passaram em `39,5 s`, completando os 45 casos da matriz com a execução anterior Chromium/Firefox. O workflow passa a instalar os três motores e executar a matriz adicional. O login externo ainda usa os assets anteriores às correções locais: acessibilidade Lighthouse `91`, boas práticas `100`, LCP observado `202 ms`, TTFB `51 ms` e CLS arredondado `0,00`, sem throttling e sem prova de cold cache. A nota externa de acessibilidade não foi encerrada: depende de deploy das correções e reteste. Foi preparado o checklist BY, cujos itens de execução continuam desmarcados.
+
+**Auditoria autenticada e preparação de segurança em 05/09/2026:** snapshots Lighthouse no build local autenticado aprovaram catálogo desktop e visão geral do Projeto 66 em viewport móvel verificado, ambos com acessibilidade/boas práticas `100`. O trace local desktop do Projeto 66 registrou LCP `119 ms` e CLS `0,01`, sem throttling. O plano DAST/pentest foi preparado e seu baseline de sessão/CSRF/isolamento aprovou 17 testes existentes. A prova não cobre todas as telas autenticadas e não equivale à execução de scanner externo ou pentest independente.
 
 ## BY — Reprodução corporativa e staging oficial
 

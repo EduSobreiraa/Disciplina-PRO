@@ -1,8 +1,10 @@
 # Checklist de definições pendentes
 
-> Disciplina PRO · Atualizado em 01/09/2026 · Reconciliado com o ADR 016 e as evidências BX.2–BX.4
+> Disciplina PRO · Atualizado em 05/09/2026 · Reconciliado com o ADR 016, as evidências BX e as decisões de Eduardo
 
 Preencher somente os campos `A DEFINIR`. Registrar a decisão, a data, o aprovador e a evidência no documento canônico indicado.
+
+**Aceite de 05/09/2026:** Eduardo aceitou as definições já estabelecidas. Vendas, orçamento e contratação cabem exclusivamente ao CEO e não integram nosso trabalho técnico. Eduardo está cursando LGPD e encontrou uma advogada para produzir as políticas e os documentos contratuais. O aceite encerra escolhas explicitamente definidas, não a elaboração jurídica, testes ou campos ainda sem valor. Fonte: decisão de Eduardo registrada em [GOVERNANCA.md](../GOVERNANCA.md#registro-de-decisões--05092026).
 
 ## 0. Gate operacional da B10.0
 
@@ -11,12 +13,13 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 - [x] Ambientes e sequência definidos: laboratório BX, staging privado e produção; staging precede produção. Evidência: ADR-016.
 - [x] Fornecedores técnicos do MVP definidos: Vercel, Railway/PostgreSQL, Cloudflare R2, OpenTelemetry, Sentry, Better Stack e Resend. Evidência: ADR-016.
 - [x] Responsabilidade técnica e operacional registrada: Eduardo é o único responsável pelo sistema — código, infraestrutura, banco, segredos, ambientes, testes e resposta técnica a incidentes — sem substituto técnico no momento. Evidência: ADR-016 e decisão operacional de 29/08/2026.
-- [ ] Orçamento e contratação dos serviços externos autorizados. Responsável: Direção da Spark. Evidência: aprovação registrada.
-- [ ] Contratos dos fornecedores, região `us-east` e retenção de backups validados para o tratamento de dados aplicável. Responsável: Spark + Jurídico. Evidência: parecer/contratos validados.
-- [ ] Responsáveis pelo canal de privacidade e respectivas substituições definidos. Responsável: Direção da Spark. Evidência: registro de designação.
+- [x] Responsabilidade por vendas, orçamento e contratação definida: exclusivamente CEO, fora do escopo técnico. Evidência: decisão de 05/09/2026. A efetivação de contratações permanece dependência externa quando necessária, não contratação comprovada por este item.
+- [x] Localização de armazenamento escolhida: Virgínia, Estados Unidos. Google Cloud São Paulo é somente alternativa de baixa probabilidade. Evidência: decisão de 05/09/2026 e ADR-016; localização efetiva por serviço ainda exige comprovação.
+- [ ] Contratos dos fornecedores, armazenamento em Virgínia/EUA e retenção de backups validados para o tratamento de dados aplicável. Responsável: CEO + Jurídico. Evidência: parecer/contratos validados; advogada encontrada, documentos por concluir.
+- [x] Recebimento do canal de privacidade definido: Eduardo exclusivamente, sem substituto designado. Evidência: decisão de 05/09/2026.
 - [ ] Matriz de tratamento, bases legais, papéis e políticas de retenção aprovados. Responsável: Spark + Jurídico. Evidência: matriz e documentos jurídicos validados.
-- [ ] Critérios empresariais de abertura de staging público e produção aprovados. Responsável: Direção da Spark. Evidência: autorização registrada.
-- [ ] Critério de aceite do ensaio de restauração definido. Decisão explicitamente adiada por Eduardo em 29/08/2026; não bloquear o trabalho preparatório BX, mas bloquear a conclusão de B10.3/produção. Evidência futura: decisão registrada.
+- [x] Definições vigentes e fluxo de aprovação técnica de staging/produção aceitos por Eduardo em 05/09/2026: testes em staging, go/no-go e evidências por e-mail. Não equivale à liberação de um release específico nem dispensa gates jurídicos e técnicos.
+- [ ] Formalizar e comprovar o critério técnico do ensaio de restauração com os parâmetros aceitos (RPO de 1 hora e RTO de 4 horas). O aceite das definições em 05/09/2026 não comprova um ensaio; evidências continuam exigidas para B10.3/produção, sem bloquear preparação BX.
 
 **Gate B10.0:** concluído somente quando todos os itens aplicáveis acima estiverem marcados e suas evidências estiverem registradas. BX pode avançar apenas nos itens técnicos que não dependem dessas decisões externas.
 
@@ -26,8 +29,8 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 
 | Definição | Valor | Decide/aprova | Limite | Fonte |
 |---|---|---|---|---|
-| Responsável interno pelo canal de privacidade | **A DEFINIR** | Direção da Spark | agora | PP-004 |
-| Substituto do responsável pelo canal de privacidade | **A DEFINIR** | Direção da Spark | agora | PP-004 |
+| Responsável interno pelo recebimento no canal de privacidade | **Eduardo exclusivamente — DEFINIDO E ACEITO** | Eduardo | operar antes de dados reais | decisão de 05/09/2026 / PP-004 |
+| Substituto do responsável pelo canal de privacidade | **nenhum designado; recebimento exclusivo por Eduardo — DEFINIDO** | Eduardo | decisão vigente | decisão de 05/09/2026 / PP-004 |
 | Responsável por receber alertas operacionais | **Eduardo — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
 | Substituto do responsável por alertas | **não há substituto; risco de pessoa-chave registrado** | Direção da Spark | revisar antes de produção | decisão operacional de 21/08/2026 |
 | Responsável por coordenar incidentes técnicos | **Eduardo — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
@@ -45,7 +48,7 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 |---|---|---|---|---|
 | Provedor de hospedagem | **Railway — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016 |
 | Frontend de staging e produção | **Vercel — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/BX |
-| Região de hospedagem dos dados | **us-east — DEFINIDA; validação jurídica pendente** | proprietário + Jurídico | antes da contratação/uso com dados reais | ADR-016/PP-004 |
+| Região de hospedagem dos dados | **Virgínia, EUA — DEFINIDA E ACEITA; Google Cloud São Paulo apenas alternativa de baixa probabilidade** | Eduardo; Jurídico valida tratamento | comprovar localização por serviço e validar antes de dados reais | decisão de 05/09/2026 / ADR-016/PP-004 |
 | Serviço de banco de dados | **PostgreSQL via Railway — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016 |
 | Serviço de armazenamento de backups | **Cloudflare R2 — DEFINIDO E OPERACIONAL NO LABORATÓRIO** | proprietário do projeto | recriar/validar no ambiente corporativo antes de dados reais | ADR-016/BX.2/PP-007 |
 | Serviço de gestão de segredos | **Railway Environment Variables no MVP — DEFINIDO** | proprietário do projeto | implementar antes de staging privado | ADR-016/PP-006 |
@@ -62,7 +65,7 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 | Subdomínio dedicado da API | **não criar `api.disciplinapro.com.br` no MVP — DEFINIDO** | proprietário do projeto | gateway deve encaminhar `/api` internamente | decisão operacional de 21/08/2026 |
 | Ferramenta adicional de segurança ou manutenção da mitigação atual | **A DEFINIR** | Direção da Spark | antes do release | PP-014 |
 | Avaliador de acessibilidade interno ou contratado | **A DEFINIR** | Direção da Spark | durante staging | PP-010 |
-| Orçamento autorizado para infraestrutura e serviços externos | **A DEFINIR** | Direção da Spark | antes das contratações | B10.0 |
+| Vendas, orçamento e contratação, inclusive infraestrutura e serviços externos | **CEO exclusivamente — FORA DO ESCOPO TÉCNICO; não implica contratação concluída** | CEO | disponibilidade dos serviços é dependência externa quando necessária | decisão de 05/09/2026 / B10.0 |
 
 ### Continuidade e operação
 
@@ -77,7 +80,7 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 | Tempo interno esperado para iniciar resposta a incidente | **até 2 horas após o reconhecimento do alerta — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
 | Canal interno de incidentes | **grupo privado no Telegram, com Bot API — DEFINIDO** | Direção da Spark | operar antes de staging público | decisão operacional de 21/08/2026 |
 | Critério para comunicar incidente a clientes | **A DEFINIR** | Direção + Jurídico | antes de produção | PP-008 |
-| Critério de aceite do ensaio de restauração | **A DEFINIR — decisão adiada em 29/08/2026** | Direção da Spark | antes de produção; não bloqueia BX | PP-007/B10.3 |
+| Critério de aceite do ensaio de restauração | **RPO de 1 hora e RTO de 4 horas aceitos; formalização do critério técnico e comprovação do ensaio pendentes** | Eduardo | antes de produção; não bloqueia BX | aceite de 05/09/2026 / PP-007/B10.3 |
 | Estratégia diante de falha de atualização | **rollback da aplicação somente se o schema for compatível; caso contrário, forward-fix — DEFINIDA** | proprietário do projeto | implementar e ensaiar antes de produção | ADR-016/PP-007 e runbook de recuperação |
 
 ### Clientes, suporte e compromissos
@@ -129,7 +132,7 @@ Preencher uma linha para **cada operação de tratamento**. Não classificar a S
 | Papel do tenant | **A DEFINIR** | Spark + Jurídico | antes do contrato | PP-004 |
 | Dados compartilhados | **A DEFINIR** | Spark + Jurídico | antes de dados reais | PP-004 |
 | Destinatários ou fornecedores | **A DEFINIR** | Spark + Jurídico | antes de dados reais | PP-004 |
-| Transferência internacional, se houver | **A DEFINIR** | Jurídico | antes da contratação | PP-004 |
+| Transferência internacional, se houver | **Armazenamento em Virgínia/EUA definido; enquadramento e documentação por operação A VALIDAR** | Jurídico | antes de dados reais | decisão de 05/09/2026 / PP-004 |
 | Tempo de armazenamento | **A DEFINIR** | Spark + Jurídico | antes de dados reais | PP-004 |
 | Destino após o prazo | **A DEFINIR** | Spark + Jurídico | antes de dados reais | PP-004 |
 | Responsável interno | **A DEFINIR** | Direção da Spark | antes de dados reais | PP-004 |
@@ -281,7 +284,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Retenção de registros de auditoria | 1 ano, salvo obrigação legal ou contratual diferente | validar exceções e implementar mecanismo |
 | Exclusão de participante | anonimização quando juridicamente permitida | definir dados mínimos preserváveis e implementar |
 | Declaração completa de acesso | até 15 dias quando o prazo legal for aplicável | validar procedimento e responsáveis |
-| Canal do titular | `privacidade@sparkinteligencia.com.br` | designar responsáveis e operar o canal |
+| Canal do titular | `privacidade@sparkinteligencia.com.br`; Eduardo recebe exclusivamente, sem substituto designado | operar o canal e validar juridicamente o procedimento |
 | Sessão autenticada | limite absoluto de 30 dias | nenhuma decisão empresarial pendente registrada |
 | Convite | validade de 72 horas | nenhuma decisão empresarial pendente registrada |
 | Hospedagem e banco do MVP | Railway com PostgreSQL | implementar e validar staging |

@@ -2,11 +2,13 @@
 
 - Estado: aceita
 - Data: 03/08/2026
-- Atualizado em: 29/08/2026
+- Atualizado em: 05/09/2026
 - Fase: B10.0
 - Decidido por: Eduardo, proprietário do projeto
 
 Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`, alternativas ainda sem escolha e validações jurídica/diretiva indicadas como pendentes não integram o escopo aprovado.
+
+Em 05/09/2026, Eduardo aceitou as definições estabelecidas e registrou os esclarecimentos em [GOVERNANCA.md](../../GOVERNANCA.md#registro-de-decisões--05092026). Vendas, orçamento e contratação são exclusivamente do CEO, fora do escopo técnico. Eduardo está cursando LGPD e encontrou uma advogada para produzir as políticas e os documentos contratuais; sua conclusão e validação continuam pendentes.
 
 ## ✅ Decisões fechadas hoje
 
@@ -16,7 +18,7 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 |---|---|---|
 | Provedor de hospedagem | **Railway** | Revisão prevista se houver crescimento significativo |
 | Frontend | **Vercel** | Staging privado; rewrite `/api` para Railway preserva origem única |
-| Região de hospedagem dos dados | **us-east (padrão Railway)** | Validar implicações LGPD com Jurídico (dados em território EUA) |
+| Região de hospedagem dos dados | **Virgínia, Estados Unidos — definida em 05/09/2026** | Confirmar localização efetiva por serviço e validar com a advogada. Google Cloud em São Paulo é alternativa de baixa probabilidade, não selecionada; fornecedores atuais permanecem. |
 | Serviço de banco de dados | **PostgreSQL via Railway** | — |
 | Serviço de armazenamento de backups | **Cloudflare R2** | Já usa Cloudflare para DNS; integração natural |
 | Serviço de gestão de segredos | **Railway Environment Variables** (fase inicial); **Doppler** a avaliar no futuro | Sem vault dedicado no MVP |
@@ -55,6 +57,7 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 
 | Definição | Decisão | Observações |
 |---|---|---|
+| Recebimento do canal de privacidade | **Eduardo exclusivamente; sem substituto designado** | `privacidade@sparkinteligencia.com.br`; decisão de 05/09/2026; não constitui nomeação jurídica de encarregado. |
 | Canal de suporte ao cliente | **E-mail: `suporte@sparkinteligencia.com.br`** | Separar do `privacidade@` (canal LGPD com obrigações legais distintas) |
 | Prazo de resposta ao cliente | **Até 2 dias úteis** (primeira resposta) | — |
 | SLA contratual de disponibilidade | **Não haverá no MVP** | Revisitar antes do primeiro cliente enterprise |
@@ -82,18 +85,15 @@ Este ADR aprova somente as linhas declaradas como decididas. Campos `A DEFINIR`,
 ## 🔴 Pendências que ficaram em aberto (requerem outras pessoas)
 
 ### Requer Direção da Spark
-- Responsáveis pelo canal de privacidade e substituto
 - Não há substituto técnico para Eduardo; a Direção deve aceitar e revisar periodicamente esse risco de pessoa-chave
-- Orçamento autorizado para infraestrutura
-- Critérios formais de abertura de staging público e produção
-- Checklists executivos de autorização de release
+- Orçamento e contratação: responsabilidade exclusiva do CEO, fora deste trabalho técnico; acompanhar somente a disponibilidade dos recursos necessários, sem presumir contratação concluída
+- Executar os critérios e registros de autorização técnica de release já definidos e aceitos por Eduardo; deliberação empresarial adicional somente se houver risco fora da operação delegada
 - Aceites formais de risco (segurança, automação, acessibilidade)
-- Tempo interno para iniciar resposta a incidente (sugestão técnica: 2h)
 - Avaliador de acessibilidade
 
 ### Requer Jurídico / Especialista em Privacidade
 - Toda a Seção 2 do checklist (matriz de tratamento, base legal, papéis, retenção por categoria)
-- Validação da região us-east sob LGPD (dados fora do Brasil)
+- Validação do armazenamento em Virgínia, Estados Unidos, e dos demais tratamentos por fornecedor (localização escolhida; análise jurídica pendente)
 - Retenção de backups (90 dias definido — validar exceções legais)
 - Política de privacidade, termos de uso, contrato com tenant
 - Hipóteses de anonimização, retenção legal, procedimentos de direitos do titular

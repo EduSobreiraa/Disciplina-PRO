@@ -8,6 +8,16 @@ Este documento separa responsabilidades técnicas, empresariais e jurídicas. El
 
 Nenhuma decisão empresarial, comercial ou jurídica é atribuída implicitamente ao Desenvolvedor. O Desenvolvedor implementa tecnicamente decisões aprovadas, sem definir por conta própria políticas, contratos, preços, SLA, bases legais ou aceite de risco empresarial.
 
+### Registro de decisões — 05/09/2026
+
+Decisões informadas e aceitas por Eduardo nesta data:
+
+- Toda venda, orçamento e contratação é responsabilidade exclusiva do CEO e fica fora do escopo deste trabalho técnico. A equipe técnica apenas registra dependências de serviços/acessos; este aceite não comprova compras autorizadas nem contratos assinados.
+- Eduardo está realizando um curso de LGPD e já encontrou uma advogada para produzir as políticas e os documentos contratuais. A elaboração e a validação jurídica permanecem por concluir; não se presume contratação formalizada da profissional.
+- A localização definida para armazenamento dos dados é **Virgínia, Estados Unidos**. Google Cloud em São Paulo é apenas uma alternativa de baixa probabilidade, não uma escolha vigente nem autorização de migração. A localização efetiva dos dados, backups e demais tratamentos de cada fornecedor ainda deve ser verificada e documentada.
+- Eduardo é o **destinatário exclusivo do canal de privacidade**, sem substituto designado. Isso não altera, por si só, a classificação jurídica dos agentes de tratamento ou constitui nomeação formal de encarregado.
+- As definições já estabelecidas ficam aceitas, incluindo os parâmetros operacionais e o fluxo de aprovação técnica por Eduardo. O aceite não preenche escolhas ainda sem valor, não dispensa evidências de testes, não equivale à validação jurídica e não libera automaticamente produção ou dados reais.
+
 ## 2. Matriz geral de responsabilidades
 
 | Tema | Desenvolvedor | Direção da Spark | Validação jurídica futura |
@@ -41,7 +51,7 @@ A Spark decide e formaliza a relação contratual. A classificação deverá con
 
 ### 3.3 Atendimento ao titular
 
-O canal oficial é [privacidade@sparkinteligencia.com.br](mailto:privacidade@sparkinteligencia.com.br), administrado pela Spark.
+O canal oficial é [privacidade@sparkinteligencia.com.br](mailto:privacidade@sparkinteligencia.com.br), administrado pela Spark, com recebimento exclusivo por Eduardo e sem substituto designado, conforme decisão de 05/09/2026.
 
 O procedimento deve registrar:
 
@@ -75,6 +85,7 @@ Permanecem pendentes e não podem ser apresentados como aprovados ou concluídos
 
 | Data | Decisão |
 |---|---|
+| 05/09/2026 | Registrados: vendas, orçamento e contratação exclusivos do CEO e fora do escopo técnico; curso de LGPD em andamento e advogada encontrada para os documentos; dados em Virgínia, com Google Cloud São Paulo apenas como alternativa de baixa probabilidade; Eduardo recebe exclusivamente o canal de privacidade; aceite das definições estabelecidas, preservadas as pendências de execução e validação jurídica. |
 | 26/07/2026 | Separadas as responsabilidades do Desenvolvedor, da Direção da Spark e de validação jurídica futura. |
 | 26/07/2026 | Aprovadas as políticas do PP-004 para classificação por operação, cancelamento de tenant, `AuditEvent`, exclusão de participante, atendimento ao titular e canal oficial. |
 | 03/08/2026 | O proprietário do projeto aprovou no ADR 016 fornecedores e parâmetros operacionais do MVP; validações jurídicas, escolhas explicitamente abertas e evidências de implementação continuam pendentes. |

@@ -13,6 +13,8 @@
     "lint": "eslint .",
     "test": "node --test src/**/*.test.js src/**/**/*.test.js",
     "test:e2e": "playwright test",
+    "test:e2e:a11y": "playwright test accessibility.spec.js",
+    "test:e2e:compatibility": "playwright test --config playwright.compatibility.config.js",
     "test:e2e:external": "playwright test --config playwright.external.config.js public-readiness.spec.js",
     "test:e2e:external:authenticated": "playwright test --config playwright.external.config.js authenticated-readonly.spec.js",
     "test:coverage": "c8 --all --check-coverage --statements=19 --branches=60 --functions=40 --lines=19 --reporter=lcov --reporter=text-summary --reports-dir=coverage --include='src/**/*.js' --include='src/**/*.jsx' --exclude='src/**/*.test.js' node --test src/**/*.test.js src/**/**/*.test.js",
@@ -25,6 +27,7 @@
     "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.1",
     "@types/react": "^19.2.17",

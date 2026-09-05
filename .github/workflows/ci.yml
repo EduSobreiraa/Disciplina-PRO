@@ -44,8 +44,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci --no-audit --fund=false
-      - name: Install Playwright browser
-        run: npm exec --workspace frontend -- playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: npm exec --workspace frontend -- playwright install --with-deps chromium firefox webkit
       - run: npm run prisma:generate
       - run: npm run prisma:migrate:deploy
       - run: npm run lint
@@ -53,6 +53,8 @@ jobs:
       - run: npm run test:coverage
       - run: npm run test:e2e
       - run: npm run test:integration
+      - name: Firefox and WebKit compatibility
+        run: npm run test:e2e:compatibility --workspace frontend -- --project=desktop-firefox --project=desktop-webkit --project=mobile-webkit
       - run: npm run build
       - run: npm run audit:dependencies
       - name: SonarQube Cloud scan
