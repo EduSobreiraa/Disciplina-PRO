@@ -37,6 +37,19 @@ async function apiLogin(page, credentials) {
   expect(response.ok(), `Login de ${credentials.email} falhou com HTTP ${response.status()}.`).toBe(true)
 }
 
+function waitForSessionContext(page) {
+  return page.waitForResponse((response) => response.url().endsWith('/api/session') && response.request().method() === 'GET')
+}
+
+async function expectTenantContext(responsePromise, email) {
+  const response = await responsePromise
+  expect(response.ok(), `Contexto de ${email} falhou com HTTP ${response.status()}.`).toBe(true)
+  const context = await response.json()
+  expect(context.user.email).toBe(email)
+  expect(context.organizations.length).toBeGreaterThan(0)
+  expect(context.organizations[0].tenant).toMatchObject({ id: expect.any(String), name: expect.any(String) })
+}
+
 async function logout(page) {
   const button = page.getByRole('button', { name: 'Sair', exact: true })
   if (await button.isVisible().catch(() => false)) {
@@ -63,16 +76,19 @@ test('logs in, restores the session and logs out through the deployed UI', async
   await page.getByLabel(/senha/i).fill(participant.password)
 
   const loginResponse = page.waitForResponse((response) => response.url().endsWith('/api/auth/login'))
+  const sessionContext = waitForSessionContext(page)
   await page.getByRole('button', { name: /entrar/i }).click()
   expect((await loginResponse).ok()).toBe(true)
+  await expectTenantContext(sessionContext, participant.email)
   await expect(page).toHaveURL(/\/app\/?$/)
   await expect(page.getByRole('navigation', { name: 'Navegação principal' })).toBeVisible()
-  await expect(page.getByText(participant.email, { exact: true })).toBeVisible()
 
   const refreshResponse = page.waitForResponse((response) => response.url().endsWith('/api/auth/refresh'))
+  const restoredContext = waitForSessionContext(page)
   await page.reload()
   expect((await refreshResponse).ok()).toBe(true)
-  await expect(page.getByText(participant.email, { exact: true })).toBeVisible()
+  await expectTenantContext(restoredContext, participant.email)
+  await expect(page.getByRole('navigation', { name: 'Navegação principal' })).toBeVisible()
 
   await logout(page)
   await expect(page.getByLabel(/e-mail/i)).toBeVisible()
@@ -81,8 +97,9 @@ test('logs in, restores the session and logs out through the deployed UI', async
 test('reads tenant, Projeto 66, tracker and ritual projections', async ({ page }) => {
   await apiLogin(page, participant)
 
+  const sessionContext = waitForSessionContext(page)
   await page.goto('/app')
-  await expect(page.getByText(participant.email, { exact: true })).toBeVisible()
+  await expectTenantContext(sessionContext, participant.email)
   await expect(page.getByRole('heading', { name: /Bom dia/i })).toBeVisible()
 
   await page.goto('/app/programas/projeto-66')
