@@ -63,6 +63,10 @@ As seis execuções — três cenários em desktop e mobile — validam:
 
 Somente `/api/auth/login`, `/api/auth/refresh` e `/api/auth/logout` podem usar métodos mutáveis. O teste não preenche nem envia formulários de tracker, ritual, programa, administração ou convite.
 
+## Evidência de execução
+
+Em 05/09/2026, o comando autenticado foi executado contra `https://disciplina-pro-frontend.vercel.app` usando as identidades fictícias dedicadas. As seis execuções passaram em `26,1 s`: os três cenários foram aprovados tanto no Chromium desktop quanto no viewport mobile. Nenhuma operação de seed, reset de banco ou escrita de negócio foi realizada.
+
 ## Limite desta etapa
 
 O smoke autenticado cobre disponibilidade, autorização, sessão e leitura das projeções principais. Operações de escrita externas exigirão dados descartáveis, limpeza idempotente e contrato explícito por cenário; elas não reutilizarão o reset do ambiente local.
