@@ -85,7 +85,7 @@ export function InvitationAcceptancePage() {
   let content
   if (accepted) {
     content = <>
-      <p role="status">Convite aceito! Seu acesso à organização está liberado.</p>
+      <output>Convite aceito! Seu acesso à organização está liberado.</output>
       <a className="button" href={existingIdentity ? '/app' : '/login'}>Entrar no Disciplina PRO</a>
     </>
   } else if (!token) {
@@ -94,7 +94,7 @@ export function InvitationAcceptancePage() {
       <a href="/login">Voltar ao login</a>
     </>
   } else if (session.status === 'loading') {
-    content = <p role="status">Verificando sessão…</p>
+    content = <output>Verificando sessão…</output>
   } else {
     content = <>
       <p>{existingIdentity ? 'Use a conta do e-mail que recebeu o convite.' : 'Crie sua senha para ativar a conta do e-mail que recebeu o convite.'}</p>

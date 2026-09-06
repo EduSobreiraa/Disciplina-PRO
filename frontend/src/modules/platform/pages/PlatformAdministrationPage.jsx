@@ -14,7 +14,7 @@ function transitionVerb(action) {
 function TenantCeoStatus({ tenant }) {
   if (tenant.activeCeo) return <>CEO ativo: <strong>{tenant.activeCeo.email}</strong></>
   if (tenant.pendingCeoInvitation) return <>Convite de CEO pendente: <strong>{tenant.pendingCeoInvitation.email}</strong></>
-  return 'Primeiro CEO ainda não convidado.'
+  return <>Primeiro CEO ainda não convidado.</>
 }
 
 export function PlatformAdministrationPage() {

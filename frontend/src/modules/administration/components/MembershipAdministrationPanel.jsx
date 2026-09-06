@@ -56,7 +56,9 @@ export function MembershipAdministrationPanel({ administration }) {
 
   async function assign(event) {
     event.preventDefault()
-    if (await administration.assignTeamMembership(assignment.teamId, assignment.membershipId, assignment.role)) setAssignment({ membershipId: '', teamId: '', role: 'MEMBER' })
+    if (await administration.assignTeamMembership(assignment.teamId, assignment.membershipId, assignment.role)) {
+      setAssignment({ membershipId: '', teamId: '', role: 'MEMBER' })
+    }
   }
 
   return <section className="admin-panel admin-members"><header><div><span>Membros visíveis</span><h2>{administration.memberships.length} pessoas</h2></div></header>

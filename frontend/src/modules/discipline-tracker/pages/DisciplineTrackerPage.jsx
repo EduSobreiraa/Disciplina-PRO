@@ -80,7 +80,7 @@ export function DisciplineTrackerPage() {
     <section className="tracker-kpis"><article className={getScoreClass(tracker.stats.percent)}><span>Disciplina do mês</span><strong>{tracker.stats.percent === null ? '—' : `${tracker.stats.percent}%`}</strong></article><article className="green"><span>Dias marcados</span><strong>{tracker.stats.markedDays}</strong></article><article className="gold"><span>Dias perfeitos</span><strong>{tracker.stats.perfectDays}</strong></article><article className="red"><span>Falhas registradas</span><strong>{tracker.stats.reds}</strong></article></section>
     <div className="tracker-months" aria-label="Selecionar mês">{months.map((name, index) => <button className={month === index ? 'active' : ''} type="button" key={name} onClick={() => setMonth(index)}>{name}</button>)}</div>
     <section className="tracker-panel">
-      <section className="tracker-scroll" tabIndex={0} aria-label="Tabela de comportamentos por dia">
+      <section className="tracker-scroll" tabIndex={0 /* NOSONAR -- a região rolável precisa receber foco para navegação horizontal pelo teclado */} aria-label="Tabela de comportamentos por dia">
         <table>
           <thead><tr><th className="behavior-col">Comportamento</th>{Array.from({ length: days }, (_, index) => <th className={month === now.getMonth() && index + 1 === now.getDate() ? 'today' : ''} key={index}>{index + 1}</th>)}<th>%</th></tr></thead>
           <tbody>{behaviors.map((behavior) => {
@@ -105,7 +105,7 @@ export function DisciplineTrackerPage() {
       </section>
       <form className="tracker-add" onSubmit={(event) => submitBehavior(event).catch(() => {})}><label htmlFor="new-behavior">Novo comportamento</label><input id="new-behavior" disabled={tracker.mutating} maxLength="200" value={newBehavior} onChange={(event) => setNewBehavior(event.target.value)} placeholder="Ex.: iniciar trabalho às 8h"/><button disabled={tracker.mutating || !newBehavior.trim() || behaviors.length >= 20} type="submit">+ Adicionar</button><span>{behaviors.length}/20</span></form>
       <div className="tracker-actions"><div className="tracker-legend"><span><i className="green"/>Cumprido</span><span><i className="red"/>Falhou</span><span>Toque: vazio → verde → vermelho</span></div><div><button disabled={tracker.mutating} type="button" onClick={() => exportBackup().catch((error) => setBackupMessage(error.message))}>Exportar backup</button><button disabled={tracker.mutating} type="button" onClick={() => importInput.current?.click()}>Importar backup</button><input ref={importInput} hidden type="file" accept="application/json,.json" onChange={importBackup}/></div></div>
-      {backupMessage && <p className="tracker-backup-message" role="status">{backupMessage}</p>}
+      {backupMessage && <output className="tracker-backup-message">{backupMessage}</output>}
     </section>
     <TrackerInsights behaviors={behaviors} stats={tracker.stats}/>
     <JustificationCenter items={justificationItems} onEdit={setJustification}/>

@@ -46,7 +46,7 @@ describe('Projeto66NewSelfPage', () => {
     await user.click(screen.getByRole('button', { name: '↺ Ainda estou treinando' }))
     await user.click(screen.getByRole('button', { name: 'Registrar check-in' }))
 
-    await waitFor(() => expect(screen.getByRole('alert')).not.toBeNull())
+    expect(await screen.findByRole('alert')).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Tentar novamente' })).not.toBeNull()
     expect(mocks.execution.savePrivateResponse).toHaveBeenCalledWith(PROJETO66_ACTIVITY_KEYS.newSelfCheckin, expect.objectContaining({ alignment: false }))
   })

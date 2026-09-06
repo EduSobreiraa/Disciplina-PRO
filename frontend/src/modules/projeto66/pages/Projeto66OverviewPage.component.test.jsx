@@ -31,7 +31,7 @@ describe('Projeto66OverviewPage', () => {
 
     expect(screen.getByText('Acenda a chama')).not.toBeNull()
     await user.click(screen.getByRole('button', { name: 'Iniciar meu ciclo de 66 dias' }))
-    await waitFor(() => expect(screen.getByRole('alert')).not.toBeNull())
+    expect(await screen.findByRole('alert')).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Tentar novamente' })).not.toBeNull()
 
     mocks.execution.startCycle.mockResolvedValueOnce(undefined)

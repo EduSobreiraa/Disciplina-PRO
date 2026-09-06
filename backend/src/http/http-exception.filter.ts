@@ -2,6 +2,8 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from
 import * as Sentry from '@sentry/nestjs'
 import type { Request, Response } from 'express'
 
+type HttpExceptionPayload = string | object | undefined
+
 function asObject(value: unknown): Record<string, unknown> {
   return typeof value === 'object' && value !== null ? value as Record<string, unknown> : {}
 }
@@ -16,12 +18,12 @@ function exceptionPayload(exception: unknown) {
   return exception instanceof HttpException ? exception.getResponse() : undefined
 }
 
-function errorDetails(payload: string | object | undefined) {
+function errorDetails(payload: HttpExceptionPayload) {
   const bodyMessage = asObject(payload).message
   return Array.isArray(bodyMessage) ? bodyMessage : undefined
 }
 
-function errorCode(status: number, payload: string | object | undefined, details: unknown[] | undefined) {
+function errorCode(status: number, payload: HttpExceptionPayload, details: unknown[] | undefined) {
   if (details) return 'VALIDATION_ERROR'
   const bodyCode = asObject(payload).code
   if (typeof bodyCode === 'string') return bodyCode
@@ -29,7 +31,7 @@ function errorCode(status: number, payload: string | object | undefined, details
   return status >= 500 ? 'INTERNAL_SERVER_ERROR' : 'HTTP_ERROR'
 }
 
-function errorMessage(status: number, payload: string | object | undefined, details: unknown[] | undefined) {
+function errorMessage(status: number, payload: HttpExceptionPayload, details: unknown[] | undefined) {
   if (details) return 'Dados inválidos'
   if (status === 413) return 'Payload excede o limite permitido'
   const rawMessage = typeof payload === 'string' ? payload : asObject(payload).message
