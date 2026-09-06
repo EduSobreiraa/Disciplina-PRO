@@ -30,7 +30,8 @@
     "prisma:validate": "npm run prisma:validate --workspace backend",
     "prisma:migrate:deploy": "npm run prisma:migrate:deploy --workspace backend",
     "prisma:migrate:status": "npm run prisma:migrate:status --workspace backend",
-    "audit:dependencies": "node scripts/audit-dependencies.mjs"
+    "audit:dependencies": "node scripts/audit-dependencies.mjs",
+    "sonar:issues": "node scripts/check-sonar-issues.mjs"
   },
   "allowScripts": {
     "@prisma/engines@7.9.1": true,

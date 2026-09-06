@@ -65,6 +65,11 @@ jobs:
             -Dsonar.qualitygate.timeout=300
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Require zero open Sonar issues on new code
+        run: npm run sonar:issues
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_BRANCH: ${{ github.head_ref || github.ref_name }}
       - run: npm run test:e2e:frontend
       - name: Firefox and WebKit compatibility
         run: npm run test:e2e:compatibility --workspace frontend -- --project=desktop-firefox --project=desktop-webkit --project=mobile-webkit
