@@ -9,6 +9,7 @@ import {
   TrackerBehaviorNotFoundError,
   TrackerContextNotFoundError,
   TrackerFutureDateError,
+  TrackerPastDateError,
   TrackerJustificationNotAllowedError,
   TrackerMarkNotFoundError,
 } from '../domain/tracker.errors.js'
@@ -74,6 +75,7 @@ export class PutTrackerMarkUseCase {
     const result = await this.repository.putMark(context, behaviorId, trackerDate(date), status)
     if (result === 'changed') return
     if (result === 'future-date') throw new TrackerFutureDateError()
+    if (result === 'past-date') throw new TrackerPastDateError()
     if (result === 'behavior-not-found') throw new TrackerBehaviorNotFoundError()
     throw new TrackerContextNotFoundError()
   }
@@ -85,6 +87,8 @@ export class DeleteTrackerMarkUseCase {
   async execute(context: CurrentTenantContext, behaviorId: string, date: string) {
     const result = await this.repository.deleteMark(context, behaviorId, trackerDate(date))
     if (result === 'changed') return
+    if (result === 'past-date') throw new TrackerPastDateError()
+    if (result === 'future-date') throw new TrackerFutureDateError()
     if (result === 'mark-not-found') throw new TrackerMarkNotFoundError()
     if (result === 'behavior-not-found') throw new TrackerBehaviorNotFoundError()
     throw new TrackerContextNotFoundError()

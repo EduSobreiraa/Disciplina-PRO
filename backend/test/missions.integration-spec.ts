@@ -72,7 +72,7 @@ describe('Missions HTTP integration', () => {
     const first = await authorized(tokenA, tenantA).expect(200)
     const second = await authorized(tokenA, tenantA).expect(200)
     expect(first.body).toEqual(second.body)
-    expect((first.body as MissionsBody).metrics).toMatchObject({ perfectDays: 2, perfectStreak: 2, monthPercent: 100, minimumBehaviorPercent: 100, markedDays: 2, totalGreens: 2, completedRitualSections: 1 })
+    expect((first.body as MissionsBody).metrics).toMatchObject({ perfectDays: 2, perfectStreak: 2, monthPercent: 6, minimumBehaviorPercent: 6, markedDays: 2, totalGreens: 2, completedRitualSections: 1 })
     expect(await prisma.xpTransaction.count({ where: { tenantId: tenantA, membershipId: membershipA } })).toBe(rewardsBefore)
 
     const foreign = await authorized(tokenB, tenantB).expect(200)

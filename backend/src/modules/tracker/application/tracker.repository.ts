@@ -27,7 +27,7 @@ export type CreateBehaviorResult =
   | { kind: 'limit' | 'duplicate' | 'context-not-found' }
 
 export type ChangeBehaviorResult = 'changed' | 'not-found' | 'duplicate' | 'context-not-found'
-export type ChangeMarkResult = 'changed' | 'behavior-not-found' | 'mark-not-found' | 'future-date' | 'context-not-found'
+export type ChangeMarkResult = 'changed' | 'behavior-not-found' | 'mark-not-found' | 'future-date' | 'past-date' | 'context-not-found'
 export type ChangeJustificationResult = 'changed' | 'mark-not-found' | 'not-failed' | 'context-not-found'
 export type RestoreTrackerResult = 'restored' | 'context-not-found' | 'future-date'
 

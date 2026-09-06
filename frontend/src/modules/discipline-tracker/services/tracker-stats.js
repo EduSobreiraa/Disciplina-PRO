@@ -1,6 +1,11 @@
 export function getMonthKey(year, month) { return `${year}-${String(month + 1).padStart(2, '0')}` }
 export function getMarkKey(year, month, day, behaviorId) { return `${getMonthKey(year, month)}-${String(day).padStart(2, '0')}:${behaviorId}` }
 
+export function monthlyPercent(greens, expected) {
+  if (!expected) return null
+  return greens === expected ? 100 : Math.min(99, Math.round(greens / expected * 100))
+}
+
 export function calculateTrackerStats(state, year, month) {
   const prefix = `${getMonthKey(year, month)}-`
   const activeIds = new Set(state.behaviors.filter((behavior) => behavior.active).map((behavior) => behavior.id))
@@ -18,9 +23,11 @@ export function calculateTrackerStats(state, year, month) {
   })
   const total = greens + reds
   const behaviorCount = activeIds.size
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  for (const stats of Object.values(byBehavior)) stats.percent = monthlyPercent(stats.greens, daysInMonth)
   const markedDays = Object.keys(byDay).length
   const perfectDays = Object.values(byDay).filter((day) => behaviorCount > 0 && day.greens === behaviorCount && day.reds === 0).length
-  return { greens, reds, total, percent: total ? Math.round((greens / total) * 100) : null, markedDays, perfectDays, byBehavior, byDay }
+  return { greens, reds, total, percent: monthlyPercent(greens, daysInMonth * behaviorCount), markedDays, perfectDays, byBehavior, byDay }
 }
 
 export function getScoreClass(percent) {
@@ -34,6 +41,6 @@ export function getBehaviorRanking(behaviors, byBehavior) {
   return behaviors.map((behavior) => {
     const stats = byBehavior[behavior.id] ?? { greens: 0, reds: 0 }
     const total = stats.greens + stats.reds
-    return { ...behavior, ...stats, percent: total ? Math.round((stats.greens / total) * 100) : null }
+    return { ...behavior, ...stats, percent: stats.percent ?? (total ? Math.round((stats.greens / total) * 100) : null) }
   }).filter((behavior) => behavior.percent !== null)
 }

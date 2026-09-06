@@ -6,5 +6,6 @@ export class TrackerMarkNotFoundError extends Error {}
 export class TrackerJustificationNotAllowedError extends Error {}
 export class InvalidTrackerRangeError extends Error {}
 export class TrackerFutureDateError extends Error {}
+export class TrackerPastDateError extends Error {}
 export class InvalidTrackerDataError extends Error {}
 export class InvalidTrackerBackupError extends Error {}

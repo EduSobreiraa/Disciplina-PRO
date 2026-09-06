@@ -23,6 +23,7 @@ import {
   TrackerBehaviorNotFoundError,
   TrackerContextNotFoundError,
   TrackerFutureDateError,
+  TrackerPastDateError,
   TrackerJustificationNotAllowedError,
   TrackerMarkNotFoundError,
 } from '../domain/tracker.errors.js'
@@ -119,6 +120,7 @@ export class TrackerController {
       if (error instanceof InvalidTrackerDataError) throw new BadRequestException({ code: 'INVALID_TRACKER_DATA', message: 'Dados do tracker inválidos' })
       if (error instanceof InvalidTrackerBackupError) throw new BadRequestException({ code: 'INVALID_TRACKER_BACKUP', message: 'Backup do tracker inválido ou incompatível' })
       if (error instanceof TrackerFutureDateError) throw new BadRequestException({ code: 'TRACKER_FUTURE_DATE', message: 'Não é permitido registrar data futura' })
+      if (error instanceof TrackerPastDateError) throw new BadRequestException({ code: 'TRACKER_PAST_DATE', message: 'Só é permitido alterar marcações do dia atual' })
       if (error instanceof TrackerBehaviorDuplicateError) throw new ConflictException({ code: 'TRACKER_BEHAVIOR_DUPLICATE', message: 'Comportamento já existe' })
       if (error instanceof TrackerBehaviorLimitError) throw new ConflictException({ code: 'TRACKER_BEHAVIOR_LIMIT', message: 'Limite de comportamentos ativos atingido' })
       if (error instanceof TrackerJustificationNotAllowedError) throw new ConflictException({ code: 'TRACKER_JUSTIFICATION_NOT_ALLOWED', message: 'Justificativa exige uma marca de falha' })

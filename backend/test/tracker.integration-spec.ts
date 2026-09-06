@@ -8,6 +8,7 @@ import { ProcessInternalEventsUseCase } from '../src/modules/events/application/
 import { CreateUserUseCase } from '../src/modules/identity-access/application/create-user.use-case.js'
 import { TrackerRepository } from '../src/modules/tracker/application/tracker.repository.js'
 import type { CurrentTenantContext } from '../src/modules/organizations/application/organization-context.repository.js'
+import { civilDateKey } from '../src/modules/missions/domain/mission-metrics.js'
 
 const ORIGIN = 'http://localhost:5173'
 const PASSWORD = 'uma frase segura para tracker'
@@ -74,7 +75,7 @@ describe('Personal tracker HTTP integration', () => {
     const createdBody = created.body as TrackerBehaviorBody
     expect(createdBody).toMatchObject({ name: 'Leitura diária', position: 10, active: true })
     const behaviorId = createdBody.id
-    const date = '2026-08-03'
+    const date = civilDateKey(new Date(), 'America/Bahia')
 
     await authorized('put', `/api/tracker/behaviors/${behaviorId}/marks/${date}`)
       .send({ status: 'FAILED' })
@@ -92,7 +93,7 @@ describe('Personal tracker HTTP integration', () => {
     expect(stateBody.behaviors).toContainEqual(expect.objectContaining({ id: behaviorId, name: 'Leitura diária' }))
     expect(stateBody.marks).toContainEqual(expect.objectContaining({
       behaviorId,
-      trackedOn: '2026-08-03T00:00:00.000Z',
+      trackedOn: `${date}T00:00:00.000Z`,
       status: 'FAILED',
       justification: 'Interrupção registrada apenas pelo titular.',
     }))
@@ -122,6 +123,36 @@ describe('Personal tracker HTTP integration', () => {
     await authorized('put', `/api/tracker/behaviors/${behaviorId}/marks/2099-01-01`)
       .send({ status: 'COMPLETED' })
       .expect(400)
+    for (const method of ['put', 'delete'] as const) {
+      const past = await authorized(method, `/api/tracker/behaviors/${behaviorId}/marks/2000-01-01`)
+        .send(method === 'put' ? { status: 'COMPLETED' } : {})
+        .expect(400)
+      expect(past.body).toMatchObject({ code: 'TRACKER_PAST_DATE' })
+    }
+  })
+
+  it('uses the organization date and preserves historical marks on rejected changes', async () => {
+    const created = await authorized('post', '/api/tracker/behaviors').send({ name: 'Data civil' }).expect(201)
+    const behaviorId = (created.body as TrackerBehaviorBody).id
+    const pastDate = new Date('2000-01-01')
+    await prisma.trackerMark.create({ data: { tenantId: tenantA, membershipId: contextA.membershipId, behaviorId, trackedOn: pastDate, status: 'COMPLETED' } })
+    for (const method of ['put', 'delete'] as const) {
+      await authorized(method, `/api/tracker/behaviors/${behaviorId}/marks/2000-01-01`)
+        .send(method === 'put' ? { status: 'FAILED' } : {}).expect(400)
+    }
+    expect(await prisma.trackerMark.findUnique({ where: { behaviorId_trackedOn: { behaviorId, trackedOn: pastDate } } })).toMatchObject({ status: 'COMPLETED' })
+    try {
+      for (const timeZone of ['Pacific/Kiritimati', 'Pacific/Pago_Pago']) {
+        await prisma.tenant.update({ where: { id: tenantA }, data: { timeZone } })
+        const today = civilDateKey(new Date(), timeZone)
+        await authorized('put', `/api/tracker/behaviors/${behaviorId}/marks/${today}`).send({ status: 'COMPLETED' }).expect(204)
+        await authorized('delete', `/api/tracker/behaviors/${behaviorId}/marks/${today}`).expect(204)
+      }
+      const future = await authorized('delete', `/api/tracker/behaviors/${behaviorId}/marks/2099-01-01`).expect(400)
+      expect(future.body).toMatchObject({ code: 'TRACKER_FUTURE_DATE' })
+    } finally {
+      await prisma.tenant.update({ where: { id: tenantA }, data: { timeZone: 'America/Bahia' } })
+    }
   })
 
   it('exports and restores the complete state using new internal identifiers', async () => {

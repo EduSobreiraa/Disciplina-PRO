@@ -78,14 +78,16 @@ export function calculateMissionMetrics(input: {
   }
 
   const greens = [...days.values()].reduce((sum, item) => sum + item.greens, 0)
-  const reds = [...days.values()].reduce((sum, item) => sum + item.reds, 0)
-  const percentages = [...behaviorCounts.values()].map(({ greens: count, total }) => total ? Math.round(count / total * 100) : 0)
+  const [year, month] = input.today.split('-').map(Number)
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
+  const percent = (count: number, expected: number) => !expected ? 0 : count === expected ? 100 : Math.min(99, Math.round(count / expected * 100))
+  const percentages = [...behaviorCounts.values()].map(({ greens: count }) => percent(count, daysInMonth))
   const currentWeek = isoWeekKey(input.today)
 
   return {
     perfectDays: perfectDates.length,
     perfectStreak,
-    monthPercent: greens + reds ? Math.round(greens / (greens + reds) * 100) : 0,
+    monthPercent: percent(greens, daysInMonth * active.size),
     minimumBehaviorPercent: percentages.length ? Math.min(...percentages) : 0,
     weeklyXp: input.xpTransactions
       .filter(({ amount, occurredAt }) => amount > 0 && isoWeekKey(civilDateKey(occurredAt, input.timeZone)) === currentWeek)

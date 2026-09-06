@@ -154,7 +154,9 @@ export class PrismaTrackerRepository extends TrackerRepository {
       await this.lockMembership(tx, context.membershipId)
       const membership = await this.activeMembership(tx, context)
       if (!membership) return 'context-not-found'
-      if (trackedOn > this.currentDateIn(membership.tenant.timeZone)) return 'future-date'
+      const currentDate = this.currentDateIn(membership.tenant.timeZone)
+      if (trackedOn > currentDate) return 'future-date'
+      if (trackedOn < currentDate) return 'past-date'
       const scope = { tenantId: context.tenantId, membershipId: context.membershipId }
       if (!await tx.trackerBehavior.findFirst({ where: { id: behaviorId, ...scope, active: true }, select: { id: true } })) return 'behavior-not-found'
       const sourceKey = `tracker-mark:${context.membershipId}:${behaviorId}:${trackedOn.toISOString().slice(0, 10)}`
@@ -195,7 +197,12 @@ export class PrismaTrackerRepository extends TrackerRepository {
 
   deleteMark(context: CurrentTenantContext, behaviorId: string, trackedOn: Date): Promise<ChangeMarkResult> {
     return this.prisma.$transaction(async (tx) => {
-      if (!await this.activeMembership(tx, context)) return 'context-not-found'
+      await this.lockMembership(tx, context.membershipId)
+      const membership = await this.activeMembership(tx, context)
+      if (!membership) return 'context-not-found'
+      const currentDate = this.currentDateIn(membership.tenant.timeZone)
+      if (trackedOn > currentDate) return 'future-date'
+      if (trackedOn < currentDate) return 'past-date'
       const scope = { tenantId: context.tenantId, membershipId: context.membershipId }
       if (!await tx.trackerBehavior.findFirst({ where: { id: behaviorId, ...scope }, select: { id: true } })) return 'behavior-not-found'
       const mark = await tx.trackerMark.findFirst({ where: { behaviorId, trackedOn, ...scope }, select: { id: true } })
