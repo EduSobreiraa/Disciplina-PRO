@@ -307,7 +307,7 @@ Playwright foi utilizado de forma assistida no gate histórico F0–F9 para:
 - identificar controles menores que 44 px;
 - capturar telas para inspeção visual.
 
-Desde a B8.4, `frontend/playwright.config.js` e quatro specs frontend estão versionados. A suíte reproduz no CI sessão, catálogo, execução, privacidade, tracker, ritual e missões em projetos Chromium desktop/mobile; validação assistiva e dispositivos físicos permanecem separados no `PP-010`.
+Desde a B8.4, `frontend/playwright.config.js` e quatro specs frontend estão versionados. A suíte reproduz no CI sessão, catálogo, execução, privacidade, tracker, ritual e missões em projetos Chromium desktop/mobile; validação assistiva permanece separada no `PP-010`. Testes em aparelhos físicos não são gate de staging.
 
 Matriz responsiva adotada:
 

@@ -253,7 +253,7 @@ Haverá custo de serviço e responsabilidade operacional contínua, com reduçã
 
 **O que é**
 
-É a verificação do produto por pessoas usando teclado, leitor de tela e dispositivos físicos, além dos testes realizados automaticamente.
+É a verificação do produto por pessoas usando teclado e leitor de tela, além dos testes realizados automaticamente. Testes em aparelhos físicos não são gate de staging.
 
 **Por que este problema existe**
 

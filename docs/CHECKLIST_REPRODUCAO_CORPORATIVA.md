@@ -38,7 +38,7 @@ Para cada item executado, registrar data, responsável, ambiente, commit e link/
 
 - [ ] Repetir origem, CORS, CSRF, cookies, rate limit, roles e isolamento tenant; confirmar Swagger fechado conforme configuração aprovada.
 - [ ] Executar smoke público e autenticado seguindo [Smoke externo](OPERACAO_SMOKE_TEST_EXTERNO.md), com contas fictícias dedicadas e sem reset/escrita de negócio.
-- [ ] Repetir axe, Lighthouse e medições autenticadas no candidato implantado; executar a matriz de [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md), dispositivos físicos e validação assistiva.
+- [ ] Repetir axe, Lighthouse e medições autenticadas no candidato implantado; executar a matriz de [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md) e a validação assistiva. Testes em aparelhos físicos não são gate de staging.
 - [ ] Definir escopo/janela de DAST e pentest com contas fictícias e registrar achados, correções e reteste.
 - [ ] Conferir todos os PP aplicáveis e gates B10.0–B10.4; obter aprovação técnica e decisões empresariais/jurídicas exigidas antes de liberar dados reais.
 - [ ] Registrar aprovação de staging e depois a decisão separada de produção, com responsável, commit, evidências e plano de recuperação.

@@ -2,7 +2,15 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, extname, resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '..')
-const ignoredDirectories = new Set(['.git', 'coverage', 'dist', 'node_modules'])
+const ignoredDirectories = new Set([
+  '.agents',
+  '.codex',
+  '.git',
+  'coverage',
+  'dist',
+  'graphify-out',
+  'node_modules',
+])
 
 function markdownFiles(directory) {
   return readdirSync(directory).flatMap((entry) => {

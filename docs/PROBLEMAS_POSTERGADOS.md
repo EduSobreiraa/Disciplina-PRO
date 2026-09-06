@@ -121,11 +121,11 @@ O projeto está adequado para continuar o desenvolvimento local. B2–B6.5 prova
 ### PP-010 — Acessibilidade sem validação assistiva real
 
 - **Prioridade/status:** P1 · ABERTO
-- **Problema:** responsividade, toque e movimento reduzido foram auditados, mas faltam leitor de tela real, navegação assistiva e dispositivos físicos.
+- **Problema:** responsividade, toque e movimento reduzido foram auditados, mas faltam leitor de tela real e navegação assistiva.
 - **Impacto:** barreiras podem permanecer invisíveis aos testes automatizados e ao navegador desktop.
-- **Motivo do adiamento:** requer dispositivos e validação humana dedicada.
+- **Motivo do adiamento:** requer validação humana assistiva dedicada.
 - **Retomada:** B10.
-- **Critério de encerramento:** fluxos críticos aprovados com teclado, leitor de tela e dispositivos físicos representativos.
+- **Critério de encerramento:** fluxos críticos aprovados com teclado e leitor de tela.
 
 ### PP-011 — Quality Gate ainda é baseline progressiva
 
@@ -223,7 +223,7 @@ Esta matriz integra cada registro `PP-*`. “Aprova” identifica quem deve acei
 | PP-007 | Spark + Desenvolvedor | Spark define RPO/RTO e aceita risco | Desenvolvedor implementa e ensaia | Spark | política aprovada, backups verificados e restore/rollback ensaiados |
 | PP-008 | Spark + Desenvolvedor | Spark aprovou BetterStack/Sentry e define cobertura e responsáveis | Desenvolvedor implementa instrumentação, monitoramento e runbook | Spark | serviços contratados; alertas e resposta a incidente testados sem dados sensíveis |
 | PP-009 | Desenvolvedor | roadmap aprovado | Desenvolvedor | gate técnico | suíte Playwright versionada no CI e staging |
-| PP-010 | Spark + Desenvolvedor | Spark define critério de aceite e disponibiliza validação humana/dispositivos | Desenvolvedor corrige barreiras técnicas | Spark, com validação humana | teclado, leitor de tela e dispositivos físicos aprovados |
+| PP-010 | Spark + Desenvolvedor | Spark define critério de aceite e disponibiliza validação humana assistiva | Desenvolvedor corrige barreiras técnicas | Spark, com validação humana | teclado e leitor de tela aprovados |
 | PP-011 | Desenvolvedor | governança técnica aprovada | Desenvolvedor | gate técnico | encerrado: pisos de cobertura no CI |
 | PP-012 | Desenvolvedor | governança de dependências aprovada | Desenvolvedor | gate técnico | encerrado: atualização compatível e auditoria limpa |
 | PP-013 | Desenvolvedor | governança de CI aprovada | Desenvolvedor | gate técnico | encerrado: action fixada por SHA |

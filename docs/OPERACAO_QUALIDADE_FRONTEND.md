@@ -2,6 +2,21 @@
 
 ## Tracker: foco e carregamento — correção local em 05/09/2026
 
+### Publicação e reteste externo — `ffb8528`
+
+O [CI 33991784831](https://github.com/EduSobreiraa/Disciplina-PRO/actions/runs/33991784831) concluiu com sucesso em **9min27s**, incluindo E2E, integrações, Firefox/WebKit, builds, auditoria e SonarQube Cloud. Os seis smokes autenticados externos passaram em **21,5 segundos**. Permanece o aviso de verificação GPG ignorada na execução, sem falha de gate.
+
+Deploy Vercel confirmado em 05/09/2026 para `ffb8528b9dfd99a2030f68f0daf4664deb166188`, assets `index-DylJlslZ.js` e `index-DsVVi-uw.css`. Quatro combinações auditadas: tracker com dados fictícios existentes e resposta vazia simulada no navegador, em `1440×900` e `375×812`. Nenhuma alteração nos dados do servidor; contextos encerrados após logout, sem senha impressa ou traces.
+
+- Axe de página inteira: nenhuma violação nas quatro combinações.
+- Tabela vazia: `tabIndex=0` no código publicado, foco confirmado por Tab a partir de Dez, ArrowRight deslocou o scroll 40px em ambos os viewports. Não houve alteração de tabindex via DOM neste reteste.
+- Durante a leitura pendente, KPIs, tabela e rankings não estavam no DOM; eram substituídos pelo estado de carregamento. Após liberar a resposta, os KPIs apareceram na mesma coordenada vertical do estado de carregamento: 362px desktop e 361,39px mobile. Não se repetiu o movimento anterior de 72px dos blocos existentes nem a expansão de uma tabela vazia já exibida.
+- `PerformanceObserver` registrou nenhuma entrada de layout shift nas duas combinações mobile e no desktop vazio. No desktop com dados houve uma entrada 0,0071 associada ao cabeçalho/título geral, não aos blocos do tracker. Observação controlada, sem throttling, não CLS oficial de campo nem garantia de zero deslocamento em todas as visitas.
+
+Procedimento temporário: `/tmp/disciplina-tracker-investigate.mjs`, com resposta GET retida até a captura do estado loading e, no cenário vazio, substituída apenas no navegador.
+
+### Implementação e prova local
+
 A região `.tracker-scroll` recebeu `tabIndex={0}`, `role="region"`, nome acessível e contorno de foco visível. O teste da página totalmente vazia voltou a executar axe na página inteira, além de verificar Tab a partir do último botão de mês e rolagem com ArrowRight.
 
 Validação: `accessibility.spec.js` e `server-projections.spec.js` aprovaram **22 testes em 51,1 s**, Chromium desktop/mobile, no banco local descartável `disciplina_pro_e2e`. Lint, build e 15 testes unitários do frontend também passaram. Build: `index-BEgdOr3X.js` e `index-DsVVi-uw.css`.
@@ -52,13 +67,13 @@ Artefatos temporários locais: `/tmp/disciplina-bx5-auth-audit.mjs` e `/tmp/disc
 
 ## Matriz reproduzível
 
-`npm run test:e2e:compatibility --workspace frontend` executa os cenários de sessão anônima, sessão autenticada/catálogo e acessibilidade em Chromium desktop/Pixel 7, Firefox desktop e WebKit desktop/iPhone 13 emulado. Os viewports adicionais são `320×568`, `375×812`, `768×1024` e `1440×900`, na visão geral do Projeto 66. A emulação não comprova uso em dispositivos físicos nem uso assistivo.
+`npm run test:e2e:compatibility --workspace frontend` executa os cenários de sessão anônima, sessão autenticada/catálogo e acessibilidade em Chromium desktop/Pixel 7, Firefox desktop e WebKit desktop/iPhone 13 emulado. Os viewports adicionais são `320×568`, `375×812`, `768×1024` e `1440×900`, na visão geral do Projeto 66. A emulação não comprova uso em dispositivos físicos nem uso assistivo; testes em aparelhos físicos não são gate de staging.
 
 A configuração reutiliza o `globalSetup` local: ele **limpa e repovoa o banco de teste**. Aponte `DATABASE_URL` somente para um banco local descartável aceito pela fixture (`disciplina_pro_test`, `disciplina_pro_e2e` ou `disciplina_pro_validation`), aplique as migrations e mantenha essa variável no mesmo ambiente durante o teste. Nunca execute esta configuração contra a infraestrutura externa.
 
 Primeira execução local de 05/09/2026: **27 aprovados e 18 falhas de inicialização**, em 1,1 minuto. Chromium desktop/mobile e Firefox desktop aprovaram os nove cenários de cada projeto. WebKit desktop/mobile não iniciou no Fedora 44 por bibliotecas ausentes.
 
-**Reteste concluído em 05/09/2026:** os **18 testes WebKit passaram em 39,5 segundos** usando o servidor Docker abaixo, com imagem `v1.61.1-noble` (digest `sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48`). Isso completa 45 casos aprovados em duas execuções complementares, sem alterações nos cenários entre elas. A prova cobre a matriz de três arquivos declarada na configuração, não todas as operações do produto nem dispositivos físicos. O CI foi configurado para instalar os três motores e executar Firefox/WebKit após as integrações; Chromium permanece na regressão padrão. A execução desse novo passo no GitHub ainda depende de publicação.
+**Reteste concluído em 05/09/2026:** os **18 testes WebKit passaram em 39,5 segundos** usando o servidor Docker abaixo, com imagem `v1.61.1-noble` (digest `sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48`). Isso completa 45 casos aprovados em duas execuções complementares, sem alterações nos cenários entre elas. A prova cobre a matriz de três arquivos declarada, não todas as operações do produto; testes em aparelhos físicos não são gate de staging. O CI foi configurado para instalar os três motores e executar Firefox/WebKit após as integrações; Chromium permanece na regressão padrão. A execução desse novo passo no GitHub ainda depende de publicação.
 
 Em um host compatível com Playwright, prepare os navegadores:
 
@@ -122,7 +137,7 @@ Para repetir, gere o build, inicie o preview, navegue para `/login` no DevTools 
 
 ### Reteste após publicação de `b775bed`
 
-O deploy Vercel do candidato `b775bed3c398be2050d4da37f6783eb9ffd4c59a` foi confirmado pelo status do commit no GitHub. O login publicado passou a referenciar `index-q5MOUuyA.js` e `index-CdP7b5e3.css`, incluindo as correções de contraste. Lighthouse em modo navigation registrou **acessibilidade 100 e boas práticas 100, em desktop e mobile**; SEO permaneceu 82 e Agentic Browsing 67. Isso substitui a pendência de contraste do login externo registrada abaixo, sem encerrar validação autenticada, dispositivos físicos ou tecnologias assistivas.
+O deploy Vercel do candidato `b775bed3c398be2050d4da37f6783eb9ffd4c59a` foi confirmado pelo status do commit no GitHub. O login publicado passou a referenciar `index-q5MOUuyA.js` e `index-CdP7b5e3.css`, incluindo as correções de contraste. Lighthouse em modo navigation registrou **acessibilidade 100 e boas práticas 100, em desktop e mobile**; SEO permaneceu 82 e Agentic Browsing 67. Isso substitui a pendência de contraste do login externo registrada abaixo, sem encerrar validação autenticada ou tecnologias assistivas; testes em aparelhos físicos não são gate de staging.
 
 O smoke público externo aprovou **2 testes em 4,3 segundos**, desktop/mobile, confirmando login, rewrite, API ready e PostgreSQL up, sem escrita de negócio. A primeira tentativa não iniciou o Chromium por restrição do sandbox; a execução autorizada fora dessa restrição passou.
 
@@ -163,3 +178,19 @@ Lighthouse `13.4.1` em modo **snapshot**, preservando a sessão. O viewport móv
 Um trace separado do reload autenticado do Projeto 66, ainda no viewport desktop 1350×940, registrou LCP **119 ms**, TTFB **2 ms** e CLS **0,01**, CPU 1×, sem throttling e sem limpeza explícita de cache. A visão geral carregou o ciclo disponível; não foi iniciado um ciclo nem registrada atividade. Não houve medição de INP. A prova não cobre tracker, ritual, administração, outros estados do programa ou desempenho autenticado externo.
 
 Artefatos temporários: `/tmp/disciplina-bx5-auth-catalog/`, `/tmp/disciplina-bx5-auth-projeto66-mobile-verified/` (cada um com `report.json` e `report.html`) e `/tmp/disciplina-bx5-auth-projeto66-trace.json.gz`. O primeiro snapshot do Projeto 66 em `/tmp/disciplina-bx5-auth-projeto66/` foi coletado em viewport desktop apesar da opção mobile; não o usar como prova móvel.
+
+## Calendário e percentual de Minha evolução — candidato local 05/09/2026
+
+- Registro, alteração de status e remoção de marcações somente no dia civil atual da organização, com bloqueio na tela e na API. Histórico continua visível; justificativas históricas e restauração explícita de backup permanecem como antes. A importação é uma exceção ao bloqueio retroativo e precisa de decisão própria caso também deva ser restringida.
+- Interpretação adotada para a solicitação de “conquista de 100%”: indicador mensal, não uma medalha nova. O denominador passa a ser todos os dias corridos do mês × comportamentos ativos. Percentuais por comportamento, rankings e projeção de missões usam a mesma base. Um mês incompleto não arredonda para 100%; comportamentos adicionados durante o mês também entram na base mensal completa.
+- Provas: testes de cálculo frontend/backend para meses de 28/29/30/31 dias, célula ausente e arredondamento; 5 testes de integração tracker/missões; 2 testes Chromium desktop/mobile de bloqueio, percentual e virada do dia em America/Bahia. A API também foi validada em Pacific/Kiritimati e Pacific/Pago_Pago, preservando registros históricos após tentativas rejeitadas.
+- Lint frontend/backend, tipagem backend e builds aprovados. Alteração ainda não publicada; não substitui a prova externa dos commits anteriores.
+# Minha evolução — calendário e mês completo, 05/09/2026
+
+Recorte publicado em `f6dc6ed`, sem incorporar as alterações paralelas do Sonar (inclusive preservando localmente o hunk de ordenação de `mission-metrics.ts`). Somente o dia civil atual da organização permite inclusão, alteração ou exclusão de marcas; passado/futuro permanecem consultáveis. Restauração explícita de backup histórico foi preservada.
+
+O percentual mensal usa todos os dias do mês e comportamentos ativos. Um mês incompleto não arredonda para 100%; testes cobrem meses de 28, 29, 30 e 31 dias. A interface atualiza a data ao recuperar foco e periodicamente, com guarda adicional no clique e validação definitiva na API.
+
+A primeira rodada de navegador aprovou 22/24 casos e revelou contraste insuficiente nos percentuais vermelhos do ranking. Corrigido com o token existente `--vermelho-texto`, sem redesenho. A rodada final focada aprovou 10/10 casos desktop/mobile: acessibilidade do tracker vazio/carregando, persistência real em segundo contexto, virada do dia, 99% versus 100% e larguras 320/375/768/1440. Lint frontend/backend, tipagem backend e builds passaram. Provas unitárias e de integração do calendário/métricas haviam passado no recorte local.
+
+Conferência externa com conta fictícia: somente os dez botões do dia atual habilitados, larguras 375/1440 sem overflow, sem escrita de marcações. API Railway no deployment `b52dc592-71d2-4d1c-8e15-3693be87cf61`, commit `f6dc6ed`, `SUCCESS`. PUT e DELETE de data passada com identificador inexistente retornaram HTTP 400/`TRACKER_PAST_DATE`; sessão encerrada com 204. O CI completo `34002100635` ainda estava em execução na última consulta; não confundir essa evidência funcional com conclusão do Quality Gate.

@@ -451,4 +451,4 @@ Para cada fatia:
 - [ ] build aprovado;
 - [ ] arquitetura e este inventário atualizados.
 
-A checklist acima é aplicada a cada nova fatia. O estado transversal verificado em 14/07/2026 está documentado em `AUDITORIA_FRONTEND.md`; itens dependentes de backend, dispositivos físicos ou tecnologia assistiva permanecem pendentes até suas fases próprias.
+A checklist acima é aplicada a cada nova fatia. O estado transversal verificado em 14/07/2026 está documentado em `AUDITORIA_FRONTEND.md`; itens dependentes de backend ou tecnologia assistiva permanecem pendentes até suas fases próprias. Testes em aparelhos físicos não são gate de staging.

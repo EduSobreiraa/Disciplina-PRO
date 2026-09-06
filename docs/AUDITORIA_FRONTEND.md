@@ -42,7 +42,7 @@ O registro objetivo do Projeto 66 e o conteúdo íntimo continuam em repositorie
 - autenticação, autorização multi-tenant e API ainda são simuladas ou inexistentes;
 - `localStorage` é apenas adapter temporário e não oferece proteção apropriada para produção;
 - a cobertura automatizada atual protege cálculos puros, mas ainda não possui suíte E2E versionada;
-- auditoria com leitor de tela real e dispositivos físicos deve ocorrer antes de produção;
+- auditoria com leitor de tela real deve ocorrer antes de produção; testes em aparelhos físicos não são gate de staging;
 - na fotografia anterior às extensões F7–F9, rituais, timer 30/30 e gamificação ainda pertenciam às fases seguintes; a integração backend permaneceu posterior.
 
 ## Critério para as próximas entregas

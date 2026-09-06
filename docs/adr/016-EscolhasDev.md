@@ -66,8 +66,12 @@ Em 05/09/2026, Eduardo aceitou as definições estabelecidas e registrou os escl
 
 | Definição | Decisão | Observações |
 |---|---|---|
-| Regra para convite não entregue (bounce) | **Reenviar 1x após 30 minutos** | Se bounce persistir, notificar admin do tenant |
-| Política de novas tentativas | **1 reenvio, intervalo de 30 min** | Implementar junto ao módulo `invitations` |
+| Regra para convite não entregue | **Falha temporária: reenviar 1x após 30 minutos; persistindo, notificar admin do tenant** | Revisão aprovada pelo proprietário em 05/09/2026; substitui retry indiscriminado de bounce |
+| Rejeição permanente e reclamação de spam | **Interromper envios ao destinatário e notificar admin do tenant, sem reenvio automático** | Seguir a orientação do Resend; não contornar supressões |
+| Política de novas tentativas | **No máximo 1 reenvio após 30 minutos para falhas temporárias elegíveis** | Implementar junto ao módulo `invitations`; não duplicar tentativas enquanto o provedor ainda processa a entrega |
+| Acompanhamento de entrega | **Webhooks assinados, sem consultas periódicas de status à API Resend** | Endpoint HTTPS receptor, verificação do corpo bruto e assinatura, deduplicação e tratamento de eventos fora de ordem; agendamento durável local para retry |
+
+Referências técnicas: [eventos de teste e rejeições permanentes](https://resend.com/docs/dashboard/emails/send-test-emails), [webhooks](https://resend.com/docs/webhooks/introduction) e [verificação de assinaturas](https://resend.com/docs/webhooks/verify-webhooks-requests). Aprovação da política não significa implementação concluída.
 
 ### Ambientes e Deploy
 

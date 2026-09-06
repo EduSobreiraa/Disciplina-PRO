@@ -92,7 +92,7 @@ Este checklist é a fonte de controle do gate B10.0. Um item marcado só é acei
 | Canal de suporte ao cliente | **suporte@sparkinteligencia.com.br — DEFINIDO** | proprietário do projeto | operar antes do primeiro cliente | ADR-016 |
 | Prazo operacional de primeira resposta ao cliente | **até 2 dias úteis — DEFINIDO** | proprietário do projeto | operar antes do primeiro cliente | ADR-016 |
 | Volume inicial esperado de e-mails | **A DEFINIR** | Direção da Spark | antes da contratação | PP-015 |
-| Regra empresarial para convite não entregue | **1 reenvio após 30 minutos; persistindo, notificar admin do tenant — DEFINIDA** | proprietário do projeto | implementar antes do primeiro cliente | ADR-016/PP-015 |
+| Regra empresarial para convite não entregue | **Falha temporária: 1 reenvio após 30 minutos; persistindo, notificar admin. Rejeição permanente/reclamação: interromper envios e notificar, sem retry — DEFINIDA em 05/09/2026** | proprietário do projeto | implementar antes do primeiro cliente | ADR-016/PP-015 |
 | Critério técnico para abertura de staging | **Eduardo valida o candidato em staging e registra o resultado por e-mail** | Direção da Spark | antes de staging público | decisão operacional de 21/08/2026 |
 | Critério técnico para abertura de produção | **testes de staging aprovados por Eduardo e decisão registrada por e-mail** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
 | Checklist de autorização técnica de release | **e-mail com versão, evidências de staging, migrations, riscos e decisão — DEFINIDO** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
@@ -242,7 +242,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Limites de disparo dos alertas | **A DEFINIR** | cobertura aprovada | antes de staging público | PP-008 |
 | Campos proibidos em logs e monitoramento | **A DEFINIR E VALIDAR** | matriz jurídica validada | antes de staging público | PP-008/PP-004 |
 | Procedimento técnico de incidente | **DEFINIDO E ENSAIADO NO LAB EM 03/09/2026** | Eduardo; contas/canais corporativos pendentes | repetir no staging oficial | PP-008/BX.4 |
-| Política técnica de novas tentativas de e-mail | **1 reenvio após 30 minutos — DEFINIDA; implementar e testar** | ADR aprovado | antes do primeiro cliente | ADR-016/PP-015 |
+| Política técnica de novas tentativas de e-mail | **1 reenvio após 30 minutos apenas para falhas temporárias elegíveis; acompanhamento por webhook assinado, sem polling de status — DEFINIDA; implementar e testar** | ADR aprovado | antes do primeiro cliente | ADR-016/PP-015 |
 | Tratamento técnico de e-mail devolvido | **após nova falha, notificar admin do tenant — DEFINIDO; implementar e testar** | ADR aprovado | antes do primeiro cliente | ADR-016/PP-015 |
 | Monitoramento de falhas de entrega | **A DEFINIR E TESTAR** | provedor aprovado | antes do primeiro cliente | PP-015 |
 | Solução para automação adicional de segurança | **A DEFINIR OU DOCUMENTAR MITIGAÇÃO** | decisão da Spark | antes do release | PP-014 |
@@ -271,7 +271,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Calendário de revisão de acessos | **A DEFINIR** | Direção da Spark | antes de produção | PP-005 |
 | Calendário de teste de restauração | **A DEFINIR** | Direção da Spark | antes de produção | PP-007 |
 | Calendário de troca de segredos | **A DEFINIR** | Direção aprova proposta técnica | antes de produção | PP-006 |
-| Acompanhamento de entrega de e-mails | **A DEFINIR** | Direção da Spark | antes do primeiro cliente | PP-015 |
+| Acompanhamento de entrega de e-mails | **Webhooks Resend assinados, com deduplicação e tratamento de eventos fora de ordem; sem polling de status — DEFINIDO em 05/09/2026; implementar e testar** | proprietário do projeto | antes do primeiro cliente | ADR-016/PP-015 |
 | Processo de suporte ao cliente | **A DEFINIR** | Direção da Spark | antes do primeiro cliente | GOVERNANCA |
 | Guarda das evidências de aprovação de release | **e-mail corporativo — DEFINIDO** | Direção da Spark | antes de produção | decisão operacional de 21/08/2026 |
 
@@ -292,7 +292,7 @@ Estas definições são técnicas. Quando dependerem de política, fornecedor ou
 | Recuperação | RPO de 1 hora e RTO de 4 horas | implementar e ensaiar |
 | Segredos no MVP | Railway Environment Variables | implementar e ensaiar comprometimento |
 | Monitoramento do MVP | OpenTelemetry, Sentry e Better Stack, com responsabilidades separadas | Sentry/Better Stack comprovados no lab; implementar OpenTelemetry, reproduzir em contas corporativas e ensaiar runbook |
-| E-mail transacional | Resend; 1 reenvio após 30 minutos | validar contrato, registrar domínio e implementar |
+| E-mail transacional | Resend; webhook assinado; 1 reenvio após 30 minutos em falha temporária, nenhum em rejeição permanente/reclamação | validar contrato, registrar domínio e implementar |
 | Cobertura operacional | segunda a sábado, 8h–20h; reconhecimento em 30 minutos | definir responsáveis e início da resposta |
 | Suporte no MVP | e-mail da Spark; primeira resposta em até 2 dias úteis; sem SLA de disponibilidade | operar e revisar antes de cliente enterprise |
 | Ambientes | staging e produção no Railway; staging primeiro e produção após validação manual | implementar e definir gates formais |

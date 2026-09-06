@@ -751,7 +751,7 @@ Entregas:
 - gestão de secrets, TLS, headers, rate limits e políticas de cookie;
 - logs, erros e monitoramento sem dados sensíveis;
 - backup, restauração, retenção e procedimento de incidente;
-- testes de carga básicos, acessibilidade e dispositivos físicos;
+- testes de carga básicos, acessibilidade e interatividade;
 - checklist de release e documentação operacional.
 
 Problemas incorporados:
@@ -761,7 +761,7 @@ Problemas incorporados:
 - `PP-006`: operar chaves e peppers em secret manager e ensaiar rotação/comprometimento;
 - `PP-007`: implementar RPO/RTO aprovados e ensaiar backup, restauração e rollback;
 - `PP-008`: implantar alertas, agregação de erros e runbook de incidente sem dados sensíveis;
-- `PP-010`: validar teclado, leitor de tela e dispositivos físicos;
+- `PP-010`: validar teclado e leitor de tela;
 - `PP-014`: restaurar CodeQL/Dependabot ou automação equivalente validada;
 - `PP-015`: selecionar e validar provedor transacional, retry e bounce;
 - `PP-016`: encerrado em 03/09/2026 com auditoria e Dependabot zerados, sem downgrade ou override incompatível;
@@ -809,7 +809,7 @@ Problemas incorporados:
 
 **Problemas proprietários:** `PP-010` e `PP-014`; ampliação do `PP-009`. O `PP-016` já foi encerrado na BX.5.
 
-**Gate:** auditoria de dependências aprovada, automação de segurança equivalente validada, Playwright executado em staging e fluxos críticos aprovados com tecnologia assistiva e dispositivos físicos.
+**Gate:** auditoria de dependências aprovada, automação de segurança equivalente validada, Playwright executado em staging e fluxos críticos aprovados com tecnologia assistiva. Testes em aparelhos físicos não são gate de staging.
 
 #### B10.5 — Staging, ensaio de release e decisão de lançamento
 
@@ -832,7 +832,7 @@ Esta matriz vincula dívida a uma entrega e impede que o item fique apenas no re
 | PP-007 — backup/rollback | B10.3 | RPO/RTO, restauração e estratégia de migration ensaiados |
 | PP-008 — observabilidade | B10.3 | alertas e runbook testados sem exposição sensível |
 | PP-009 — Playwright frontend | B8, ampliado em B10.4 | suíte versionada no CI e execução em staging |
-| PP-010 — acessibilidade real | B10.4 | validação assistiva e dispositivos físicos |
+| PP-010 — acessibilidade real | B10.4 | validação assistiva |
 | PP-014 — automação de segurança | B10.4 | CodeQL/Dependabot ou equivalente validado |
 | PP-015 — e-mail transacional | B10.3 | envio, retry e bounce pelo provedor escolhido |
 | PP-016 — advisories | BX.5 — encerrado em 03/09/2026 | auditoria, Dependabot e CI sem achados |
