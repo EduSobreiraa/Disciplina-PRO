@@ -21,7 +21,7 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 | --- | --- | --- |
 | S1 — Governança do Sonar e CI | Validada no CI | O scan do commit `c9bff77` recebeu a versão `0.1.0`, consumiu os cinco LCOV e bloqueou corretamente o workflow quando o Quality Gate ficou vermelho. |
 | S2 — Bugs e blockers | Validada no SonarCloud | A análise do commit `c9bff77` não apresentou issues abertas; as correções e assertions explícitas foram aceitas pelo analisador. |
-| S3 — Cobertura | Correção complementar em validação | O primeiro scan mediu 68,9% no código novo. Setup de teste e cliente Prisma gerado foram retirados do escopo, e 10 testes diretos foram adicionados; a estimativa local de linhas novas cobertas passou a 84,3%. |
+| S3 — Cobertura | Correção complementar em validação | Os scans mediram 68,9% e depois 74,6% no código novo. Setup de teste e cliente Prisma gerado foram retirados do escopo, e 16 testes diretos foram adicionados; a estimativa local combinada de linhas e condições passou a 82,4%. |
 | S4 — Configuração e segurança | Implementada e validada localmente | Validação de ambiente modularizada, e-mail validado sem regex vulnerável e bootstrap com propagação de falha. |
 | S5 — Complexidade backend | Implementada e validada localmente | Worker, eventos, filtro HTTP, mapeadores e entrega Resend foram divididos em funções menores; testes unitários e integrações afetadas foram aprovados. |
 | S6 — Diálogos e semântica | Implementada localmente | Três modais migrados para `<dialog>`, região rolável convertida para `<section>` e 17 usos intencionais classificados no Sonar. Chromium e Firefox aprovados; WebKit será confirmado no CI. |
@@ -36,7 +36,7 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 - backend E2E: 5 suítes e 24 testes aprovados; cobertura de linhas de 57,56%;
 - após regenerar os três relatórios, a união dos LCOV do backend contém 3.045 de 3.391 linhas cobertas, ou 89,80%; as CLIs permanecem no escopo e o cliente Prisma gerado foi retirado dos coletores;
 - arquivos `*.spec.ts` e `main.ts` foram retirados dos três coletores; nenhum arquivo de teste permanece nos LCOV do backend;
-- frontend: infraestrutura Vitest/jsdom/Testing Library adicionada, com 40 testes de componente aprovados;
+- frontend: infraestrutura Vitest/jsdom/Testing Library adicionada, com 46 testes de componente aprovados;
 - união dos LCOV do frontend calculada localmente: 1.123 de 2.075 linhas, ou 54,12%;
 - fase de cobertura completa em 06/09/2026: 48 suítes e 214 testes unitários do backend, 59 testes unitários do frontend e 30 testes de componentes aprovados; os cinco LCOV configurados no Sonar foram encontrados, estão preenchidos e referenciam somente fontes existentes;
 - fase de integração completa em 06/09/2026: banco isolado criado, 14 migrations aplicadas e 36 suítes com 120 testes aprovados; o LCOV de integração foi regenerado, sem fontes ausentes ou arquivos de teste, e a união do backend permaneceu em 3.045 de 3.391 linhas, ou 89,80%;
@@ -44,8 +44,9 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 - fase de auditoria de dependências em 06/09/2026: o gate inicialmente aprovou por não haver alertas altos ou críticos, mas a auditoria bruta revelou duas ocorrências moderadas da mesma cadeia `prisma > mysql2`; o override transitivo foi atualizado de `mysql2@3.22.0` para a primeira versão corrigida, `3.23.1`, preservando o Prisma 7.9.1. A repetição do gate e da auditoria bruta confirmou zero vulnerabilidades em todas as severidades; `prisma validate` e typecheck também passaram;
 - primeira consolidação da fase 5: commit `c9bff77` enviado para `main`; o workflow `34031337317` aprovou instalação limpa, geração e migrations Prisma, lint, typecheck, coberturas unitária/E2E/integração e o upload do Sonar para o mesmo SHA;
 - o Quality Gate bloqueou corretamente esse workflow por uma única condição: 68,9% de cobertura no código novo, diante da meta de 80%; a consulta de issues retornou zero itens abertos;
-- correção complementar de cobertura: `frontend/src/test/**` passou a ser classificado como teste, `backend/src/generated/**` foi excluído dos coletores e foram adicionados 10 testes para `DisciplineTrackerPage`, `JustificationDialog`, `MembershipAdministrationPanel`, `RitualTimer` e `PlatformAdministrationPage`;
-- após a correção complementar, 11 arquivos e 40 testes de componente passaram; a cobertura de componentes chegou a 504 de 1.442 linhas, ou 34,95%, e a interseção local entre os cinco LCOV e as linhas novas desde `2569ab0` estimou 397 de 471 linhas, ou 84,3%;
+- primeira correção complementar de cobertura: `frontend/src/test/**` passou a ser classificado como teste, `backend/src/generated/**` foi excluído dos coletores e foram adicionados 10 testes para `DisciplineTrackerPage`, `JustificationDialog`, `MembershipAdministrationPanel`, `RitualTimer` e `PlatformAdministrationPage`; o scan do commit `8613f2f` subiu a cobertura do código novo para 74,6%;
+- segundo bloco complementar: seis testes cobrem os fluxos de definição do Novo Eu, check-in, dia difícil, início do ciclo, resumo de fases e meditação do Projeto 66;
+- após os dois blocos, 14 arquivos e 46 testes de componente passaram; a cobertura de componentes chegou a 574 de 1.442 linhas, ou 39,80%, e a interseção local entre os cinco LCOV e as linhas/condições novas desde `2569ab0` estimou cobertura combinada de 82,4%;
 - `InvitationAcceptancePage`: nove cenários de componente aprovados e 58 de 62 linhas cobertas, ou 93,55%;
 - `useTenantAdministration`: seis cenários de hook aprovados e 58 de 59 linhas cobertas, ou 98,31%;
 - `useDailyRitual`: cinco cenários de hook aprovados e 61 de 63 linhas cobertas, ou 96,83%;
