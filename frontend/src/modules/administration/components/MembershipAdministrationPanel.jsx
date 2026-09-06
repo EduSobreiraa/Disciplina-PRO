@@ -35,7 +35,13 @@ export function MembershipAdministrationPanel({ administration }) {
       if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
     }
     document.addEventListener('keydown', onKeyDown)
-    return () => { document.removeEventListener('keydown', onKeyDown); if (dialog.open) dialog.close(); openerRef.current?.focus?.() }
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      if (dialog.open) {
+        dialog.close()
+      }
+      openerRef.current?.focus?.()
+    }
   }, [transition])
 
   function allowedTransitions(membership) {
