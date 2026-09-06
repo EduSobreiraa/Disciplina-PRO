@@ -19,9 +19,9 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 
 | Entrega | Estado | Resultado atual |
 | --- | --- | --- |
-| S1 — Governança do Sonar e CI | Implementada localmente | O scan aguarda o Quality Gate, recebe a versão do pacote e consome todos os LCOV disponíveis. Falta validar o workflow após commit. |
-| S2 — Bugs e blockers | Implementada localmente | Correções de código e assertions explícitas concluídas. Falta a nova análise confirmar o encerramento das issues. |
-| S3 — Cobertura | Validada localmente | LCOV separado para unitários, integração, E2E e componentes; os cinco relatórios foram validados sem fontes ausentes ou arquivos de teste. A meta de 80% no código novo ainda precisa ser medida pelo Sonar. |
+| S1 — Governança do Sonar e CI | Validada no CI | O scan do commit `c9bff77` recebeu a versão `0.1.0`, consumiu os cinco LCOV e bloqueou corretamente o workflow quando o Quality Gate ficou vermelho. |
+| S2 — Bugs e blockers | Validada no SonarCloud | A análise do commit `c9bff77` não apresentou issues abertas; as correções e assertions explícitas foram aceitas pelo analisador. |
+| S3 — Cobertura | Correção complementar em validação | O primeiro scan mediu 68,9% no código novo. Setup de teste e cliente Prisma gerado foram retirados do escopo, e 10 testes diretos foram adicionados; a estimativa local de linhas novas cobertas passou a 84,3%. |
 | S4 — Configuração e segurança | Implementada e validada localmente | Validação de ambiente modularizada, e-mail validado sem regex vulnerável e bootstrap com propagação de falha. |
 | S5 — Complexidade backend | Implementada e validada localmente | Worker, eventos, filtro HTTP, mapeadores e entrega Resend foram divididos em funções menores; testes unitários e integrações afetadas foram aprovados. |
 | S6 — Diálogos e semântica | Implementada localmente | Três modais migrados para `<dialog>`, região rolável convertida para `<section>` e 17 usos intencionais classificados no Sonar. Chromium e Firefox aprovados; WebKit será confirmado no CI. |
@@ -34,14 +34,18 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 - backend unitário: 48 suítes e 214 testes aprovados; cobertura de linhas de 35,56%;
 - backend integração: 36 suítes e 120 testes aprovados; cobertura de linhas de 82,42%;
 - backend E2E: 5 suítes e 24 testes aprovados; cobertura de linhas de 57,56%;
-- após regenerar os três relatórios, a união dos LCOV do backend contém 3.045 de 3.391 linhas cobertas, ou 89,80%; código gerado e CLIs permanecem no escopo;
+- após regenerar os três relatórios, a união dos LCOV do backend contém 3.045 de 3.391 linhas cobertas, ou 89,80%; as CLIs permanecem no escopo e o cliente Prisma gerado foi retirado dos coletores;
 - arquivos `*.spec.ts` e `main.ts` foram retirados dos três coletores; nenhum arquivo de teste permanece nos LCOV do backend;
-- frontend: infraestrutura Vitest/jsdom/Testing Library adicionada, com 30 testes de componente aprovados;
+- frontend: infraestrutura Vitest/jsdom/Testing Library adicionada, com 40 testes de componente aprovados;
 - união dos LCOV do frontend calculada localmente: 1.123 de 2.075 linhas, ou 54,12%;
 - fase de cobertura completa em 06/09/2026: 48 suítes e 214 testes unitários do backend, 59 testes unitários do frontend e 30 testes de componentes aprovados; os cinco LCOV configurados no Sonar foram encontrados, estão preenchidos e referenciam somente fontes existentes;
 - fase de integração completa em 06/09/2026: banco isolado criado, 14 migrations aplicadas e 36 suítes com 120 testes aprovados; o LCOV de integração foi regenerado, sem fontes ausentes ou arquivos de teste, e a união do backend permaneceu em 3.045 de 3.391 linhas, ou 89,80%;
 - fase E2E completa em 06/09/2026: banco `disciplina_pro_e2e` reconstruído, 5 suítes e 24 testes backend aprovados e LCOV E2E regenerado; no frontend, 105 execuções Playwright passaram em Chromium desktop/mobile e uma jornada de privacidade foi ignorada intencionalmente no projeto mobile, pois sua execução funcional ocorre no desktop e a responsividade é coberta pela matriz dedicada;
 - fase de auditoria de dependências em 06/09/2026: o gate inicialmente aprovou por não haver alertas altos ou críticos, mas a auditoria bruta revelou duas ocorrências moderadas da mesma cadeia `prisma > mysql2`; o override transitivo foi atualizado de `mysql2@3.22.0` para a primeira versão corrigida, `3.23.1`, preservando o Prisma 7.9.1. A repetição do gate e da auditoria bruta confirmou zero vulnerabilidades em todas as severidades; `prisma validate` e typecheck também passaram;
+- primeira consolidação da fase 5: commit `c9bff77` enviado para `main`; o workflow `34031337317` aprovou instalação limpa, geração e migrations Prisma, lint, typecheck, coberturas unitária/E2E/integração e o upload do Sonar para o mesmo SHA;
+- o Quality Gate bloqueou corretamente esse workflow por uma única condição: 68,9% de cobertura no código novo, diante da meta de 80%; a consulta de issues retornou zero itens abertos;
+- correção complementar de cobertura: `frontend/src/test/**` passou a ser classificado como teste, `backend/src/generated/**` foi excluído dos coletores e foram adicionados 10 testes para `DisciplineTrackerPage`, `JustificationDialog`, `MembershipAdministrationPanel`, `RitualTimer` e `PlatformAdministrationPage`;
+- após a correção complementar, 11 arquivos e 40 testes de componente passaram; a cobertura de componentes chegou a 504 de 1.442 linhas, ou 34,95%, e a interseção local entre os cinco LCOV e as linhas novas desde `2569ab0` estimou 397 de 471 linhas, ou 84,3%;
 - `InvitationAcceptancePage`: nove cenários de componente aprovados e 58 de 62 linhas cobertas, ou 93,55%;
 - `useTenantAdministration`: seis cenários de hook aprovados e 58 de 59 linhas cobertas, ou 98,31%;
 - `useDailyRitual`: cinco cenários de hook aprovados e 61 de 63 linhas cobertas, ou 96,83%;
@@ -59,9 +63,9 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 
 O restante será executado em blocos independentes, com validação e relato ao final de cada bloco:
 
-1. consolidar as alterações em commit, atualizar o Graphify e conferir o SonarCloud;
-2. confirmar os projetos WebKit no CI;
-3. usar a cobertura do código novo publicada pelo Sonar para decidir se páginas frontend adicionais precisam de testes diretos.
+1. consolidar a correção complementar de cobertura, atualizar o Graphify e conferir novamente o SonarCloud;
+2. confirmar os projetos WebKit no CI depois da aprovação do Quality Gate;
+3. encerrar a fase 5 quando o mesmo SHA estiver verde no CI e no SonarCloud.
 
 ## 3. Decisões de implementação
 
@@ -78,7 +82,7 @@ O restante será executado em blocos independentes, com validação e relato ao 
 
 ### Entrega S1 — Governança do Sonar e do CI
 
-**Status:** implementada localmente; validação no GitHub Actions pendente
+**Status:** validada no GitHub Actions; o bloqueio do Quality Gate foi comprovado
 **Prioridade:** P0
 **Dependências:** nenhuma
 **Arquivos principais:** `.github/workflows/ci.yml`, `sonar-project.properties`, `package.json`
@@ -108,7 +112,7 @@ Critério de aceite:
 
 ### Entrega S2 — Bugs e blockers
 
-**Status:** implementada localmente; confirmação pelo próximo scan pendente
+**Status:** validada no SonarCloud; zero issues abertas no scan do commit `c9bff77`
 **Prioridade:** P0
 **Dependências:** S1; consolidação das mudanças locais de `mission-metrics.ts`
 **Resultado esperado:** remover ou resolver 15 bugs e 8 blockers
@@ -143,7 +147,7 @@ Critério de aceite:
 
 ### Entrega S3 — Cobertura observável e confiável
 
-**Status:** cobertura local concluída e validada; medição do código novo no Sonar pendente
+**Status:** correção complementar concluída localmente; nova medição do Sonar pendente
 **Prioridade:** P0
 **Dependências:** S1
 **Arquivos principais:** scripts dos workspaces, configurações Jest, configuração de testes frontend e `sonar-project.properties`
