@@ -13,6 +13,31 @@ describe('validateEnvironment', () => {
     expect(validateEnvironment({ ...base, RESEND_API_KEY: 're_test', RESEND_TEST_RECIPIENT: 'owner@example.test' })).toMatchObject({ INVITATION_EMAIL_PROVIDER: 'resend', RESEND_FROM: 'onboarding@resend.dev' })
   })
 
+  it.each([
+    'owner @example.test',
+    'owner@@example.test',
+    'owner@',
+    'owner@example',
+    'owner@example.test;second@example.test',
+  ])('rejects an invalid Resend test recipient: %s', (recipient) => {
+    expect(() => validateEnvironment({
+      INVITATION_EMAIL_PROVIDER: 'resend',
+      SMTP_DELIVERY_ENABLED: 'true',
+      RESEND_API_KEY: 're_test',
+      RESEND_TEST_RECIPIENT: recipient,
+    })).toThrow('RESEND_TEST_RECIPIENT')
+  })
+
+  it('rejects a Resend test recipient above the supported size limit', () => {
+    const recipient = `${'a'.repeat(309)}@example.test`
+    expect(() => validateEnvironment({
+      INVITATION_EMAIL_PROVIDER: 'resend',
+      SMTP_DELIVERY_ENABLED: 'true',
+      RESEND_API_KEY: 're_test',
+      RESEND_TEST_RECIPIENT: recipient,
+    })).toThrow('RESEND_TEST_RECIPIENT')
+  })
+
   it('does not require Resend credentials when delivery is disabled', () => {
     expect(validateEnvironment({ INVITATION_EMAIL_PROVIDER: 'resend', SMTP_DELIVERY_ENABLED: 'false' }).SMTP_DELIVERY_ENABLED).toBe(false)
   })

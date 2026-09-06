@@ -39,7 +39,7 @@ export class ResendWebhookController {
     if (!status) return { received: true }
     const event = payload as { data?: { email_id?: unknown }; created_at?: unknown }
     const emailId = event.data?.email_id
-    const occurredAt = typeof event.created_at === 'string' ? new Date(event.created_at) : new Date(NaN)
+    const occurredAt = typeof event.created_at === 'string' ? new Date(event.created_at) : new Date(Number.NaN)
     if (typeof emailId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(emailId) || Number.isNaN(occurredAt.getTime())) throw new BadRequestException('Evento inválido')
     // Acknowledge only after commit; storage failures remain retryable by Resend.
     await this.deliveries.recordEvent({ eventId, providerEmailId: emailId, status, occurredAt })

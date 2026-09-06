@@ -44,6 +44,7 @@ export class PrismaProgramAvailabilityProvisioner extends ProgramAvailabilityPro
   }
 
   private lock(transaction: Prisma.TransactionClient, tenantId: string) {
-    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:availability:${tenantId}`}))`
+    const lockKey = `disciplina-pro:availability:${tenantId}`
+    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
   }
 }

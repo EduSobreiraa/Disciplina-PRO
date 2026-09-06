@@ -1,9 +1,12 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "rootDir": "..",
   "testEnvironment": "node",
   "testRegex": ".integration-spec.ts$",
   "extensionsToTreatAsEsm": [".ts"],
   "transform": {"^.+\\.ts$": ["ts-jest", {"useESM": true}]},
-  "moduleNameMapper": {"^(\\.{1,2}/.*)\\.js$": "$1"}
+  "moduleNameMapper": {"^(\\.{1,2}/.*)\\.js$": "$1"},
+  "collectCoverageFrom": ["src/**/*.ts", "!src/**/*.spec.ts", "!src/main.ts"],
+  "coverageDirectory": "coverage/integration",
+  "coverageReporters": ["lcov", "text-summary"]
 }

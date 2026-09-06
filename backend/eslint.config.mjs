@@ -13,6 +13,7 @@ export default tseslint.config(
     },
     rules: {
       '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
   { ignores: ['dist/**', 'coverage/**'] },

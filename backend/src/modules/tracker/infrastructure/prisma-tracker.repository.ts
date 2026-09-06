@@ -244,7 +244,8 @@ export class PrismaTrackerRepository extends TrackerRepository {
   }
 
   private lockMembership(tx: Transaction, membershipId: string) {
-    return tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:tracker:${membershipId}`}))`
+    const lockKey = `disciplina-pro:tracker:${membershipId}`
+    return tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
   }
 
   private currentDateIn(timeZone: string) {

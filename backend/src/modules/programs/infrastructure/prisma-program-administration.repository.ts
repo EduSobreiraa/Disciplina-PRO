@@ -158,7 +158,8 @@ export class PrismaProgramAdministrationRepository extends ProgramAdministration
   }
 
   private async lockProgram(tx: Prisma.TransactionClient, id: string) {
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:program:${id}`}))`
+    const lockKey = `disciplina-pro:program:${id}`
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
     const program = await tx.program.findUnique({ where: { id } })
     if (!program) throw new ProgramNotFoundError()
     return program

@@ -12,7 +12,7 @@ export class ResendInvitationNoticeDelivery extends InvitationNoticeDelivery {
     if (!this.config.get('SMTP_DELIVERY_ENABLED', { infer: true })) return 'BLOCKED'
     const stage = this.config.get('DEPLOYMENT_STAGE', { infer: true })
     const allowed = this.config.get('RESEND_TEST_RECIPIENT', { infer: true })
-    if (['local', 'lab'].includes(stage) && (!allowed || notice.email.toLowerCase() !== allowed.toLowerCase())) return 'BLOCKED'
+    if (['local', 'lab'].includes(stage) && notice.email.toLowerCase() !== allowed?.toLowerCase()) return 'BLOCKED'
     // No acceptance token or invitee address: details require an authenticated panel.
     const body = JSON.stringify({
       from: this.config.get('RESEND_FROM', { infer: true }), to: notice.email,

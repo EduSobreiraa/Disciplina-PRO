@@ -94,7 +94,8 @@ export class PrismaTenantAdministrationRepository extends TenantAdministrationRe
   }
 
   private async findTransitionTarget(transaction: Prisma.TransactionClient, id: string, states: TenantStatus[]) {
-    await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:tenant:${id}`}))`
+    const lockKey = `disciplina-pro:tenant:${id}`
+    await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
     const tenant = await transaction.tenant.findUnique({ where: { id }, select: { id: true, status: true } })
     if (!tenant) throw new TenantNotFoundError()
     if (!states.includes(tenant.status)) throw new InvalidTenantTransitionError()

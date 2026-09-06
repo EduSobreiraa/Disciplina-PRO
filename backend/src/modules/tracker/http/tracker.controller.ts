@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common'
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, HttpException, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common'
 import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import type { CurrentTenantContext } from '../../organizations/application/organization-context.repository.js'
 import { CurrentTenant } from '../../organizations/http/current-organization-context.decorators.js'
@@ -28,6 +28,27 @@ import {
   TrackerMarkNotFoundError,
 } from '../domain/tracker.errors.js'
 import { RestoreTrackerBackupDto, TrackerBackupDto, TrackerBehaviorDto, TrackerBehaviorViewDto, TrackerJustificationDto, TrackerMarkDto, TrackerRangeQueryDto, TrackerStateDto } from './tracker.dto.js'
+
+interface TrackerErrorMapping {
+  matches(error: unknown): boolean
+  toHttpException(): HttpException
+}
+
+const TRACKER_ERROR_MAPPINGS: TrackerErrorMapping[] = [
+  { matches: (error) => error instanceof InvalidTrackerRangeError, toHttpException: () => new BadRequestException({ code: 'INVALID_TRACKER_DATE', message: 'Data ou intervalo do tracker inválido' }) },
+  { matches: (error) => error instanceof InvalidTrackerDataError, toHttpException: () => new BadRequestException({ code: 'INVALID_TRACKER_DATA', message: 'Dados do tracker inválidos' }) },
+  { matches: (error) => error instanceof InvalidTrackerBackupError, toHttpException: () => new BadRequestException({ code: 'INVALID_TRACKER_BACKUP', message: 'Backup do tracker inválido ou incompatível' }) },
+  { matches: (error) => error instanceof TrackerFutureDateError, toHttpException: () => new BadRequestException({ code: 'TRACKER_FUTURE_DATE', message: 'Não é permitido registrar data futura' }) },
+  { matches: (error) => error instanceof TrackerPastDateError, toHttpException: () => new BadRequestException({ code: 'TRACKER_PAST_DATE', message: 'Só é permitido alterar marcações do dia atual' }) },
+  { matches: (error) => error instanceof TrackerBehaviorDuplicateError, toHttpException: () => new ConflictException({ code: 'TRACKER_BEHAVIOR_DUPLICATE', message: 'Comportamento já existe' }) },
+  { matches: (error) => error instanceof TrackerBehaviorLimitError, toHttpException: () => new ConflictException({ code: 'TRACKER_BEHAVIOR_LIMIT', message: 'Limite de comportamentos ativos atingido' }) },
+  { matches: (error) => error instanceof TrackerJustificationNotAllowedError, toHttpException: () => new ConflictException({ code: 'TRACKER_JUSTIFICATION_NOT_ALLOWED', message: 'Justificativa exige uma marca de falha' }) },
+  { matches: (error) => error instanceof TrackerContextNotFoundError || error instanceof TrackerBehaviorNotFoundError || error instanceof TrackerMarkNotFoundError, toHttpException: () => new NotFoundException({ code: 'RESOURCE_NOT_FOUND', message: 'Recurso não encontrado' }) },
+]
+
+function trackerHttpException(error: unknown) {
+  return TRACKER_ERROR_MAPPINGS.find((mapping) => mapping.matches(error))?.toHttpException()
+}
 
 @ApiTags('Personal tracker')
 @TenantRoute()
@@ -116,15 +137,8 @@ export class TrackerController {
 
   private async mapErrors<T>(operation: () => Promise<T>) {
     try { return await operation() } catch (error) {
-      if (error instanceof InvalidTrackerRangeError) throw new BadRequestException({ code: 'INVALID_TRACKER_DATE', message: 'Data ou intervalo do tracker inválido' })
-      if (error instanceof InvalidTrackerDataError) throw new BadRequestException({ code: 'INVALID_TRACKER_DATA', message: 'Dados do tracker inválidos' })
-      if (error instanceof InvalidTrackerBackupError) throw new BadRequestException({ code: 'INVALID_TRACKER_BACKUP', message: 'Backup do tracker inválido ou incompatível' })
-      if (error instanceof TrackerFutureDateError) throw new BadRequestException({ code: 'TRACKER_FUTURE_DATE', message: 'Não é permitido registrar data futura' })
-      if (error instanceof TrackerPastDateError) throw new BadRequestException({ code: 'TRACKER_PAST_DATE', message: 'Só é permitido alterar marcações do dia atual' })
-      if (error instanceof TrackerBehaviorDuplicateError) throw new ConflictException({ code: 'TRACKER_BEHAVIOR_DUPLICATE', message: 'Comportamento já existe' })
-      if (error instanceof TrackerBehaviorLimitError) throw new ConflictException({ code: 'TRACKER_BEHAVIOR_LIMIT', message: 'Limite de comportamentos ativos atingido' })
-      if (error instanceof TrackerJustificationNotAllowedError) throw new ConflictException({ code: 'TRACKER_JUSTIFICATION_NOT_ALLOWED', message: 'Justificativa exige uma marca de falha' })
-      if (error instanceof TrackerContextNotFoundError || error instanceof TrackerBehaviorNotFoundError || error instanceof TrackerMarkNotFoundError) throw new NotFoundException({ code: 'RESOURCE_NOT_FOUND', message: 'Recurso não encontrado' })
+      const httpException = trackerHttpException(error)
+      if (httpException) throw httpException
       throw error
     }
   }

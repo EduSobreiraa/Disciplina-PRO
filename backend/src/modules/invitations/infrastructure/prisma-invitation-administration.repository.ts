@@ -4,6 +4,8 @@ import { PrismaService } from '../../../database/prisma.service.js'
 import { InvitationAdministrationRepository, type InvitationRecord, type TenantInvitationActor } from '../application/invitation-administration.repository.js'
 import { FirstCeoInvitationUnavailableError, InvitationActorInactiveError, InvitationAlreadyPendingError, InvitationNotFoundError, InvitationNotPendingError, InvitationResourceScopeDeniedError, MembershipAlreadyExistsError } from '../domain/invitation.errors.js'
 
+type TenantInvitationActorRecord = { id: string; role: 'USER' | 'MANAGER' | 'CEO' }
+
 @Injectable()
 export class PrismaInvitationAdministrationRepository extends InvitationAdministrationRepository {
   constructor(private readonly prisma: PrismaService) { super() }
@@ -103,7 +105,7 @@ export class PrismaInvitationAdministrationRepository extends InvitationAdminist
       if (platform.length !== 1) throw new InvitationActorInactiveError()
       await this.lockInvitationIdentity(transaction, input.tenantId, input.normalizedEmail)
       const tenant = await transaction.tenant.findUnique({ where: { id: input.tenantId }, select: { status: true } })
-      if (!tenant || tenant.status !== 'PENDING') throw new FirstCeoInvitationUnavailableError()
+      if (tenant?.status !== 'PENDING') throw new FirstCeoInvitationUnavailableError()
       if (await transaction.tenantMembership.count({ where: { tenantId: input.tenantId } })) throw new FirstCeoInvitationUnavailableError()
       if (await transaction.invitation.count({ where: { tenantId: input.tenantId, role: 'CEO', status: 'PENDING' } })) throw new InvitationAlreadyPendingError()
       await this.assertNoMembership(transaction, input.tenantId, input.normalizedEmail)
@@ -135,7 +137,7 @@ export class PrismaInvitationAdministrationRepository extends InvitationAdminist
   }
 
   private async assertTenantActor(transaction: Prisma.TransactionClient, input: TenantInvitationActor) {
-    const actors = await transaction.$queryRaw<Array<{ id: string; role: 'USER' | 'MANAGER' | 'CEO' }>>`
+    const actors = await transaction.$queryRaw<TenantInvitationActorRecord[]>`
       SELECT tm.id, tm.role::text AS role
       FROM tenant_memberships tm
       JOIN tenants t ON t.id = tm.tenant_id
@@ -206,7 +208,8 @@ export class PrismaInvitationAdministrationRepository extends InvitationAdminist
   }
 
   private lockInvitationIdentity(transaction: Prisma.TransactionClient, tenantId: string, normalizedEmail: string) {
-    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:invitation:${tenantId}:${normalizedEmail}`}))`
+    const lockKey = `disciplina-pro:invitation:${tenantId}:${normalizedEmail}`
+    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
   }
 
   private auditMembershipActor(

@@ -6,6 +6,17 @@ import '../styles/platform-administration.css'
 
 const statusLabel = { PENDING: 'Pendente', ACTIVE: 'Ativo', SUSPENDED: 'Suspenso', CLOSED: 'Encerrado' }
 
+function transitionVerb(action) {
+  if (action === 'close') return 'encerrar definitivamente'
+  return action === 'suspend' ? 'suspender' : 'reativar'
+}
+
+function TenantCeoStatus({ tenant }) {
+  if (tenant.activeCeo) return <>CEO ativo: <strong>{tenant.activeCeo.email}</strong></>
+  if (tenant.pendingCeoInvitation) return <>Convite de CEO pendente: <strong>{tenant.pendingCeoInvitation.email}</strong></>
+  return 'Primeiro CEO ainda não convidado.'
+}
+
 export function PlatformAdministrationPage() {
   const session = useAppContext()
   const platform = usePlatformAdministration()
@@ -20,7 +31,7 @@ export function PlatformAdministrationPage() {
   }
 
   async function transition(tenant, action) {
-    const verb = action === 'close' ? 'encerrar definitivamente' : action === 'suspend' ? 'suspender' : 'reativar'
+    const verb = transitionVerb(action)
     const reason = window.prompt(`Motivo para ${verb} ${tenant.name}:`)
     if (reason?.trim()) await platform.transitionTenant(tenant.id, action, reason.trim())
   }
@@ -39,7 +50,7 @@ export function PlatformAdministrationPage() {
           <label>Nome<input required maxLength="160" value={tenantForm.name} onChange={(event) => setTenantForm({ ...tenantForm, name: event.target.value })} /></label>
           <label>Slug<input required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" maxLength="80" value={tenantForm.slug} onChange={(event) => setTenantForm({ ...tenantForm, slug: event.target.value })} /></label>
           <label>Timezone<input required maxLength="100" value={tenantForm.timeZone} onChange={(event) => setTenantForm({ ...tenantForm, timeZone: event.target.value })} /></label>
-          <button className="button" disabled={platform.mutating}>Criar pendente</button>
+          <button className="button" disabled={platform.mutating} type="submit">Criar pendente</button>
         </form>
       </section>
 
@@ -48,8 +59,8 @@ export function PlatformAdministrationPage() {
         {platform.delivery && <p className={`admin-delivery ${platform.delivery.status === 'FAILED' ? 'failed' : ''}`}>Convite para {platform.delivery.email}: {platform.delivery.status === 'SENT' ? 'enviado' : 'falha no transporte'}.</p>}
         {platform.tenants.length === 0 ? <p className="admin-empty">Nenhum tenant cadastrado.</p> : <div className="platform-list">{platform.tenants.map((tenant) => <article key={tenant.id}>
           <div className="platform-tenant-heading"><div><strong>{tenant.name}</strong><span>{tenant.slug} · {tenant.timeZone}</span></div><b className={`admin-status ${tenant.status.toLowerCase()}`}>{statusLabel[tenant.status]}</b></div>
-          <p>{tenant.activeCeo ? <>CEO ativo: <strong>{tenant.activeCeo.email}</strong></> : tenant.pendingCeoInvitation ? <>Convite de CEO pendente: <strong>{tenant.pendingCeoInvitation.email}</strong></> : 'Primeiro CEO ainda não convidado.'}</p>
-          {tenant.status === 'PENDING' && !tenant.activeCeo && !tenant.pendingCeoInvitation && <form className="platform-inline" onSubmit={(event) => { event.preventDefault(); platform.inviteFirstCeo(tenant.id, ceoEmails[tenant.id] ?? '').catch(() => {}) }}><label htmlFor={`ceo-email-${tenant.id}`}>E-mail do primeiro CEO</label><input id={`ceo-email-${tenant.id}`} required type="email" placeholder="ceo@empresa.com" value={ceoEmails[tenant.id] ?? ''} onChange={(event) => setCeoEmails({ ...ceoEmails, [tenant.id]: event.target.value })} /><button disabled={platform.mutating}>Convidar primeiro CEO</button></form>}
+          <p><TenantCeoStatus tenant={tenant} /></p>
+          {tenant.status === 'PENDING' && !tenant.activeCeo && !tenant.pendingCeoInvitation && <form className="platform-inline" onSubmit={(event) => { event.preventDefault(); platform.inviteFirstCeo(tenant.id, ceoEmails[tenant.id] ?? '').catch(() => {}) }}><label htmlFor={`ceo-email-${tenant.id}`}>E-mail do primeiro CEO</label><input id={`ceo-email-${tenant.id}`} required type="email" placeholder="ceo@empresa.com" value={ceoEmails[tenant.id] ?? ''} onChange={(event) => setCeoEmails({ ...ceoEmails, [tenant.id]: event.target.value })} /><button disabled={platform.mutating} type="submit">Convidar primeiro CEO</button></form>}
           <div className="platform-actions">
             {tenant.status === 'ACTIVE' && <button disabled={platform.mutating} onClick={() => transition(tenant, 'suspend').catch(() => {})}>Suspender</button>}
             {tenant.status === 'SUSPENDED' && <button disabled={platform.mutating} onClick={() => transition(tenant, 'reactivate').catch(() => {})}>Reativar</button>}

@@ -50,7 +50,8 @@ export class PrismaTenantProgramAdministrationRepository extends TenantProgramAd
   }
 
   private lock(tx: Prisma.TransactionClient, tenantId: string, programId: string) {
-    return tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:tenant-program:${tenantId}:${programId}`}))`
+    const lockKey = `disciplina-pro:tenant-program:${tenantId}:${programId}`
+    return tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
   }
 
   private async assertActor(tx: Prisma.TransactionClient, id: string) {

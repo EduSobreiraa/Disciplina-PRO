@@ -153,7 +153,8 @@ export class PrismaRitualRepository extends RitualRepository {
   }
 
   private lockMembership(tx: Transaction, membershipId: string) {
-    return tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:ritual:${membershipId}`}))`
+    const lockKey = `disciplina-pro:ritual:${membershipId}`
+    return tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
   }
 
   private currentDateIn(timeZone: string, now: Date) {

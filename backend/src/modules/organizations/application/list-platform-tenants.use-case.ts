@@ -6,8 +6,7 @@ import { TenantAdministrationRepository } from './tenant-administration.reposito
 export class ListPlatformTenantsUseCase {
   constructor(private readonly tenants: TenantAdministrationRepository) {}
 
-  execute(context: CurrentPlatformContext) {
-    void context
+  execute(_context: CurrentPlatformContext) {
     return this.tenants.list()
   }
 }

@@ -68,6 +68,12 @@ const executionDetailInclude = {
 type ExecutionDetailRecord = Prisma.EnrollmentGetPayload<{ include: typeof executionDetailInclude }>
 type Transaction = Prisma.TransactionClient
 
+function activityOccurrenceKey(frequency: 'ONCE' | 'DAILY' | 'WEEKLY', programDay: number) {
+  if (frequency === 'ONCE') return 'once'
+  if (frequency === 'DAILY') return `day:${programDay}`
+  return `week:${Math.ceil(programDay / 7)}`
+}
+
 @Injectable()
 export class PrismaExecutionRepository extends ExecutionLifecycleRepository implements ExecutionQueryRepository, ExecutionAdministrativeBlocker, ObjectiveExecutionFactsRepository {
   constructor(
@@ -96,7 +102,8 @@ export class PrismaExecutionRepository extends ExecutionLifecycleRepository impl
   start(context: CurrentTenantContext, enrollmentId: string, now: Date): Promise<EnrollmentExecutionView> {
     return this.prisma.$transaction(async (tx) => {
       const locked = await this.lockOwned(tx, context, enrollmentId)
-      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:program:${locked.programId}`}))`
+      const programLockKey = `disciplina-pro:program:${locked.programId}`
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${programLockKey}))`
       const enrollment = await this.current(tx, locked.id)
       if (enrollment.status !== 'AVAILABLE') throw new InvalidEnrollmentTransitionError()
       await this.assertEffectiveActor(tx, context)
@@ -306,11 +313,7 @@ export class PrismaExecutionRepository extends ExecutionLifecycleRepository impl
       if (!activity) throw new ActivityNotExecutableError()
       const progress = this.progress(enrollment, input.now)
       if (!progress) throw new ActivityNotExecutableError()
-      const occurrenceKey = activity.frequency === 'ONCE'
-        ? 'once'
-        : activity.frequency === 'DAILY'
-          ? `day:${progress.programDay}`
-          : `week:${Math.ceil(progress.programDay / 7)}`
+      const occurrenceKey = activityOccurrenceKey(activity.frequency, progress.programDay)
       const existing = await tx.activityCompletion.findUnique({
         where: { enrollmentId_activityId_occurrenceKey: { enrollmentId: enrollment.id, activityId: activity.id, occurrenceKey } },
       })
@@ -533,16 +536,14 @@ export class PrismaExecutionRepository extends ExecutionLifecycleRepository impl
       if (duplicate) continue
       if (!candidate.timeZone) throw new InvalidEnrollmentTransitionError()
       let pause = await tx.enrollmentPause.findFirst({ where: { enrollmentId: candidate.id, resumedAt: null } })
-      if (!pause) {
-        pause = await tx.enrollmentPause.create({
-          data: {
-            tenantId: input.tenantId,
-            enrollmentId: candidate.id,
-            pausedAt: input.now,
-            pauseStartsOn: this.calendar.addDays(this.calendar.today(input.now, candidate.timeZone), 1),
-          },
-        })
-      }
+      pause ??= await tx.enrollmentPause.create({
+        data: {
+          tenantId: input.tenantId,
+          enrollmentId: candidate.id,
+          pausedAt: input.now,
+          pauseStartsOn: this.calendar.addDays(this.calendar.today(input.now, candidate.timeZone), 1),
+        },
+      })
       await tx.enrollmentPauseCause.create({
         data: {
           tenantId: input.tenantId,

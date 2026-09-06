@@ -1,10 +1,9 @@
 import { InvalidEmailError, WeakPasswordError } from './identity.errors.js'
-
-const SIMPLE_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u
+import { isSingleEmailAddress } from '../../../email-address.js'
 
 export function normalizeEmail(email: string) {
   const normalized = email.trim().normalize('NFC').toLowerCase()
-  if (normalized.length > 320 || !SIMPLE_EMAIL_PATTERN.test(normalized)) throw new InvalidEmailError()
+  if (!isSingleEmailAddress(normalized)) throw new InvalidEmailError()
   return normalized
 }
 

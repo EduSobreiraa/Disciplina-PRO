@@ -12,7 +12,7 @@ export function getScoreStats(dailyRecords = {}) {
   if (!records.length) return { records, averageLast7: null, best: null, last: null }
   const last7 = records.slice(-7)
   const averageLast7 = Math.round((last7.reduce((total, record) => total + record.score, 0) / last7.length) * 10) / 10
-  const best = records.reduce((winner, record) => record.score > winner.score ? record : winner)
+  const best = records.reduce((winner, record) => record.score > winner.score ? record : winner, records[0])
   return { records, averageLast7, best, last: records.at(-1) }
 }
 

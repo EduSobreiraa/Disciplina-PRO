@@ -51,14 +51,22 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test:coverage
-      - run: npm run test:e2e
-      - run: npm run test:integration
+      - run: npm run test:e2e:coverage --workspace backend
+      - run: npm run test:integration:coverage --workspace backend
+      - name: Resolve project version
+        run: node -p "'SONAR_PROJECT_VERSION=' + require('./package.json').version" >> "$GITHUB_ENV"
+      - name: SonarQube Cloud scan and Quality Gate
+        # Tag v7 resolved and reviewed on 20/07/2026; Renovate/maintenance must update this SHA deliberately.
+        uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2
+        with:
+          args: >
+            -Dsonar.projectVersion=${{ env.SONAR_PROJECT_VERSION }}
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - run: npm run test:e2e:frontend
       - name: Firefox and WebKit compatibility
         run: npm run test:e2e:compatibility --workspace frontend -- --project=desktop-firefox --project=desktop-webkit --project=mobile-webkit
       - run: npm run build
       - run: npm run audit:dependencies
-      - name: SonarQube Cloud scan
-        # Tag v7 resolved and reviewed on 20/07/2026; Renovate/maintenance must update this SHA deliberately.
-        uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

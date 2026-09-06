@@ -2,7 +2,7 @@ import type { InvitationDeliveryMessage } from '../application/invitation-delive
 
 export function invitationEmail(message: InvitationDeliveryMessage, acceptanceUrl: string, from: string) {
   const link = `${acceptanceUrl}#token=${encodeURIComponent(message.token)}`
-  const htmlLink = link.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const htmlLink = link.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
   return {
     from,
     to: message.email,

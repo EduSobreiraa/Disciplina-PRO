@@ -5,6 +5,12 @@ import { calculateTrackerStats, getMarkKey } from '../services/tracker-stats'
 
 const emptyState = { behaviors: [], marks: {}, justifications: {} }
 
+function persistMark(repository, behaviorId, date, nextStatus) {
+  if (nextStatus === 0) return repository.deleteMark(behaviorId, date)
+  const status = nextStatus === 1 ? 'COMPLETED' : 'FAILED'
+  return repository.putMark(behaviorId, date, status)
+}
+
 export function useDisciplineTracker(year, month) {
   const session = useAppContext()
   const [view, setView] = useState({ status: 'loading', state: emptyState, error: null, mutating: false })
@@ -54,9 +60,7 @@ export function useDisciplineTracker(year, month) {
     const current = view.state.marks[key] ?? 0
     const nextStatus = (current + 1) % 3
     const date = key.slice(0, 10)
-    await mutate(() => nextStatus === 0
-      ? repository.deleteMark(behaviorId, date)
-      : repository.putMark(behaviorId, date, nextStatus === 1 ? 'COMPLETED' : 'FAILED'))
+    await mutate(() => persistMark(repository, behaviorId, date, nextStatus))
     return { key, status: nextStatus }
   }
 

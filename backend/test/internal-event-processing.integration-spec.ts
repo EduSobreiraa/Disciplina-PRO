@@ -100,6 +100,7 @@ describe('Internal event processing integration', () => {
         where: { entityId: concurrentEvent.id, action: 'TEST_INTERNAL_EVENT_PROCESSED' },
       })).toBe(1)
 
+      const metricsBeforeFailure = await metrics.execute()
       shouldFail = true
       const failingEvent = await createEvent(`failure:${suffix}`)
       const firstFailureAt = new Date()
@@ -137,9 +138,9 @@ describe('Internal event processing integration', () => {
       })
       expect(JSON.stringify(failedDelivery)).not.toContain('mensagem que não pode ser persistida')
       await expect(metrics.execute()).resolves.toMatchObject({
-        failed: 1,
-        expiredProcessing: 0,
-        maximumAttempts: 2,
+        failed: metricsBeforeFailure.failed + 1,
+        expiredProcessing: metricsBeforeFailure.expiredProcessing,
+        maximumAttempts: Math.max(metricsBeforeFailure.maximumAttempts, 2),
       })
 
       shouldFail = false

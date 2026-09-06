@@ -170,7 +170,8 @@ describe('Audit integration', () => {
   })
 
   it('validates pagination at the HTTP boundary', async () => {
-    await api('/me?page=0&limit=101', memberToken).expect(400)
+    const response = await api('/me?page=0&limit=101', memberToken)
+    expect(response.status).toBe(400)
   })
 
   async function login(email: string) {

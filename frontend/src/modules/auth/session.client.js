@@ -18,6 +18,16 @@ function cookieValue(cookieHeader, names) {
   return null
 }
 
+async function parse(response) {
+  if (response.ok) return response.status === 204 ? null : response.json()
+  const problem = await response.json().catch(() => ({}))
+  throw new SessionApiError(
+    response.status,
+    problem.code ?? 'REQUEST_FAILED',
+    problem.message ?? 'Falha na sessão',
+  )
+}
+
 export function createSessionClient({
   baseUrl = '/api',
   fetchImplementation = fetch,
@@ -26,16 +36,6 @@ export function createSessionClient({
   let accessToken = null
   let expiresAt = null
   let refreshFlight = null
-
-  async function parse(response) {
-    if (response.ok) return response.status === 204 ? null : response.json()
-    const problem = await response.json().catch(() => ({}))
-    throw new SessionApiError(
-      response.status,
-      problem.code ?? 'REQUEST_FAILED',
-      problem.message ?? 'Falha na sessão',
-    )
-  }
 
   function acceptAccess(session) {
     accessToken = session.accessToken

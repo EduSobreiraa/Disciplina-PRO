@@ -1,12 +1,16 @@
+import { isSingleEmailAddress } from '../email-address.js'
+
 const NODE_ENVIRONMENTS = ['development', 'test', 'production'] as const
 const DEPLOYMENT_STAGES = ['local', 'lab', 'staging', 'production'] as const
 const LOG_LEVELS = ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'] as const
 
 export type NodeEnvironment = (typeof NODE_ENVIRONMENTS)[number]
+type DeploymentStage = (typeof DEPLOYMENT_STAGES)[number]
+type InvitationEmailProvider = 'smtp' | 'resend'
 
 export interface Environment {
   NODE_ENV: NodeEnvironment
-  DEPLOYMENT_STAGE: (typeof DEPLOYMENT_STAGES)[number]
+  DEPLOYMENT_STAGE: DeploymentStage
   PORT: number
   FRONTEND_URL: string
   DATABASE_URL: string
@@ -32,7 +36,7 @@ export interface Environment {
   SMTP_AUTH_USER?: string
   SMTP_AUTH_PASSWORD?: string
   SMTP_FROM: string
-  INVITATION_EMAIL_PROVIDER: 'smtp' | 'resend'
+  INVITATION_EMAIL_PROVIDER: InvitationEmailProvider
   RESEND_API_KEY?: string
   RESEND_WEBHOOK_SECRET?: string
   RESEND_FROM: string
@@ -110,6 +114,94 @@ function requireProductionValue(raw: Record<string, unknown>, name: string) {
   return value
 }
 
+function validateResendConfiguration(input: {
+  raw: Record<string, unknown>
+  deploymentStage: DeploymentStage
+  smtpDeliveryEnabled: boolean
+  invitationEmailProvider: InvitationEmailProvider
+  resendApiKey?: string
+  resendFrom: string
+  resendTestRecipient?: string
+}) {
+  if (input.invitationEmailProvider !== 'resend' || !input.smtpDeliveryEnabled) return
+  if (!input.resendApiKey?.startsWith('re_')) throw new Error('RESEND_API_KEY é obrigatória para Resend')
+
+  const isTestStage = input.deploymentStage === 'local' || input.deploymentStage === 'lab'
+  if (isTestStage && (!input.resendTestRecipient || !isSingleEmailAddress(input.resendTestRecipient))) {
+    throw new Error('RESEND_TEST_RECIPIENT deve identificar um único destinatário de teste')
+  }
+
+  const isOfficialStage = input.deploymentStage === 'staging' || input.deploymentStage === 'production'
+  if (!isOfficialStage) return
+  requireProductionValue(input.raw, 'RESEND_FROM')
+  if (/@resend\.dev\b/i.test(input.resendFrom)) throw new Error('RESEND_FROM deve usar domínio corporativo em staging/produção')
+}
+
+function validateDeploymentStage(nodeEnvironment: NodeEnvironment, deploymentStage: DeploymentStage) {
+  if (nodeEnvironment !== 'production' && (deploymentStage === 'staging' || deploymentStage === 'production')) {
+    throw new Error('DEPLOYMENT_STAGE staging/production exige NODE_ENV=production')
+  }
+}
+
+function validateProductionSmtp(input: {
+  raw: Record<string, unknown>
+  deploymentStage: DeploymentStage
+  smtpDeliveryEnabled: boolean
+  invitationEmailProvider: InvitationEmailProvider
+}) {
+  const isOfficialStage = input.deploymentStage === 'staging' || input.deploymentStage === 'production'
+  if (isOfficialStage && !input.smtpDeliveryEnabled) throw new Error('SMTP_DELIVERY_ENABLED deve ser true em staging/produção')
+  if (!input.smtpDeliveryEnabled || input.invitationEmailProvider !== 'smtp') return
+
+  requireProductionValue(input.raw, 'SMTP_HOST')
+  requireProductionValue(input.raw, 'SMTP_AUTH_USER')
+  requireProductionValue(input.raw, 'SMTP_AUTH_PASSWORD')
+  requireProductionValue(input.raw, 'SMTP_FROM')
+  if (input.raw.SMTP_REQUIRE_TLS !== true && input.raw.SMTP_REQUIRE_TLS !== 'true') {
+    throw new Error('SMTP_REQUIRE_TLS deve ser true em produção')
+  }
+}
+
+function validateProductionConfiguration(input: {
+  raw: Record<string, unknown>
+  nodeEnvironment: NodeEnvironment
+  deploymentStage: DeploymentStage
+  smtpDeliveryEnabled: boolean
+  invitationEmailProvider: InvitationEmailProvider
+  swaggerEnabled: boolean
+  trustProxyHops: number
+}) {
+  if (input.nodeEnvironment !== 'production') return
+  if (!input.raw.DATABASE_URL) throw new Error('DATABASE_URL é obrigatória em produção')
+  if (!input.raw.JWT_PRIVATE_KEY_BASE64) throw new Error('JWT_PRIVATE_KEY_BASE64 é obrigatória em produção')
+  if (!input.raw.JWT_PUBLIC_KEYS_JSON) throw new Error('JWT_PUBLIC_KEYS_JSON é obrigatória em produção')
+  if (!input.raw.REFRESH_TOKEN_PEPPER) throw new Error('REFRESH_TOKEN_PEPPER é obrigatória em produção')
+  if (!input.raw.INVITATION_TOKEN_PEPPER) throw new Error('INVITATION_TOKEN_PEPPER é obrigatória em produção')
+
+  requireProductionValue(input.raw, 'JWT_ACTIVE_KID')
+  requireProductionValue(input.raw, 'JWT_AUDIENCE')
+  validateProductionSmtp(input)
+  if (input.swaggerEnabled) throw new Error('SWAGGER_ENABLED deve ser false em produção até existir controle de acesso dedicado')
+  if (input.trustProxyHops < 1) throw new Error('TRUST_PROXY_HOPS deve ser configurada explicitamente em produção')
+}
+
+function parseTokenPeppers(raw: Record<string, unknown>, nodeEnvironment: NodeEnvironment) {
+  const refreshTokenPepper = parseString(raw.REFRESH_TOKEN_PEPPER, 'development-only-refresh-pepper-change-me', 'REFRESH_TOKEN_PEPPER')
+  if (refreshTokenPepper.length < 32) throw new Error('REFRESH_TOKEN_PEPPER deve possuir ao menos 32 caracteres')
+  const invitationTokenPepper = parseString(raw.INVITATION_TOKEN_PEPPER, 'development-only-invitation-pepper-change-me', 'INVITATION_TOKEN_PEPPER')
+  if (invitationTokenPepper.length < 32) throw new Error('INVITATION_TOKEN_PEPPER deve possuir ao menos 32 caracteres')
+  if (invitationTokenPepper === refreshTokenPepper) throw new Error('INVITATION_TOKEN_PEPPER deve ser diferente de REFRESH_TOKEN_PEPPER')
+  const usesDevelopmentPepper = refreshTokenPepper.startsWith('development-only-') || invitationTokenPepper.startsWith('development-only-')
+  if (nodeEnvironment === 'production' && usesDevelopmentPepper) throw new Error('Peppers de desenvolvimento não podem ser usados em produção')
+  return { refreshTokenPepper, invitationTokenPepper }
+}
+
+function parseRequestBodyLimit(raw: Record<string, unknown>) {
+  const requestBodyLimit = parseString(raw.REQUEST_BODY_LIMIT, '100kb', 'REQUEST_BODY_LIMIT')
+  if (!/^\d+(?:b|kb|mb)$/i.test(requestBodyLimit)) throw new Error('REQUEST_BODY_LIMIT deve usar b, kb ou mb')
+  return requestBodyLimit
+}
+
 export function validateEnvironment(raw: Record<string, unknown>): Environment {
   const nodeEnvironment = parseChoice(raw.NODE_ENV, 'development', NODE_ENVIRONMENTS, 'NODE_ENV')
   const deploymentStage = parseChoice(raw.DEPLOYMENT_STAGE, nodeEnvironment === 'production' ? 'production' : 'local', DEPLOYMENT_STAGES, 'DEPLOYMENT_STAGE')
@@ -123,52 +215,12 @@ export function validateEnvironment(raw: Record<string, unknown>): Environment {
   const resendApiKey = raw.RESEND_API_KEY ? parseNonEmptyString(raw.RESEND_API_KEY, '', 'RESEND_API_KEY') : undefined
   const resendFrom = parseNonEmptyString(raw.RESEND_FROM, 'onboarding@resend.dev', 'RESEND_FROM')
   const resendTestRecipient = raw.RESEND_TEST_RECIPIENT ? parseNonEmptyString(raw.RESEND_TEST_RECIPIENT, '', 'RESEND_TEST_RECIPIENT') : undefined
-  if (invitationEmailProvider === 'resend' && smtpDeliveryEnabled) {
-    if (!resendApiKey?.startsWith('re_')) throw new Error('RESEND_API_KEY é obrigatória para Resend')
-    if ((deploymentStage === 'local' || deploymentStage === 'lab') && (!resendTestRecipient || !/^[^\s@<> ,;]+@[^\s@<> ,;]+\.[^\s@<> ,;]+$/.test(resendTestRecipient))) throw new Error('RESEND_TEST_RECIPIENT deve identificar um único destinatário de teste')
-    if (deploymentStage === 'staging' || deploymentStage === 'production') {
-      requireProductionValue(raw, 'RESEND_FROM')
-      if (/@resend\.dev\b/i.test(resendFrom)) throw new Error('RESEND_FROM deve usar domínio corporativo em staging/produção')
-    }
-  }
+  validateResendConfiguration({ raw, deploymentStage, smtpDeliveryEnabled, invitationEmailProvider, resendApiKey, resendFrom, resendTestRecipient })
+  validateDeploymentStage(nodeEnvironment, deploymentStage)
+  validateProductionConfiguration({ raw, nodeEnvironment, deploymentStage, smtpDeliveryEnabled, invitationEmailProvider, swaggerEnabled, trustProxyHops })
 
-  if (nodeEnvironment !== 'production' && (deploymentStage === 'staging' || deploymentStage === 'production')) {
-    throw new Error('DEPLOYMENT_STAGE staging/production exige NODE_ENV=production')
-  }
-
-  if (nodeEnvironment === 'production' && !databaseUrl) throw new Error('DATABASE_URL é obrigatória em produção')
-  if (nodeEnvironment === 'production' && !raw.JWT_PRIVATE_KEY_BASE64) throw new Error('JWT_PRIVATE_KEY_BASE64 é obrigatória em produção')
-  if (nodeEnvironment === 'production' && !raw.JWT_PUBLIC_KEYS_JSON) throw new Error('JWT_PUBLIC_KEYS_JSON é obrigatória em produção')
-  if (nodeEnvironment === 'production' && !raw.REFRESH_TOKEN_PEPPER) throw new Error('REFRESH_TOKEN_PEPPER é obrigatória em produção')
-  if (nodeEnvironment === 'production' && !raw.INVITATION_TOKEN_PEPPER) throw new Error('INVITATION_TOKEN_PEPPER é obrigatória em produção')
-  if (nodeEnvironment === 'production') {
-    requireProductionValue(raw, 'JWT_ACTIVE_KID')
-    requireProductionValue(raw, 'JWT_AUDIENCE')
-    if ((deploymentStage === 'staging' || deploymentStage === 'production') && !smtpDeliveryEnabled) {
-      throw new Error('SMTP_DELIVERY_ENABLED deve ser true em staging/produção')
-    }
-    if (smtpDeliveryEnabled && invitationEmailProvider === 'smtp') {
-      requireProductionValue(raw, 'SMTP_HOST')
-      requireProductionValue(raw, 'SMTP_AUTH_USER')
-      requireProductionValue(raw, 'SMTP_AUTH_PASSWORD')
-      requireProductionValue(raw, 'SMTP_FROM')
-      if (raw.SMTP_REQUIRE_TLS !== true && raw.SMTP_REQUIRE_TLS !== 'true') throw new Error('SMTP_REQUIRE_TLS deve ser true em produção')
-    }
-    if (swaggerEnabled) throw new Error('SWAGGER_ENABLED deve ser false em produção até existir controle de acesso dedicado')
-    if (trustProxyHops < 1) throw new Error('TRUST_PROXY_HOPS deve ser configurada explicitamente em produção')
-  }
-
-  const requestBodyLimit = parseString(raw.REQUEST_BODY_LIMIT, '100kb', 'REQUEST_BODY_LIMIT')
-  if (!/^\d+(?:b|kb|mb)$/i.test(requestBodyLimit)) throw new Error('REQUEST_BODY_LIMIT deve usar b, kb ou mb')
-
-  const refreshTokenPepper = parseString(raw.REFRESH_TOKEN_PEPPER, 'development-only-refresh-pepper-change-me', 'REFRESH_TOKEN_PEPPER')
-  if (refreshTokenPepper.length < 32) throw new Error('REFRESH_TOKEN_PEPPER deve possuir ao menos 32 caracteres')
-  const invitationTokenPepper = parseString(raw.INVITATION_TOKEN_PEPPER, 'development-only-invitation-pepper-change-me', 'INVITATION_TOKEN_PEPPER')
-  if (invitationTokenPepper.length < 32) throw new Error('INVITATION_TOKEN_PEPPER deve possuir ao menos 32 caracteres')
-  if (invitationTokenPepper === refreshTokenPepper) throw new Error('INVITATION_TOKEN_PEPPER deve ser diferente de REFRESH_TOKEN_PEPPER')
-  if (nodeEnvironment === 'production' && (refreshTokenPepper.startsWith('development-only-') || invitationTokenPepper.startsWith('development-only-'))) {
-    throw new Error('Peppers de desenvolvimento não podem ser usados em produção')
-  }
+  const requestBodyLimit = parseRequestBodyLimit(raw)
+  const { refreshTokenPepper, invitationTokenPepper } = parseTokenPeppers(raw, nodeEnvironment)
 
   const jwtActiveKid = parseNonEmptyString(raw.JWT_ACTIVE_KID, 'local-ephemeral', 'JWT_ACTIVE_KID')
   if (!/^[A-Za-z0-9._-]{1,64}$/u.test(jwtActiveKid)) throw new Error('JWT_ACTIVE_KID deve usar apenas letras, números, ponto, hífen ou underscore e possuir até 64 caracteres')

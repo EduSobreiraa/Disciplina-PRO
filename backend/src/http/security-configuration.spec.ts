@@ -40,9 +40,12 @@ describe('security HTTP configuration', () => {
 
   it('uses the trusted proxy client IP for rate limiting', async () => {
     const server = app.getHttpServer() as Parameters<typeof request>[0]
-    await request(server).get('/api/security-probe').set('X-Forwarded-For', '203.0.113.10').expect(200)
-    await request(server).get('/api/security-probe').set('X-Forwarded-For', '203.0.113.10').expect(429)
-    await request(server).get('/api/security-probe').set('X-Forwarded-For', '203.0.113.11').expect(200)
+    const first = await request(server).get('/api/security-probe').set('X-Forwarded-For', '203.0.113.10')
+    const limited = await request(server).get('/api/security-probe').set('X-Forwarded-For', '203.0.113.10')
+    const otherClient = await request(server).get('/api/security-probe').set('X-Forwarded-For', '203.0.113.11')
+    expect(first.status).toBe(200)
+    expect(limited.status).toBe(429)
+    expect(otherClient.status).toBe(200)
   })
 
   it('does not reflect query parameters in error responses', async () => {

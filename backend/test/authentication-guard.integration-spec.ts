@@ -73,13 +73,15 @@ describe('AuthenticationGuard integration', () => {
     const active = await request(app.getHttpServer() as Parameters<typeof request>[0]).get('/api/test/protected').set('Authorization', `Bearer ${accessToken}`).expect(200)
     const principal = (active.body as { principal: CurrentPrincipal }).principal
     await revoke.execute({ sessionId: principal.sessionId })
-    await request(app.getHttpServer() as Parameters<typeof request>[0]).get('/api/test/protected').set('Authorization', `Bearer ${accessToken}`).expect(401)
+    const revoked = await request(app.getHttpServer() as Parameters<typeof request>[0]).get('/api/test/protected').set('Authorization', `Bearer ${accessToken}`)
+    expect(revoked.status).toBe(401)
   })
 
   it('rejects an otherwise valid JWT immediately after the user is disabled', async () => {
     const { accessToken } = await login()
     const user = await prisma.user.findUniqueOrThrow({ where: { normalizedEmail: email } })
     await prisma.user.update({ where: { id: user.id }, data: { status: 'DISABLED' } })
-    await request(app.getHttpServer() as Parameters<typeof request>[0]).get('/api/test/protected').set('Authorization', `Bearer ${accessToken}`).expect(401)
+    const disabled = await request(app.getHttpServer() as Parameters<typeof request>[0]).get('/api/test/protected').set('Authorization', `Bearer ${accessToken}`)
+    expect(disabled.status).toBe(401)
   })
 })

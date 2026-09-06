@@ -6,8 +6,7 @@ import { ProgramAdministrationRepository } from './program-administration.reposi
 export class ListPlatformProgramsUseCase {
   constructor(private readonly programs: ProgramAdministrationRepository) {}
 
-  execute(context: CurrentPlatformContext) {
-    void context
+  execute(_context: CurrentPlatformContext) {
     return this.programs.list()
   }
 }

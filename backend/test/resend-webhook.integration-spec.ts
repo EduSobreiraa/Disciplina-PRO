@@ -91,8 +91,10 @@ describe('Resend signed webhook and durable delivery tracking', () => {
   })
 
   it('ignores signed unsupported events and rejects malformed supported events', async () => {
-    await post(JSON.stringify({ type: 'email.opened' })).expect(200)
-    await post(JSON.stringify({ type: 'email.delivered', data: {}, created_at: 'invalid' })).expect(400)
+    const unsupported = await post(JSON.stringify({ type: 'email.opened' }))
+    const malformed = await post(JSON.stringify({ type: 'email.delivered', data: {}, created_at: 'invalid' }))
+    expect(unsupported.status).toBe(200)
+    expect(malformed.status).toBe(400)
   })
 
   it('does not acknowledge storage failure and allows a later retry', async () => {
@@ -110,9 +112,13 @@ describe('Resend signed webhook and durable delivery tracking', () => {
   })
 
   it('limits payload size and remains disabled without its signing secret', async () => {
-    await post(JSON.stringify({ type: 'email.opened', unused: 'x'.repeat(110000) })).expect(413)
+    const oversized = await post(JSON.stringify({ type: 'email.opened', unused: 'x'.repeat(110000) }))
+    expect(oversized.status).toBe(413)
     app.get(ConfigService).set('RESEND_WEBHOOK_SECRET', '')
-    try { await post(payload(randomUUID())).expect(503) }
+    try {
+      const disabled = await post(payload(randomUUID()))
+      expect(disabled.status).toBe(503)
+    }
     finally { app.get(ConfigService).set('RESEND_WEBHOOK_SECRET', SECRET) }
   })
 })

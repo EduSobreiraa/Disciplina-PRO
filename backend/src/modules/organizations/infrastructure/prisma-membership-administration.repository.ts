@@ -109,7 +109,7 @@ export class PrismaMembershipAdministrationRepository extends MembershipAdminist
       if (tenant.status !== 'ACTIVE') throw new InvalidCeoReplacementError()
       const current = await transaction.tenantMembership.findFirst({ where: { tenantId: input.tenantId, role: 'CEO', status: 'ACTIVE' } })
       const successor = await transaction.tenantMembership.findFirst({ where: { id: input.successorMembershipId, tenantId: input.tenantId }, include: { user: { select: { status: true, email: true } } } })
-      if (!current || current.id !== input.expectedCeoMembershipId || !successor || successor.id === current.id || successor.role === 'CEO' || successor.user.status !== 'ACTIVE') throw new InvalidCeoReplacementError()
+      if (current?.id !== input.expectedCeoMembershipId || !successor || successor.id === current.id || successor.role === 'CEO' || successor.user.status !== 'ACTIVE') throw new InvalidCeoReplacementError()
       const activeLinks = await transaction.teamMembership.findMany({ where: { tenantId: input.tenantId, membershipId: current.id, endedAt: null }, select: { id: true, teamId: true, role: true } })
       if (activeLinks.length) {
         await transaction.teamMembership.updateMany({ where: { id: { in: activeLinks.map(({ id }) => id) } }, data: { endedAt: input.now } })
@@ -205,7 +205,8 @@ export class PrismaMembershipAdministrationRepository extends MembershipAdminist
   }
 
   private lockTenant(transaction: Prisma.TransactionClient, tenantId: string) {
-    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:memberships:${tenantId}`}))`
+    const lockKey = `disciplina-pro:memberships:${tenantId}`
+    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
   }
 
   private async findTarget(transaction: Prisma.TransactionClient, tenantId: string, membershipId: string) {

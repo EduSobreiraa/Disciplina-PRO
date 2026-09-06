@@ -26,4 +26,4 @@ async function bootstrap() {
   await app.listen(config.get('PORT', { infer: true }), '0.0.0.0')
 }
 
-void bootstrap()
+await bootstrap()

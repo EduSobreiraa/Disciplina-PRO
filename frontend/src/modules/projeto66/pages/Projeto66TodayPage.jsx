@@ -12,6 +12,12 @@ const sections = [
 const totalItems = sections.reduce((total, section) => total + section.items.length, 0)
 const itemKey = projeto66ChecklistActivityKey
 
+function progressMessage(stats) {
+  if (stats.complete) return '🏆 Checklist completo. Dia dominado.'
+  if (stats.commandDay) return '🔥 Dia de Comando conquistado.'
+  return `Marque mais ${Math.max(0, 10 - stats.checked)} para um Dia de Comando.`
+}
+
 export function Projeto66TodayPage() {
   const { cycle, currentDay, saveChecklist } = useProjeto66Cycle()
   const day = currentDay || 1
@@ -39,7 +45,7 @@ export function Projeto66TodayPage() {
   return (
     <>
       <header className="p66-page-title p66-check-title"><div><span>{active ? `Dia ${day} · ${new Date().toLocaleDateString('pt-BR', { weekday: 'long' })}` : 'Ciclo ainda não iniciado'}</span><h1>Checklist</h1></div><strong>{stats.checked}/{stats.total}</strong></header>
-      <section className={`p66-check-progress ${stats.commandDay ? 'command' : ''}`}><div><i style={{ width: `${stats.percent}%` }} /></div><p>{stats.complete ? '🏆 Checklist completo. Dia dominado.' : stats.commandDay ? '🔥 Dia de Comando conquistado.' : `Marque mais ${Math.max(0, 10 - stats.checked)} para um Dia de Comando.`}</p></section>
+      <section className={`p66-check-progress ${stats.commandDay ? 'command' : ''}`}><div><i style={{ width: `${stats.percent}%` }} /></div><p>{progressMessage(stats)}</p></section>
       {!active && <section className="p66-callout"><b>🔥</b><p><strong>Inicie seu ciclo primeiro.</strong> O checklist será liberado no seu primeiro dia.</p></section>}
       {sections.map((section) => {
         const sectionChecked = section.items.filter((_, index) => checklist[itemKey(section.key, index)]).length

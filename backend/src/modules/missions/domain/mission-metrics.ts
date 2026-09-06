@@ -66,7 +66,7 @@ export function calculateMissionMetrics(input: {
   const perfectDates = [...days.entries()]
     .filter(([, counts]) => active.size > 0 && counts.greens === active.size && counts.reds === 0)
     .map(([date]) => date)
-    .sort()
+    .sort((left, right) => left.localeCompare(right))
   let perfectStreak = 0
   let currentStreak = 0
   let previous: Date | null = null
@@ -96,7 +96,7 @@ export function calculateMissionMetrics(input: {
     totalGreens: input.totalGreens,
     completedRitualSections: input.ritualSectionCounts.filter(({ sectionKey, count }) => {
       const items = RITUAL_ITEMS[sectionKey as keyof typeof RITUAL_ITEMS]
-      return items && count === items.length
+      return count === items?.length
     }).length,
   }
 }

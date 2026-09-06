@@ -95,7 +95,8 @@ export class PrismaTeamAdministrationRepository extends TeamAdministrationReposi
   }
 
   private lockTenant(transaction: Prisma.TransactionClient, tenantId: string) {
-    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`disciplina-pro:teams:${tenantId}`}))`
+    const lockKey = `disciplina-pro:teams:${tenantId}`
+    return transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey}))`
   }
 
   private async findTeam(transaction: Prisma.TransactionClient, tenantId: string, teamId: string) {

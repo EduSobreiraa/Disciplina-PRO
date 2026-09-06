@@ -10,6 +10,21 @@ describe('identity policy', () => {
     expect(() => normalizeEmail('invalid')).toThrow(InvalidEmailError)
   })
 
+  it.each([
+    'user @example.com',
+    'user@@example.com',
+    'user@',
+    'user@example',
+    'user@example.com,second@example.com',
+  ])('rejects an invalid single email address: %s', (email) => {
+    expect(() => normalizeEmail(email)).toThrow(InvalidEmailError)
+  })
+
+  it('accepts tags and subdomains and rejects addresses above 320 characters', () => {
+    expect(normalizeEmail('User+Tag@Sub.Example.COM')).toBe('user+tag@sub.example.com')
+    expect(() => normalizeEmail(`${'a'.repeat(309)}@example.com`)).toThrow(InvalidEmailError)
+  })
+
   it('requires a password with at least 15 unicode characters', () => {
     expect(() => assertPasswordPolicy('short')).toThrow(WeakPasswordError)
     expect(() => assertPasswordPolicy('frase longa e segura')).not.toThrow()

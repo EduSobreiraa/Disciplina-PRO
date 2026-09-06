@@ -25,7 +25,7 @@ export function getProgressPercent(completedDays = []) {
   return Math.round((normalizeCompletedDays(completedDays).length / PROGRAM_LENGTH) * 100)
 }
 
-export function getCurrentStreak(completedDays = [], referenceDay) {
+export function getCurrentStreak(completedDays = [], referenceDay = undefined) {
   const days = normalizeCompletedDays(completedDays)
   if (!days.length) return 0
   const completed = new Set(days)

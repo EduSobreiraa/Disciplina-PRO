@@ -12,6 +12,17 @@ import '../styles/tracker-insights.css'
 
 const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
+function getMarkPresentation(status) {
+  if (status === 1) return { label: 'cumprido', nextAction: 'marcar como falhou', symbol: '✓' }
+  if (status === 2) return { label: 'falhou', nextAction: 'limpar marcação', symbol: '!' }
+  return { label: 'sem marcação', nextAction: 'marcar como cumprido', symbol: '' }
+}
+
+function getMarkHelpText(locked, nextAction) {
+  if (locked) return 'Somente leitura: só é permitido marcar hoje'
+  return `Clique para ${nextAction}`
+}
+
 export function DisciplineTrackerPage() {
   const session = useAppContext()
   const timeZone = session.tenant?.timeZone ?? 'UTC'
@@ -68,7 +79,34 @@ export function DisciplineTrackerPage() {
     {tracker.status === 'error' && <section className="tracker-state error" role="alert"><strong>Não foi possível sincronizar o tracker.</strong><span>{tracker.error?.message}</span><button className="button" type="button" onClick={() => tracker.reload().catch(() => {})}>Tentar novamente</button></section>}
     <section className="tracker-kpis"><article className={getScoreClass(tracker.stats.percent)}><span>Disciplina do mês</span><strong>{tracker.stats.percent === null ? '—' : `${tracker.stats.percent}%`}</strong></article><article className="green"><span>Dias marcados</span><strong>{tracker.stats.markedDays}</strong></article><article className="gold"><span>Dias perfeitos</span><strong>{tracker.stats.perfectDays}</strong></article><article className="red"><span>Falhas registradas</span><strong>{tracker.stats.reds}</strong></article></section>
     <div className="tracker-months" aria-label="Selecionar mês">{months.map((name, index) => <button className={month === index ? 'active' : ''} type="button" key={name} onClick={() => setMonth(index)}>{name}</button>)}</div>
-    <section className="tracker-panel"><div className="tracker-scroll" tabIndex={0} role="region" aria-label="Tabela de comportamentos por dia"><table><thead><tr><th className="behavior-col">Comportamento</th>{Array.from({ length: days }, (_, index) => <th className={month === now.getMonth() && index + 1 === now.getDate() ? 'today' : ''} key={index}>{index + 1}</th>)}<th>%</th></tr></thead><tbody>{behaviors.map((behavior) => { const behaviorStats = tracker.stats.byBehavior[behavior.id]; const percent = behaviorStats.percent; return <tr key={behavior.id}><td className="behavior-col"><input defaultValue={behavior.name} disabled={tracker.mutating} aria-label={`Comportamento ${behavior.name}`} onBlur={(event) => tracker.renameBehavior(behavior.id, event.target.value).catch(() => {})}/><button disabled={tracker.mutating} type="button" aria-label={`Remover ${behavior.name}`} onClick={() => tracker.removeBehavior(behavior.id).catch(() => {})}>×</button></td>{Array.from({ length: days }, (_, index) => { const day = index + 1; const key = getMarkKey(year, month, day, behavior.id); const status = tracker.state.marks[key] ?? 0; const future = key.slice(0, 10) > today; const locked = key.slice(0, 10) !== today; const nextAction = status === 0 ? 'marcar como cumprido' : status === 1 ? 'marcar como falhou' : 'limpar marcação'; return <td key={day}><button className={`mark status-${status} ${future ? 'future' : ''}`} disabled={locked || tracker.mutating} type="button" aria-label={`${behavior.name}, dia ${day}: ${status === 1 ? 'cumprido' : status === 2 ? 'falhou' : 'sem marcação'}. ${locked ? "Somente leitura: só é permitido marcar hoje" : `Clique para ${nextAction}`}.`} title={locked ? "Somente leitura: só é permitido marcar hoje" : `Clique para ${nextAction}`} onClick={() => mark(day, behavior).catch(() => {})}>{status === 1 ? '✓' : status === 2 ? '!' : ''}{status === 2 && tracker.state.justifications[key] && <i />}</button></td> })}<td className={`behavior-score ${getScoreClass(percent)}`}>{percent === null ? '—' : `${percent}%`}</td></tr> })}</tbody></table></div><form className="tracker-add" onSubmit={(event) => submitBehavior(event).catch(() => {})}><label htmlFor="new-behavior">Novo comportamento</label><input id="new-behavior" disabled={tracker.mutating} maxLength="200" value={newBehavior} onChange={(event) => setNewBehavior(event.target.value)} placeholder="Ex.: iniciar trabalho às 8h"/><button disabled={tracker.mutating || !newBehavior.trim() || behaviors.length >= 20} type="submit">+ Adicionar</button><span>{behaviors.length}/20</span></form><div className="tracker-actions"><div className="tracker-legend"><span><i className="green"/>Cumprido</span><span><i className="red"/>Falhou</span><span>Toque: vazio → verde → vermelho</span></div><div><button disabled={tracker.mutating} type="button" onClick={() => exportBackup().catch((error) => setBackupMessage(error.message))}>Exportar backup</button><button disabled={tracker.mutating} type="button" onClick={() => importInput.current?.click()}>Importar backup</button><input ref={importInput} hidden type="file" accept="application/json,.json" onChange={importBackup}/></div></div>{backupMessage && <p className="tracker-backup-message" role="status">{backupMessage}</p>}</section>
+    <section className="tracker-panel">
+      <section className="tracker-scroll" tabIndex={0} aria-label="Tabela de comportamentos por dia">
+        <table>
+          <thead><tr><th className="behavior-col">Comportamento</th>{Array.from({ length: days }, (_, index) => <th className={month === now.getMonth() && index + 1 === now.getDate() ? 'today' : ''} key={index}>{index + 1}</th>)}<th>%</th></tr></thead>
+          <tbody>{behaviors.map((behavior) => {
+            const behaviorStats = tracker.stats.byBehavior[behavior.id]
+            const percent = behaviorStats.percent
+            return <tr key={behavior.id}>
+              <td className="behavior-col"><input defaultValue={behavior.name} disabled={tracker.mutating} aria-label={`Comportamento ${behavior.name}`} onBlur={(event) => tracker.renameBehavior(behavior.id, event.target.value).catch(() => {})}/><button disabled={tracker.mutating} type="button" aria-label={`Remover ${behavior.name}`} onClick={() => tracker.removeBehavior(behavior.id).catch(() => {})}>×</button></td>
+              {Array.from({ length: days }, (_, index) => {
+                const day = index + 1
+                const key = getMarkKey(year, month, day, behavior.id)
+                const status = tracker.state.marks[key] ?? 0
+                const future = key.slice(0, 10) > today
+                const locked = key.slice(0, 10) !== today
+                const presentation = getMarkPresentation(status)
+                const helpText = getMarkHelpText(locked, presentation.nextAction)
+                return <td key={day}><button className={`mark status-${status} ${future ? 'future' : ''}`} disabled={locked || tracker.mutating} type="button" aria-label={`${behavior.name}, dia ${day}: ${presentation.label}. ${helpText}.`} title={helpText} onClick={() => mark(day, behavior).catch(() => {})}>{presentation.symbol}{status === 2 && tracker.state.justifications[key] && <i />}</button></td>
+              })}
+              <td className={`behavior-score ${getScoreClass(percent)}`}>{percent === null ? '—' : `${percent}%`}</td>
+            </tr>
+          })}</tbody>
+        </table>
+      </section>
+      <form className="tracker-add" onSubmit={(event) => submitBehavior(event).catch(() => {})}><label htmlFor="new-behavior">Novo comportamento</label><input id="new-behavior" disabled={tracker.mutating} maxLength="200" value={newBehavior} onChange={(event) => setNewBehavior(event.target.value)} placeholder="Ex.: iniciar trabalho às 8h"/><button disabled={tracker.mutating || !newBehavior.trim() || behaviors.length >= 20} type="submit">+ Adicionar</button><span>{behaviors.length}/20</span></form>
+      <div className="tracker-actions"><div className="tracker-legend"><span><i className="green"/>Cumprido</span><span><i className="red"/>Falhou</span><span>Toque: vazio → verde → vermelho</span></div><div><button disabled={tracker.mutating} type="button" onClick={() => exportBackup().catch((error) => setBackupMessage(error.message))}>Exportar backup</button><button disabled={tracker.mutating} type="button" onClick={() => importInput.current?.click()}>Importar backup</button><input ref={importInput} hidden type="file" accept="application/json,.json" onChange={importBackup}/></div></div>
+      {backupMessage && <p className="tracker-backup-message" role="status">{backupMessage}</p>}
+    </section>
     <TrackerInsights behaviors={behaviors} stats={tracker.stats}/>
     <JustificationCenter items={justificationItems} onEdit={setJustification}/>
     {justification && <JustificationDialog

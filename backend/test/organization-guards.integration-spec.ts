@@ -121,14 +121,17 @@ describe('Organization guards integration', () => {
   })
 
   it('revalidates tenant and membership state on every request', async () => {
-    await get('tenant', tokens.user, suspendedTenantId).expect(403)
+    const suspendedTenant = await get('tenant', tokens.user, suspendedTenantId)
+    expect(suspendedTenant.status).toBe(403)
     await prisma.tenantMembership.update({
       where: { id: userMembershipId },
       data: { status: 'SUSPENDED', suspendedAt: new Date() },
     })
-    await get('tenant', tokens.user, tenantAId).expect(403)
+    const suspendedMembership = await get('tenant', tokens.user, tenantAId)
+    expect(suspendedMembership.status).toBe(403)
     await prisma.tenantMembership.update({ where: { id: userMembershipId }, data: { status: 'ACTIVE', suspendedAt: null } })
-    await get('tenant', tokens.user, tenantAId).expect(200)
+    const reactivatedMembership = await get('tenant', tokens.user, tenantAId)
+    expect(reactivatedMembership.status).toBe(200)
   })
 
   it('enforces cumulative role capabilities before resource scope', async () => {

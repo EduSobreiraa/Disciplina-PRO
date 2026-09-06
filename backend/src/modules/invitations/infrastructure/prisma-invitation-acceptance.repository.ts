@@ -71,7 +71,7 @@ export class PrismaInvitationAcceptanceRepository extends InvitationAcceptanceRe
       FOR UPDATE
     `
     const invitation = rows[0]
-    if (!invitation || invitation.status !== 'PENDING' || invitation.expiresAt <= input.now) throw new InvitationInvalidError()
+    if (invitation?.status !== 'PENDING' || invitation.expiresAt <= input.now) throw new InvitationInvalidError()
     const tenant = await transaction.tenant.findUnique({ where: { id: invitation.tenantId }, select: { status: true } })
     const validTenant = invitation.role === 'CEO' ? tenant?.status === 'PENDING' : tenant?.status === 'ACTIVE'
     if (!validTenant) throw new InvitationInvalidError()

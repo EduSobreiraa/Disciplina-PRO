@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, ForbiddenException, Get, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Put } from '@nestjs/common'
+import { BadRequestException, Body, ConflictException, Controller, ForbiddenException, Get, HttpException, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Put } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import type { CurrentPlatformContext } from '../../organizations/application/organization-context.repository.js'
 import { CurrentPlatform } from '../../organizations/http/current-organization-context.decorators.js'
@@ -8,6 +8,26 @@ import { InvalidProgramDataError, InvalidProgramTransitionError, PlatformProgram
 import { CreateProgramDto, ProgramIdentityDto, ProgramVersionDto } from './program-administration.dto.js'
 import { DisableTenantProgramUseCase, EnableTenantProgramUseCase } from '../application/tenant-program-administration.use-cases.js'
 import { ListPlatformProgramsUseCase } from '../application/list-platform-programs.use-case.js'
+
+interface ProgramErrorMapping {
+  matches(error: unknown): boolean
+  toHttpException(error: unknown): HttpException
+}
+
+const PROGRAM_ERROR_MAPPINGS: ProgramErrorMapping[] = [
+  { matches: (error) => error instanceof InvalidProgramDataError, toHttpException: (error) => new BadRequestException({ code: 'INVALID_PROGRAM_DATA', message: (error as Error).message }) },
+  { matches: (error) => error instanceof ProgramNotFoundError, toHttpException: () => new NotFoundException({ code: 'RESOURCE_NOT_FOUND', message: 'Programa ou versão não encontrado' }) },
+  { matches: (error) => error instanceof ProgramSlugAlreadyExistsError, toHttpException: () => new ConflictException({ code: 'PROGRAM_SLUG_ALREADY_EXISTS', message: 'Slug de programa já utilizado' }) },
+  { matches: (error) => error instanceof ProgramDraftAlreadyExistsError, toHttpException: () => new ConflictException({ code: 'PROGRAM_DRAFT_ALREADY_EXISTS', message: 'O programa já possui um draft' }) },
+  { matches: (error) => error instanceof ProgramVersionNotPublishableError, toHttpException: () => new ConflictException({ code: 'PROGRAM_VERSION_NOT_PUBLISHABLE', message: 'A versão não pode ser publicada' }) },
+  { matches: (error) => error instanceof InvalidProgramTransitionError, toHttpException: () => new ConflictException({ code: 'INVALID_PROGRAM_TRANSITION', message: 'Transição de programa inválida' }) },
+  { matches: (error) => error instanceof ProgramEnablementNotAllowedError, toHttpException: () => new ConflictException({ code: 'PROGRAM_ENABLEMENT_NOT_ALLOWED', message: 'Programa não pode ser habilitado ou desabilitado' }) },
+  { matches: (error) => error instanceof PlatformProgramActorInactiveError, toHttpException: () => new ForbiddenException({ code: 'PLATFORM_ACCESS_DENIED', message: 'Acesso de plataforma negado' }) },
+]
+
+function programHttpException(error: unknown) {
+  return PROGRAM_ERROR_MAPPINGS.find((mapping) => mapping.matches(error))?.toHttpException(error)
+}
 
 @ApiTags('Platform programs')
 @PlatformRoute()
@@ -81,14 +101,8 @@ export class PlatformProgramsController {
 
   private async mapErrors<T>(operation: () => Promise<T>) {
     try { return await operation() } catch (error) {
-      if (error instanceof InvalidProgramDataError) throw new BadRequestException({ code: 'INVALID_PROGRAM_DATA', message: error.message })
-      if (error instanceof ProgramNotFoundError) throw new NotFoundException({ code: 'RESOURCE_NOT_FOUND', message: 'Programa ou versão não encontrado' })
-      if (error instanceof ProgramSlugAlreadyExistsError) throw new ConflictException({ code: 'PROGRAM_SLUG_ALREADY_EXISTS', message: 'Slug de programa já utilizado' })
-      if (error instanceof ProgramDraftAlreadyExistsError) throw new ConflictException({ code: 'PROGRAM_DRAFT_ALREADY_EXISTS', message: 'O programa já possui um draft' })
-      if (error instanceof ProgramVersionNotPublishableError) throw new ConflictException({ code: 'PROGRAM_VERSION_NOT_PUBLISHABLE', message: 'A versão não pode ser publicada' })
-      if (error instanceof InvalidProgramTransitionError) throw new ConflictException({ code: 'INVALID_PROGRAM_TRANSITION', message: 'Transição de programa inválida' })
-      if (error instanceof ProgramEnablementNotAllowedError) throw new ConflictException({ code: 'PROGRAM_ENABLEMENT_NOT_ALLOWED', message: 'Programa não pode ser habilitado ou desabilitado' })
-      if (error instanceof PlatformProgramActorInactiveError) throw new ForbiddenException({ code: 'PLATFORM_ACCESS_DENIED', message: 'Acesso de plataforma negado' })
+      const httpException = programHttpException(error)
+      if (httpException) throw httpException
       throw error
     }
   }

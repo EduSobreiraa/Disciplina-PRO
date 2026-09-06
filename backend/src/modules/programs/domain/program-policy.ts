@@ -81,8 +81,8 @@ export function normalizeVersionDefinition(input: ProgramVersionDefinition, publ
 
 function normalizeActivityConfiguration(input: Record<string, unknown>): Record<string, unknown> {
   if (!plainObject(input)) throw new InvalidProgramDataError('Configuração inválida')
-  const allowed = ['estimatedMinutes', 'itemCount', 'items', 'privateResponse']
-  if (Object.keys(input).some((key) => !allowed.includes(key))) throw new InvalidProgramDataError('Propriedade de atividade desconhecida')
+  const allowed = new Set(['estimatedMinutes', 'itemCount', 'items', 'privateResponse'])
+  if (Object.keys(input).some((key) => !allowed.has(key))) throw new InvalidProgramDataError('Propriedade de atividade desconhecida')
   const normalized: Record<string, unknown> = {}
   for (const key of ['estimatedMinutes', 'itemCount', 'items'] as const) {
     const value = input[key]
