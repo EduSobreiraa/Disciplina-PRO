@@ -1,6 +1,6 @@
 import type { ReadableSpan, SpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { jest } from '@jest/globals'
-import { SanitizingSpanProcessor, createOpenTelemetryOptions, sanitizeSpan } from './telemetry.js'
+import { SanitizingSpanProcessor, createOpenTelemetryOptions, parseOtlpHeaders, sanitizeSpan } from './telemetry.js'
 
 function testSpan(): ReadableSpan {
   return {
@@ -36,6 +36,17 @@ describe('OpenTelemetry', () => {
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: 'http://localhost:4318/v1/traces',
       OTEL_TRACES_SAMPLER: 'always_on',
     })).toThrow('parentbased_traceidratio')
+  })
+
+  it('decodes configured OTLP headers for the HTTP exporter', () => {
+    expect(parseOtlpHeaders('Authorization=Bearer%20source-token,X-Tenant=corporate')).toEqual({
+      Authorization: 'Bearer source-token',
+      'X-Tenant': 'corporate',
+    })
+  })
+
+  it('rejects malformed OTLP headers', () => {
+    expect(() => parseOtlpHeaders('Authorization')).toThrow('nome=valor')
   })
 
   it('enables one sanitizing processor with the configured sampling ratio', () => {

@@ -87,6 +87,27 @@ function validateSampler(value: string | undefined) {
   }
 }
 
+export function parseOtlpHeaders(value: string | undefined) {
+  const configured = value?.trim()
+  if (!configured) return undefined
+
+  const headers: Record<string, string> = {}
+  for (const entry of configured.split(',')) {
+    const separator = entry.indexOf('=')
+    if (separator < 1) throw new Error('OTEL_EXPORTER_OTLP_HEADERS deve usar o formato nome=valor')
+
+    try {
+      const name = decodeURIComponent(entry.slice(0, separator).trim())
+      const headerValue = decodeURIComponent(entry.slice(separator + 1).trim())
+      if (!name || !headerValue) throw new Error('empty header')
+      headers[name] = headerValue
+    } catch {
+      throw new Error('OTEL_EXPORTER_OTLP_HEADERS contém codificação inválida')
+    }
+  }
+  return headers
+}
+
 export function createOpenTelemetryOptions(environment: NodeJS.ProcessEnv = process.env) {
   const endpoint = environment.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT?.trim()
   if (!endpoint) return { spanProcessors: undefined, tracesSampleRate: undefined }
@@ -105,7 +126,10 @@ export function createOpenTelemetryOptions(environment: NodeJS.ProcessEnv = proc
   }
 
   validateSampler(environment.OTEL_TRACES_SAMPLER)
-  const exporter = new OTLPTraceExporter({ url: endpoint })
+  const exporter = new OTLPTraceExporter({
+    url: endpoint,
+    headers: parseOtlpHeaders(environment.OTEL_EXPORTER_OTLP_HEADERS),
+  })
   const processor = new SanitizingSpanProcessor(new BatchSpanProcessor(exporter))
   return {
     spanProcessors: [processor],
