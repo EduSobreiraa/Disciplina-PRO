@@ -184,7 +184,7 @@ Commits exclusivamente Markdown executam o workflow documental de links e comand
 
 ## Análise de qualidade
 
-O CI envia análise estática e cobertura LCOV ao SonarQube Cloud no projeto `EduSobreiraa_Disciplina-PRO`. A configuração versionada está em `sonar-project.properties`; o token permanece exclusivamente no secret `SONAR_TOKEN` do GitHub Actions. O scanner envia a versão declarada no `package.json`, aguarda o processamento do Quality Gate e interrompe o CI quando o gate reprova. A análise ocorre depois das coberturas unitária, de integração e E2E do backend e antes do E2E do frontend.
+O CI envia análise estática e cobertura LCOV ao SonarQube Cloud no projeto `disciplinapro_Disciplina-PRO`, da organização `disciplinapro`. A configuração versionada e usada pelo script de consulta está em `sonar-project.properties`; o token permanece exclusivamente no secret `SONAR_TOKEN` do GitHub Actions. O scanner envia a versão declarada no `package.json`, aguarda o processamento do Quality Gate e interrompe o CI quando o gate reprova. A análise ocorre depois das coberturas unitária, de integração e E2E do backend e antes do E2E do frontend.
 
 ### E-mail local de convites
 

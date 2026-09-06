@@ -2,7 +2,9 @@
 
 ## 1. Objetivo
 
-Levar o projeto `EduSobreiraa_Disciplina-PRO` a um Quality Gate confiável e verde, corrigindo os apontamentos que representam risco ou dívida técnica e registrando como falso positivo somente os casos em que o código atual está semanticamente correto.
+Levar o projeto a um Quality Gate confiável e verde, corrigindo os apontamentos que representam risco ou dívida técnica e registrando como falso positivo somente os casos em que o código atual está semanticamente correto.
+
+Este plano foi originalmente executado no projeto `EduSobreiraa_Disciplina-PRO`. A configuração ativa migrou para `disciplinapro_Disciplina-PRO`, na organização `disciplinapro`, preservando o escopo versionado de fontes, testes e exclusões. As evidências históricas abaixo continuam identificando o projeto e os commits em que foram coletadas.
 
 O plano usa como referência a análise do commit `2569ab0`, publicada em 05/09/2026 às 21:00 BRT:
 
