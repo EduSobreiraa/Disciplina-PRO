@@ -13,7 +13,7 @@ O plano usa como referência a análise do commit `2569ab0`, publicada em 05/09/
 - cobertura do código novo de 32,15%;
 - zero vulnerabilidades e zero security hotspots.
 
-As alterações descritas neste documento ainda não fazem parte dessa análise. O painel somente poderá confirmar o encerramento das issues depois que o código for consolidado em um commit e o workflow analisar exatamente esse SHA.
+O resultado final foi publicado para o commit `e4d9a41` em 06/09/2026. O painel e a consulta autenticada do CI confirmaram o encerramento das issues no mesmo SHA aprovado pelo workflow.
 
 ## 2. Status da execução em 06/09/2026
 
@@ -21,13 +21,13 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 | --- | --- | --- |
 | S1 — Governança do Sonar e CI | Validada no CI | O scan do commit `c9bff77` recebeu a versão `0.1.0`, consumiu os cinco LCOV e bloqueou corretamente o workflow quando o Quality Gate ficou vermelho. |
 | S2 — Bugs e blockers | Validada no SonarCloud | A análise do commit `c9bff77` não apresentou issues abertas; as correções e assertions explícitas foram aceitas pelo analisador. |
-| S3 — Cobertura | Correção complementar em validação | Os scans mediram 68,9% e depois 74,6% no código novo. Setup de teste e cliente Prisma gerado foram retirados do escopo, e 16 testes diretos foram adicionados; a estimativa local combinada de linhas e condições passou a 82,4%. |
-| S4 — Configuração e segurança | Implementada e validada localmente | Validação de ambiente modularizada, e-mail validado sem regex vulnerável e bootstrap com propagação de falha. |
-| S5 — Complexidade backend | Implementada e validada localmente | Worker, eventos, filtro HTTP, mapeadores e entrega Resend foram divididos em funções menores; testes unitários e integrações afetadas foram aprovados. |
-| S6 — Diálogos e semântica | Implementada localmente | Três modais migrados para `<dialog>`, região rolável convertida para `<section>` e 17 usos intencionais classificados no Sonar. Chromium e Firefox aprovados; WebKit será confirmado no CI. |
-| S7 — Ternários frontend | Implementada localmente | Páginas do Projeto 66, administração, convites, timer, hook e página do tracker foram simplificados. Falta a confirmação pelo próximo scan. |
-| S8 — Templates | Implementada localmente | Chaves de advisory lock e textos do heatmap foram extraídos sem concatenar SQL. |
-| S9 — Limpeza | Implementada localmente | Optional chaining, `replaceAll`, `Set`, `Number.NaN`, `.at()`, `??=`, imports, aliases e parâmetros não usados foram tratados. |
+| S3 — Cobertura | Validada no SonarCloud | Após dois blocos de testes diretos e a retirada de setup/cliente Prisma gerado do escopo, o commit `e4d9a41` atingiu 85,3% de cobertura no código novo. |
+| S4 — Configuração e segurança | Validada no CI e SonarCloud | Validação de ambiente modularizada, e-mail validado sem regex vulnerável e bootstrap com propagação de falha. |
+| S5 — Complexidade backend | Validada no CI e SonarCloud | Worker, eventos, filtro HTTP, mapeadores e entrega Resend foram divididos em funções menores; testes unitários e integrações afetadas foram aprovados. |
+| S6 — Diálogos e semântica | Validada no CI e SonarCloud | Três modais migrados para `<dialog>`, mensagens de resultado usam `<output>` e a região rolável mantém navegação por teclado documentada. Chromium, Firefox e WebKit foram aprovados. |
+| S7 — Ternários frontend | Validada no CI e SonarCloud | Páginas do Projeto 66, administração, convites, timer, hook e página do tracker foram simplificados. |
+| S8 — Templates | Validada no CI e SonarCloud | Chaves de advisory lock e textos do heatmap foram extraídos sem concatenar SQL. |
+| S9 — Limpeza | Validada no CI e SonarCloud | Optional chaining, `replaceAll`, `Set`, `Number.NaN`, `.at()`, `??=`, imports, aliases e parâmetros não usados foram tratados. |
 
 ### Evidências já coletadas
 
@@ -47,6 +47,9 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 - primeira correção complementar de cobertura: `frontend/src/test/**` passou a ser classificado como teste, `backend/src/generated/**` foi excluído dos coletores e foram adicionados 10 testes para `DisciplineTrackerPage`, `JustificationDialog`, `MembershipAdministrationPanel`, `RitualTimer` e `PlatformAdministrationPage`; o scan do commit `8613f2f` subiu a cobertura do código novo para 74,6%;
 - segundo bloco complementar: seis testes cobrem os fluxos de definição do Novo Eu, check-in, dia difícil, início do ciclo, resumo de fases e meditação do Projeto 66;
 - após os dois blocos, 14 arquivos e 46 testes de componente passaram; a cobertura de componentes chegou a 574 de 1.442 linhas, ou 39,80%, e a interseção local entre os cinco LCOV e as linhas/condições novas desde `2569ab0` estimou cobertura combinada de 82,4%;
+- encerramento da fase 5 no commit `e4d9a41`: workflow `34034229898` aprovado integralmente; Quality Gate verde, 85,3% de cobertura no código novo, zero hotspots, 0,0% de duplicação no código novo e consulta autenticada com zero issues abertas;
+- o CI agora consulta as issues do projeto privado após o Quality Gate e bloqueia novas entregas enquanto houver qualquer issue aberta no período de código novo;
+- no mesmo workflow, cobertura unitária, E2E backend, integração, 105 execuções Chromium desktop/mobile, compatibilidade Firefox/WebKit, build e auditoria de dependências foram aprovados;
 - `InvitationAcceptancePage`: nove cenários de componente aprovados e 58 de 62 linhas cobertas, ou 93,55%;
 - `useTenantAdministration`: seis cenários de hook aprovados e 58 de 59 linhas cobertas, ou 98,31%;
 - `useDailyRitual`: cinco cenários de hook aprovados e 61 de 63 linhas cobertas, ou 96,83%;
@@ -60,13 +63,9 @@ As alterações descritas neste documento ainda não fazem parte dessa análise.
 - validação estática completa do estado atual aprovada: `npm run lint`, `npm run typecheck` e `npm run build` passaram nos workspaces frontend e backend;
 - WebKit não iniciou localmente por ausência de bibliotecas nativas e indisponibilidade de `sudo` não interativo; o workflow do CI já instala essas dependências.
 
-### Próximas tasks curtas
+### Fase 5 concluída
 
-O restante será executado em blocos independentes, com validação e relato ao final de cada bloco:
-
-1. consolidar a correção complementar de cobertura, atualizar o Graphify e conferir novamente o SonarCloud;
-2. confirmar os projetos WebKit no CI depois da aprovação do Quality Gate;
-3. encerrar a fase 5 quando o mesmo SHA estiver verde no CI e no SonarCloud.
+O commit `e4d9a41` atende aos critérios finais do plano no mesmo SHA: CI verde, Quality Gate verde, cobertura de código novo acima de 80%, zero issues abertas na consulta autenticada e matriz Chromium/Firefox/WebKit aprovada.
 
 ## 3. Decisões de implementação
 
@@ -113,7 +112,7 @@ Critério de aceite:
 
 ### Entrega S2 — Bugs e blockers
 
-**Status:** validada no SonarCloud; zero issues abertas no scan do commit `c9bff77`
+**Status:** validada no SonarCloud; zero issues abertas na consulta autenticada do commit `e4d9a41`
 **Prioridade:** P0
 **Dependências:** S1; consolidação das mudanças locais de `mission-metrics.ts`
 **Resultado esperado:** remover ou resolver 15 bugs e 8 blockers
@@ -148,7 +147,7 @@ Critério de aceite:
 
 ### Entrega S3 — Cobertura observável e confiável
 
-**Status:** correção complementar concluída localmente; nova medição do Sonar pendente
+**Status:** validada no SonarCloud; cobertura do código novo de 85,3%
 **Prioridade:** P0
 **Dependências:** S1
 **Arquivos principais:** scripts dos workspaces, configurações Jest, configuração de testes frontend e `sonar-project.properties`
@@ -216,7 +215,7 @@ Critério de aceite:
 
 ### Entrega S4 — Configuração, segurança e inicialização
 
-**Status:** implementada e validada localmente
+**Status:** validada no CI e no SonarCloud
 **Prioridade:** P1
 **Dependências:** S2 e testes de caracterização
 **Regras principais:** `S8786`, `S5869`, `S3776`, `S7785`
@@ -237,7 +236,7 @@ Critério de aceite:
 
 ### Entrega S5 — Complexidade do backend
 
-**Status:** implementada e validada localmente
+**Status:** validada no CI e no SonarCloud
 **Prioridade:** P1
 **Dependências:** S3 para que os testes de caracterização sejam contabilizados
 
@@ -259,7 +258,7 @@ Critério de aceite:
 
 ### Entrega S6 — Diálogos e semântica do frontend
 
-**Status:** implementada localmente; confirmação WebKit no CI pendente
+**Status:** validada no CI e no SonarCloud; Chromium, Firefox e WebKit aprovados
 **Prioridade:** P1/P2
 **Dependências:** testes frontend da S3
 
@@ -292,7 +291,7 @@ Critério de aceite:
 
 ### Entrega S7 — Ternários e apresentação frontend
 
-**Status:** implementada localmente; confirmação pelo próximo scan pendente
+**Status:** validada no CI e no SonarCloud
 **Prioridade:** P2
 **Dependências:** S6; consolidação do trabalho local do tracker
 **Regras:** 26 ocorrências `javascript:S3358` e uma `javascript:S3776`
@@ -320,7 +319,7 @@ Critério de aceite:
 
 ### Entrega S8 — Persistência e templates
 
-**Status:** implementada localmente
+**Status:** validada no CI e no SonarCloud
 **Prioridade:** P2
 **Dependências:** S5
 **Regras:** 11 ocorrências TypeScript e uma JavaScript de `S4624`
@@ -340,7 +339,7 @@ Critério de aceite:
 
 ### Entrega S9 — Limpeza de baixa prioridade
 
-**Status:** implementada localmente
+**Status:** validada no CI e no SonarCloud
 **Prioridade:** P3
 **Dependências:** entregas anteriores
 
