@@ -18,21 +18,37 @@ export function MembershipAdministrationPanel({ administration }) {
   const assignableMembers = administration.memberships.filter(({ role, status }) => role !== 'CEO' && status === 'ACTIVE')
 
   useEffect(() => {
-    if (!transition) return undefined
+    if (!transition) {
+      return undefined
+    }
     openerRef.current = document.activeElement
     const dialog = dialogRef.current
-    if (!dialog.open) dialog.showModal()
+    if (!dialog.open) {
+      dialog.showModal()
+    }
     const focusable = () => [...dialog.querySelectorAll('textarea, button:not(:disabled)')]
     focusable()[0]?.focus()
     function onKeyDown(event) {
-      if (event.key === 'Escape') setTransition(null)
-      if (event.key !== 'Tab') return
+      if (event.key === 'Escape') {
+        setTransition(null)
+      }
+      if (event.key !== 'Tab') {
+        return
+      }
       const controls = focusable()
       const first = controls[0]
       const last = controls.at(-1)
-      if (!first || !last) return
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
-      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+      if (!first || !last) {
+        return
+      }
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      }
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
     document.addEventListener('keydown', onKeyDown)
     return () => {
