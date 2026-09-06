@@ -7,6 +7,7 @@ import { GamificationPage } from './modules/gamification/pages/GamificationPage'
 import { MissionsPage } from './modules/discipline-content/pages/MissionsPage'
 import { ProtocolPage } from './modules/discipline-content/pages/ProtocolPage'
 import { LoginPage } from './modules/auth/LoginPage'
+import { InvitationAcceptancePage } from './modules/invitations/InvitationAcceptancePage'
 import { ProfilePage } from './modules/profile/ProfilePage'
 import { ProgramsPage } from './modules/programs/ProgramsPage'
 import { Projeto66Layout } from './modules/projeto66/Projeto66Layout'
@@ -47,6 +48,7 @@ function App() {
     <GamificationProvider key={tenantScopeKey(session.tenant?.id)}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/convites/aceitar" element={<InvitationAcceptancePage />} />
         <Route path="/plataforma" element={<RequirePlatformSession><PlatformAdministrationPage /></RequirePlatformSession>} />
         <Route path="/app" element={<RequireSession><AppLayout /></RequireSession>}>
           <Route index element={<DashboardPage />} />
