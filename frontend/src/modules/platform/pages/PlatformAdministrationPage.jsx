@@ -41,7 +41,7 @@ export function PlatformAdministrationPage() {
       <div><span className="eyebrow">Administração de plataforma</span><h1>Disciplina <em>PRO</em></h1><p>Fronteira global sem contexto ou permissões de uma organização.</p></div>
       <div><strong>{session.user.email}</strong><small>SUPER_ADMIN</small><button type="button" onClick={() => session.logout()}>Sair</button></div>
     </header>
-    {platform.status === 'loading' && <section className="admin-state" role="status">Carregando plataforma…</section>}
+    {platform.status === 'loading' && <section className="admin-state" aria-live="polite" aria-atomic="true">Carregando plataforma…</section>}
     {platform.status === 'error' && <section className="admin-state error" role="alert"><strong>Não foi possível carregar a plataforma.</strong><span>{platform.error?.message}</span><button className="button" type="button" onClick={() => platform.reload().catch(() => {})}>Tentar novamente</button></section>}
     {platform.status === 'ready' && <div className="platform-grid">
       <section className="platform-panel">

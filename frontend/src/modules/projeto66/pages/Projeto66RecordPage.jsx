@@ -71,7 +71,7 @@ export function Projeto66RecordPage() {
       <section className="p66-record-section private"><div className="p66-section-head"><div><span>🔒 Somente você</span><h2>Como você se sentiu?</h2></div></div><p className="p66-private-note">Este conteúdo é armazenado separadamente e não aparece em relatórios da empresa.</p><div className="p66-emotions">{emotionOptions.map((option) => <button disabled={!active} className={emotion === option.value ? 'selected' : ''} type="button" key={option.value} onClick={() => setEmotion(option.value)}><b>{option.emoji}</b><span>{option.label}</span></button>)}</div><h3>Gratidão</h3>{['O passado que me formou…', 'O futuro que estou criando…', 'Uma pessoa importante hoje…'].map((placeholder, index) => <label className="p66-textarea-field" htmlFor={`gratitude-${index}`} key={placeholder}>Reflexão {index + 1}<textarea id={`gratitude-${index}`} disabled={!active} value={gratitude[index]} placeholder={placeholder} onChange={(event) => updateGratitude(index, event.target.value)} /></label>)}</section>
       <button className="p66-primary" disabled={!active || saving || saved} type="submit">{recordButtonLabel({ saved, saving, saveError, existing })}</button>
       {saveError && <p className="p66-action-error" role="alert">{saveError}</p>}
-      {saved && <div className="p66-saved" role="status">✓ Dia {day} salvo. Visão geral e tracker atualizados.</div>}
+      {saved && <output className="p66-saved">✓ Dia {day} salvo. Visão geral e tracker atualizados.</output>}
     </form>
   )
 }

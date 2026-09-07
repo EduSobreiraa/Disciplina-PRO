@@ -7,7 +7,7 @@ export function ProgramsPage() {
   return (
     <>
       <section className="page-heading"><span className="eyebrow">Arsenal de desenvolvimento</span><h1>Programas <em>Spark</em></h1><p>Escolha uma jornada habilitada pela sua empresa e entre em campo.</p></section>
-      {catalog.status === 'loading' && <section className="program-state" role="status">Carregando programas habilitados…</section>}
+      {catalog.status === 'loading' && <section className="program-state" aria-live="polite" aria-atomic="true">Carregando programas habilitados…</section>}
       {catalog.status === 'error' && <section className="program-state error" role="alert"><strong>Não foi possível carregar o catálogo.</strong><span>{catalog.error?.message}</span><button className="button" type="button" onClick={() => catalog.reload().catch(() => {})}>Tentar novamente</button></section>}
       {catalog.status === 'ready' && catalog.programs.length === 0 && <section className="program-state"><strong>Nenhum programa disponível.</strong><span>Sua organização ainda não habilitou uma jornada para você.</span></section>}
       <section className="program-grid">

@@ -7,7 +7,7 @@ export function MissionsPage() {
   const missions = useMissions()
 
   return <><header className="page-title"><span className="eyebrow">Objetivos derivados da execução</span><h1>Missões <em>ativas</em></h1><p>O progresso vem dos fatos já registrados. Complete a meta e resgate a recompensa uma única vez.</p></header>
-    {missions.status === 'loading' && <section className="mission-state" role="status">Carregando missões…</section>}
+    {missions.status === 'loading' && <section className="mission-state" aria-live="polite" aria-atomic="true">Carregando missões…</section>}
     {missions.status === 'error' && <section className="mission-state error" role="alert"><strong>Não foi possível carregar as missões.</strong><span>{missions.error?.message}</span><button type="button" onClick={() => missions.reload().catch(() => {})}>Tentar novamente</button></section>}
     <section className="mission-grid">{missionDefinitions.map((mission) => {
       const value = missions.metrics[mission.metric] ?? 0

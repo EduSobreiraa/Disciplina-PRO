@@ -75,7 +75,7 @@ export function DisciplineTrackerPage() {
   }
   return <>
     <section className="page-heading"><span className="eyebrow">Disciplina célula por célula</span><h1>Minha <em>evolução</em></h1><p>Acompanhe comportamentos objetivos e registre a causa de cada desvio.</p></section>
-    {tracker.status === 'loading' ? <section className="tracker-state tracker-loading" role="status">Carregando tracker…</section> : <>
+    {tracker.status === 'loading' ? <section className="tracker-state tracker-loading" aria-live="polite" aria-atomic="true">Carregando tracker…</section> : <>
     {tracker.status === 'error' && <section className="tracker-state error" role="alert"><strong>Não foi possível sincronizar o tracker.</strong><span>{tracker.error?.message}</span><button className="button" type="button" onClick={() => tracker.reload().catch(() => {})}>Tentar novamente</button></section>}
     <section className="tracker-kpis"><article className={getScoreClass(tracker.stats.percent)}><span>Disciplina do mês</span><strong>{tracker.stats.percent === null ? '—' : `${tracker.stats.percent}%`}</strong></article><article className="green"><span>Dias marcados</span><strong>{tracker.stats.markedDays}</strong></article><article className="gold"><span>Dias perfeitos</span><strong>{tracker.stats.perfectDays}</strong></article><article className="red"><span>Falhas registradas</span><strong>{tracker.stats.reds}</strong></article></section>
     <div className="tracker-months" aria-label="Selecionar mês">{months.map((name, index) => <button className={month === index ? 'active' : ''} type="button" key={name} onClick={() => setMonth(index)}>{name}</button>)}</div>

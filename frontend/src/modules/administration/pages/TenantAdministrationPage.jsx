@@ -12,9 +12,9 @@ export function TenantAdministrationPage() {
 
   return <>
     <header className="page-heading"><span className="eyebrow">Administração da organização</span><h1>Pessoas e <em>times</em></h1><p>Visão limitada pelo seu papel e pelo escopo autorizado no servidor.</p></header>
-    {administration.status === 'loading' && <section className="admin-state" role="status">Carregando estrutura da organização…</section>}
+    {administration.status === 'loading' && <section className="admin-state" aria-live="polite" aria-atomic="true">Carregando estrutura da organização…</section>}
     {administration.status === 'error' && <section className="admin-state error" role="alert"><strong>Não foi possível carregar a administração.</strong><span>{administration.error?.message}</span><button className="button" type="button" onClick={() => administration.reload().catch(() => {})}>Tentar novamente</button></section>}
-    {administration.status === 'ready' && administration.notice && <p className="admin-action-notice" role="status">{administration.notice}</p>}
+    {administration.status === 'ready' && administration.notice && <output className="admin-action-notice">{administration.notice}</output>}
     {administration.status === 'ready' && <div className="admin-layout">
       <MembershipAdministrationPanel administration={administration} />
       {administration.canManageTeams ? <TeamAdministrationPanel administration={administration} /> : <section className="admin-panel"><header><div><span>Escopo gerencial</span><h2>Somente equipes atribuídas</h2></div></header><p className="admin-empty">A API já restringiu a lista de pessoas aos seus times. A gestão estrutural de times pertence ao CEO.</p></section>}

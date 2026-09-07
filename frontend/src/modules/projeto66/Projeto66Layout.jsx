@@ -24,7 +24,7 @@ const secondaryLinks = [
 function Projeto66Shell() {
   const [crisisOpen, setCrisisOpen] = useState(false)
   const execution = useProjeto66Context()
-  if (execution.status === 'loading') return <section className="p66-app"><div className="p66-content"><p className="p66-loading" role="status">Carregando seu ciclo…</p></div></section>
+  if (execution.status === 'loading') return <section className="p66-app"><div className="p66-content"><p className="p66-loading" aria-live="polite" aria-atomic="true">Carregando seu ciclo…</p></div></section>
   if (execution.status === 'error') return <section className="p66-app"><div className="p66-content"><section className="p66-callout"><b>!</b><p>{execution.error.message}</p></section><button className="p66-primary" type="button" onClick={() => execution.reload()}>Tentar novamente</button></div></section>
   return (
     <section className="p66-app">

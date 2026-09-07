@@ -13,3 +13,4 @@
 .admin-panel button,.admin-dialog button{min-width:44px}
 .admin-invitation-form fieldset label{display:inline-flex;align-items:center;gap:6px;min-height:44px;min-width:44px;cursor:pointer}
 .admin-dialog{position:static;max-width:none;margin:0;color:inherit}.admin-dialog form>div{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.admin-dialog form>div button{min-height:44px}
+.admin-delivery,.admin-action-notice{display:block}

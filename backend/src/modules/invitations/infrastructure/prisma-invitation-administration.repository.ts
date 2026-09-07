@@ -4,7 +4,15 @@ import { PrismaService } from '../../../database/prisma.service.js'
 import { InvitationAdministrationRepository, type InvitationRecord, type TenantInvitationActor } from '../application/invitation-administration.repository.js'
 import { FirstCeoInvitationUnavailableError, InvitationActorInactiveError, InvitationAlreadyPendingError, InvitationNotFoundError, InvitationNotPendingError, InvitationResourceScopeDeniedError, MembershipAlreadyExistsError } from '../domain/invitation.errors.js'
 
-type TenantInvitationActorRecord = { id: string; role: 'USER' | 'MANAGER' | 'CEO' }
+type InvitationRole = 'USER' | 'MANAGER' | 'CEO'
+type TenantInvitationActorRecord = { id: string; role: InvitationRole }
+type PendingInvitationRecord = {
+  id: string
+  role: InvitationRole
+  status: string
+  expiresAt: Date
+  createdByMembershipId: string | null
+}
 
 @Injectable()
 export class PrismaInvitationAdministrationRepository extends InvitationAdministrationRepository {
@@ -158,7 +166,7 @@ export class PrismaInvitationAdministrationRepository extends InvitationAdminist
   private async assertAssignableTeams(
     transaction: Prisma.TransactionClient,
     input: Parameters<InvitationAdministrationRepository['createTenant']>[0],
-    actorRole: 'USER' | 'MANAGER' | 'CEO',
+    actorRole: InvitationRole,
   ) {
     if (!input.teams.length) return
     const teamIds = input.teams.map(({ teamId }) => teamId)
@@ -181,9 +189,9 @@ export class PrismaInvitationAdministrationRepository extends InvitationAdminist
   private async findPendingOwned(
     transaction: Prisma.TransactionClient,
     input: TenantInvitationActor & { invitationId: string; now: Date },
-    actorRole: 'USER' | 'MANAGER' | 'CEO',
+    actorRole: InvitationRole,
   ) {
-    const rows = await transaction.$queryRaw<Array<{ id: string; role: 'USER' | 'MANAGER' | 'CEO'; status: string; expiresAt: Date; createdByMembershipId: string | null }>>`
+    const rows = await transaction.$queryRaw<PendingInvitationRecord[]>`
       SELECT id, role::text AS role, status::text AS status, expires_at AS "expiresAt", created_by_membership_id AS "createdByMembershipId"
       FROM invitations
       WHERE id = ${input.invitationId}::uuid AND tenant_id = ${input.tenantId}::uuid

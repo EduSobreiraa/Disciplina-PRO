@@ -37,6 +37,12 @@ export function isoWeekKey(dateKey: string) {
   return `${value.getUTCFullYear()}-W${String(week).padStart(2, '0')}`
 }
 
+function percent(count: number, expected: number) {
+  if (!expected) return 0
+  if (count === expected) return 100
+  return Math.min(99, Math.round(count / expected * 100))
+}
+
 export function calculateMissionMetrics(input: {
   activeBehaviorIds: string[]
   monthMarks: Array<{ behaviorId: string; trackedOn: Date; status: 'COMPLETED' | 'FAILED' }>
@@ -80,7 +86,6 @@ export function calculateMissionMetrics(input: {
   const greens = [...days.values()].reduce((sum, item) => sum + item.greens, 0)
   const [year, month] = input.today.split('-').map(Number)
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
-  const percent = (count: number, expected: number) => !expected ? 0 : count === expected ? 100 : Math.min(99, Math.round(count / expected * 100))
   const percentages = [...behaviorCounts.values()].map(({ greens: count }) => percent(count, daysInMonth))
   const currentWeek = isoWeekKey(input.today)
 
