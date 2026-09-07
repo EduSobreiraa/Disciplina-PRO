@@ -202,6 +202,14 @@ BX encerra quando todo item possível sem contas corporativas estiver implementa
 
 Antes da transição, o reteste autenticado do candidato `b775bed` foi concluído em 05/09/2026: **6 testes aprovados em 22,9 s**, desktop/mobile, sem escrita de negócio. A credencial fictícia foi disponibilizada no `.env` local e carregada sem exposição; traces desativados. Isso resolve a dependência de credencial para o smoke mencionada no registro anterior, mas não encerra Lighthouse/performance autenticados ou tecnologias assistivas. Testes em aparelhos físicos não são gate de staging. Procedimento e evidência em [Smoke externo](OPERACAO_SMOKE_TEST_EXTERNO.md#reteste-do-candidato-b775bed--05092026).
 
+### Diretriz de lançamento MVP controlado — 07/09/2026
+
+O primeiro lançamento busca aprendizado com usuários reais, não antecipar toda a operação de escala. A beta só abre após prova de fluxo principal, backup/restore, segurança focada e observabilidade com responsável operacional; deve começar com grupo limitado, suporte definido e capacidade de pausar novos cadastros. Envio básico de convite/webhook precisa estar operacional; retry entregue, bounce e automações avançadas podem evoluir após o início, com risco conhecido registrado.
+
+O runner de migrations não é serviço de uso diário: removê-lo após a reprodução bem-sucedida libera capacidade para backup e ele deve ser recriado pelo runbook somente antes de um deploy que contenha migration versionada. Alterações de frontend ou lógica sem mudança de schema não exigem esse runner.
+
+PITR e RPO de uma hora continuam o objetivo de produção plena. Caso a beta seja aberta antes desse ensaio, documentar o RPO efetivo, a limitação de participantes, responsável pelo aceite e critérios de interrupção; não promover essa exceção a conclusão dos gates B10/produção.
+
 Após criação do e-mail corporativo:
 
 1. criar contas corporativas de Vercel, Railway, Cloudflare/R2, Sentry, Better Stack e Resend;
