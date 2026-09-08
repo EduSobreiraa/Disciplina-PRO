@@ -82,6 +82,7 @@ test('logs in, restores the session and logs out through the deployed UI', async
   await expectTenantContext(sessionContext, participant.email)
   await expect(page).toHaveURL(/\/app\/?$/)
   await expect(page.getByRole('navigation', { name: 'Navegação principal' })).toBeVisible()
+  await expect(page.getByText('Ambiente de desenvolvimento')).toHaveCount(0)
 
   const refreshResponse = page.waitForResponse((response) => response.url().endsWith('/api/auth/refresh'))
   const restoredContext = waitForSessionContext(page)
@@ -94,7 +95,7 @@ test('logs in, restores the session and logs out through the deployed UI', async
   await expect(page.getByLabel(/e-mail/i)).toBeVisible()
 })
 
-test('reads tenant, Projeto 66, tracker and ritual projections', async ({ page }) => {
+test('reads tenant, Projeto 77, tracker and ritual projections', async ({ page }) => {
   await apiLogin(page, participant)
 
   const sessionContext = waitForSessionContext(page)
@@ -104,7 +105,7 @@ test('reads tenant, Projeto 66, tracker and ritual projections', async ({ page }
 
   await page.goto('/app/programas/projeto-66')
   await expect(page.getByText('Carregando seu ciclo…')).toHaveCount(0)
-  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 77' })).toBeVisible()
 
   await page.goto('/app/minha-evolucao')
   await expect(page.getByRole('heading', { name: /Minha evolução/i })).toBeVisible()
