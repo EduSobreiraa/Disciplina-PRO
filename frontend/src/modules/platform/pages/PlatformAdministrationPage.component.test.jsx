@@ -84,4 +84,14 @@ describe('PlatformAdministrationPage', () => {
 
     prompt.mockRestore()
   })
+
+  it('announces loading until the platform is ready', () => {
+    mocks.platform.status = 'loading'
+    const { container, rerender } = render(<PlatformAdministrationPage />)
+    const loading = container.querySelector('[aria-live="polite"]')
+    expect(loading?.getAttribute('aria-atomic')).toBe('true')
+    mocks.platform.status = 'ready'
+    rerender(<PlatformAdministrationPage />)
+    expect(container.querySelector('[aria-live="polite"]')).toBeNull()
+  })
 })

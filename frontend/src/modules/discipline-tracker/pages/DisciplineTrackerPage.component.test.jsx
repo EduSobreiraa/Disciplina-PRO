@@ -52,6 +52,14 @@ function createTracker(overrides = {}) {
 }
 
 describe('DisciplineTrackerPage', () => {
+  it('announces loading until the tracker is ready', () => {
+    mocks.tracker = createTracker({ status: 'loading' })
+    const { container, rerender } = render(<DisciplineTrackerPage />)
+    expect(container.querySelector('[aria-live="polite"]')?.getAttribute('aria-atomic')).toBe('true')
+    mocks.tracker.status = 'ready'
+    rerender(<DisciplineTrackerPage />)
+    expect(container.querySelector('[aria-live="polite"]')).toBeNull()
+  })
   beforeEach(() => {
     mocks.tracker = createTracker()
     mocks.parseBackup.mockReset().mockReturnValue({ version: 1 })
