@@ -23,7 +23,7 @@ SHA-256 do JSON CEO: `f3307d3f01a14c1254d9f82ad327a3dd1af2fb0f17511c282375444ca7
 - Esperado: rejeição controlada de entrada inválida, preferencialmente HTTP 400.
 - Observado: HTTP 500, código `INTERNAL_SERVER_ERROR`, mensagem `Erro interno do servidor`. Resposta contém apenas status, código, mensagem, requestId, timestamp e path; não contém stack ou SQL.
 - Pós-condição: consulta ao banco confirmou zero convites para o endereço da reprodução.
-- Classificação provisória: defeito de validação/robustez; nenhum vazamento ou acesso cruzado demonstrado nessa reprodução. Correção e reteste pendentes.
+- Classificação inicial: defeito de validação/robustez; nenhum vazamento ou acesso cruzado demonstrado nessa reprodução. Corrigido e retestado conforme registro abaixo.
 
 ## DAST-002 — alerta 90022 ainda não encerrado
 
@@ -52,3 +52,9 @@ Correção publicada no commit `2c148ca0facb4a67271a50a6a07285cd4026b293`, envia
 Smoke público contra `https://disciplina-pro-frontend.vercel.app`: **2/2 em 4,6 s**, desktop/mobile, login público e readiness com banco disponível. Smoke autenticado somente leitura: **6/6 em 21,5 s**, desktop/mobile, login, refresh, logout, contexto, projeções e administração. Nenhum reset, seed ou escrita de negócio executado no staging.
 
 A primeira execução autenticada teve 5/6 aprovados e um erro local `ENOENT` ao fechar o trace devido à pasta de artefatos compartilhada com o smoke público simultâneo. A repetição foi sequencial, passando `--trace=off` diretamente ao script do workspace, e aprovou todos os cenários. A publicação e o smoke da correção estão concluídos; isso não amplia a cobertura do DAST nem constitui pentest independente.
+
+## Check final do CI
+
+O workflow CI `34177547367`, do commit `2c148ca`, terminou com falha exclusivamente no Quality Gate Sonar. Os cinco relatórios LCOV foram importados; passaram 216 testes unitários backend, 24 E2E backend, 124 de integração e 46 de componentes frontend. A condição reprovada foi `new_coverage`: **26%**, mínimo **80%**. Confiabilidade, segurança, manutenção, duplicação e revisão de hotspots passaram. Não há evidência de relatório LCOV ausente nessa execução.
+
+Os workflows de documentação de `2c148ca` e `b20e6c8` passaram. A publicação e os smokes permanecem comprovados, mas o gate de CI está aberto até tratar a cobertura insuficiente. Não declarar aprovação final de todos os gates nem reduzir o limiar para encobrir essa falha.
