@@ -74,7 +74,10 @@ authenticatedTest('does not render empty tracker projections while loading', asy
   })
   try {
     await page.goto('/app/minha-evolucao')
-    await expect(page.getByRole('status')).toHaveText('Carregando tracker…')
+    const loading = page.getByText('Carregando tracker…', { exact: true })
+    await expect(loading).toBeVisible()
+    await expect(loading).toHaveAttribute('aria-live', 'polite')
+    await expect(loading).toHaveAttribute('aria-atomic', 'true')
     await expect(page.locator('.tracker-panel, .tracker-kpis, .tracker-insights')).toHaveCount(0)
     await page.evaluate(() => document.fonts.ready)
     const heading = await page.getByRole('heading', { name: 'Minha evolução' }).boundingBox()
