@@ -64,6 +64,8 @@ O runner de migrations não precisa ocupar capacidade no cotidiano: ele é recri
 
 ## Registro de execução
 
+**Atualização 08/09/2026 UTC:** correção DAST publicada no commit `2c148ca`, deployment API `212db92f-5f73-470f-a19b-9449ccd7a2c4` em `SUCCESS`. Validação UUID confirmada no runtime; smoke público 2/2 e autenticado 6/6 aprovados em desktop/mobile. A pendência de publicação/smoke da correção foi concluída. O escopo e os limites do teste de segurança estão no [resultado DAST local](RESULTADO_DAST_LOCAL_20260908.md).
+
 | Item | Data/ambiente | Commit/recurso | Responsável | Evidência | Resultado e pendência |
 |---|---|---|---|---|---|
 | Fase 0 — baseline e corte corporativo | 06/09/2026 · staging privado corporativo | `b6856f41d2461172c6fd694184d2cf0c04030f25` · Vercel, Railway API/PostgreSQL/worker | Eduardo | API corporativa respondeu `ready` com banco disponível; smoke externo público 2/2 e autenticado 6/6 aprovados, desktop e mobile | Candidato limpo e caminho Vercel → API corporativa → PostgreSQL corporativo validado. Backend anterior permanece somente como rollback temporário; seu desligamento depende das fases de recuperação e ensaio completo. |

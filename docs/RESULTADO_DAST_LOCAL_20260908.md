@@ -44,3 +44,11 @@ ZAP 2.17.0 executado novamente com SUPER_ADMIN fictício e OpenAPI restrito à r
 Relatórios preservados localmente em `/tmp/disciplina-dast-focused-report.json` e `/tmp/disciplina-dast-focused-report.html`, fora do Git. SHA-256 JSON: `f32c423816c5eb5ef73e60f768dc5767b1fb6e9ffb61d90acfd6d688cb5440a7`. O volume interno Docker permitiu salvar e copiar os artefatos sem o problema de permissão anterior.
 
 DAST-001 corrigido e retestado localmente; DAST-002 não reproduzido no reteste focado. API e recursos descartáveis encerrados após a coleta. A mudança ainda precisa ser publicada no staging e receber smoke do candidato implantado; não foi realizado deploy nesta rodada. Os limites de cobertura descritos acima permanecem válidos.
+
+## Publicação e smoke — 08/09/2026 UTC
+
+Correção publicada no commit `2c148ca0facb4a67271a50a6a07285cd4026b293`, enviado ao `main`. Deploy da API Railway `Disciplina-PRO` no ambiente corporativo de staging (nome Railway `production`): `212db92f-5f73-470f-a19b-9449ccd7a2c4`, estado `SUCCESS`. Inspeção somente leitura do JavaScript compilado no runtime confirmou `ParseUUIDPipe` no controller de convites de plataforma.
+
+Smoke público contra `https://disciplina-pro-frontend.vercel.app`: **2/2 em 4,6 s**, desktop/mobile, login público e readiness com banco disponível. Smoke autenticado somente leitura: **6/6 em 21,5 s**, desktop/mobile, login, refresh, logout, contexto, projeções e administração. Nenhum reset, seed ou escrita de negócio executado no staging.
+
+A primeira execução autenticada teve 5/6 aprovados e um erro local `ENOENT` ao fechar o trace devido à pasta de artefatos compartilhada com o smoke público simultâneo. A repetição foi sequencial, passando `--trace=off` diretamente ao script do workspace, e aprovou todos os cenários. A publicação e o smoke da correção estão concluídos; isso não amplia a cobertura do DAST nem constitui pentest independente.
