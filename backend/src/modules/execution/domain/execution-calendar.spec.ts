@@ -60,4 +60,14 @@ describe('ExecutionCalendar', () => {
     expect(before).toMatchObject({ programDay: 9, isCompletable: false })
     expect(final).toMatchObject({ programDay: 10, isCompletable: true })
   })
+
+  it.each([66, 67, 76, 77, 78])('uses the 77-day deadline on active day %s', (day) => {
+    const startedOn = date('2026-01-01')
+    const result = calendar.calculate({
+      startedOn, now: calendar.addDays(startedOn, day - 1), timeZone: 'UTC',
+      durationDays: 77, pauses: [],
+    })
+    expect(result).toMatchObject({ programDay: Math.min(day, 77), isCompletable: day >= 77 })
+  })
+
 })

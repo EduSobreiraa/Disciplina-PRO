@@ -21,7 +21,7 @@ try {
     userId: access.userId,
     platformRole: access.role,
   }, PROJETO66_CATALOG)
-  process.stdout.write(`Projeto 66: ${result.action} (${result.programId}/${result.versionId})\n`)
+  process.stdout.write(`Projeto 77: ${result.action} (${result.programId}/${result.versionId})\n`)
 } finally {
   await app.close()
 }

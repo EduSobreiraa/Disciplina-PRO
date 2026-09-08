@@ -1,3 +1,4 @@
+import { PROGRAM_LENGTH } from '../../services/progress'
 import { getHeatLevel, getScore } from '../../services/scoring'
 
 function scoreDescription(score) {
@@ -8,8 +9,8 @@ function heatmapTitle(day, score) {
   return `Dia ${day}: ${scoreDescription(score)}`
 }
 
-export function ProgramHeatmap({ dailyRecords, currentDay = 0 }) {
-  const days = Array.from({ length: 66 }, (_, index) => {
+export function ProgramHeatmap({ dailyRecords, currentDay = 0, durationDays = PROGRAM_LENGTH }) {
+  const days = Array.from({ length: durationDays }, (_, index) => {
     const day = index + 1
     const score = getScore(dailyRecords[day])
     return { day, score, level: getHeatLevel(score) }

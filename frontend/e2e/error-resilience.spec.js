@@ -17,7 +17,7 @@ async function expectCatalogRecovery(page, handler) {
   await expect(page.getByRole('alert')).toContainText('Não foi possível carregar o catálogo.')
   await page.unroute('**/*', handler)
   await page.getByRole('button', { name: 'Tentar novamente' }).click()
-  await expect(page.getByRole('heading', { name: 'Projeto 66 — Ciclo fundador' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Projeto 77 — Ciclo fundador' })).toBeVisible()
 }
 
 for (const failure of apiFailures) {

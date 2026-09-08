@@ -6,7 +6,7 @@ import { MaterializeBundledProgramUseCase } from '../src/modules/programs/applic
 import { PROJETO66_CATALOG, PROJETO66_REQUIRED_ACTIVITY_KEYS } from '../src/modules/programs/catalog/projeto66.definition.js'
 import type { CurrentPlatformContext } from '../src/modules/organizations/application/organization-context.repository.js'
 
-describe('Projeto 66 catalog materialization integration', () => {
+describe('Projeto 77 catalog materialization integration', () => {
   let app: INestApplication
   let prisma: PrismaService
   let context: CurrentPlatformContext
@@ -50,7 +50,7 @@ describe('Projeto 66 catalog materialization integration', () => {
       },
     })
     expect(program.versions).toHaveLength(1)
-    expect(program.versions[0]).toMatchObject({ status: 'PUBLISHED', durationDays: 66 })
+    expect(program.versions[0]).toMatchObject({ status: 'PUBLISHED', durationDays: 77 })
     expect(program.versions[0]?.activities.map(({ key }) => key).sort())
       .toEqual([...PROJETO66_REQUIRED_ACTIVITY_KEYS].sort())
     expect(await prisma.auditEvent.count({
@@ -60,4 +60,35 @@ describe('Projeto 66 catalog materialization integration', () => {
       where: { entityId: program.id, action: 'PROGRAM_VERSION_PUBLISHED' },
     })).toBe(1)
   })
+
+  it('upgrades the exact 66-day predecessor without rewriting its activities or duration', async () => {
+    const slug = `projeto77-upgrade-${Date.now()}`
+    const previous = {
+      ...PROJETO66_CATALOG.previous,
+      identity: { ...PROJETO66_CATALOG.previous.identity, slug },
+    }
+    const next = {
+      ...PROJETO66_CATALOG,
+      identity: { ...PROJETO66_CATALOG.identity, slug },
+      previous,
+    }
+    const materialize = app.get(MaterializeBundledProgramUseCase)
+    const original = await materialize.execute(context, previous)
+    const activitiesBefore = await prisma.programActivity.findMany({ where: { programVersionId: original.versionId }, orderBy: { key: 'asc' } })
+    const result = await materialize.execute(context, next)
+    expect(result.action).toBe('UPGRADED_AND_PUBLISHED')
+    expect(result.programId).toBe(original.programId)
+    expect(result.versionId).not.toBe(original.versionId)
+    expect(await prisma.programVersion.findUniqueOrThrow({ where: { id: original.versionId } }))
+      .toMatchObject({ durationDays: 66, status: 'ARCHIVED' })
+    expect(await prisma.programActivity.findMany({ where: { programVersionId: original.versionId }, orderBy: { key: 'asc' } }))
+      .toEqual(activitiesBefore)
+    expect(await prisma.programVersion.findUniqueOrThrow({ where: { id: result.versionId } }))
+      .toMatchObject({ durationDays: 77, status: 'PUBLISHED', versionNumber: 2 })
+    expect(await prisma.program.findUniqueOrThrow({ where: { id: original.programId } }))
+      .toMatchObject({ name: 'Projeto 77', slug })
+    await expect(materialize.execute(context, next)).resolves.toMatchObject({ action: 'UNCHANGED', versionId: result.versionId })
+    expect(await prisma.programVersion.count({ where: { programId: original.programId } })).toBe(2)
+  })
+
 })

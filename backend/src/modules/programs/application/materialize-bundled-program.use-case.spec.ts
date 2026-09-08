@@ -27,11 +27,17 @@ describe('MaterializeBundledProgramUseCase', () => {
     const findBySlug = jest.fn<BundledProgramMaterializationRepository['findBySlug']>().mockResolvedValue(state)
     const create = jest.fn<ProgramAdministrationRepository['create']>().mockResolvedValue({ ...version, status: 'DRAFT', publishedAt: null })
     const publish = jest.fn<ProgramAdministrationRepository['publish']>().mockResolvedValue(version)
-    const programs = { create, publish } as unknown as ProgramAdministrationRepository
+    const createVersion = jest.fn<ProgramAdministrationRepository['createVersion']>().mockResolvedValue({ ...version, ...normalizeVersionDefinition(PROJETO66_CATALOG.previous.version, true), status: 'DRAFT' })
+    const replaceDraft = jest.fn<ProgramAdministrationRepository['replaceDraft']>().mockResolvedValue({ ...version, status: 'DRAFT' })
+    const updateProgram = jest.fn<ProgramAdministrationRepository['updateProgram']>()
+    const programs = { create, publish, createVersion, replaceDraft, updateProgram } as unknown as ProgramAdministrationRepository
     return {
       useCase: new MaterializeBundledProgramUseCase({ findBySlug }, programs),
       create,
       publish,
+      createVersion,
+      replaceDraft,
+      updateProgram,
     }
   }
 
@@ -65,4 +71,51 @@ describe('MaterializeBundledProgramUseCase', () => {
     expect(create).not.toHaveBeenCalled()
     expect(publish).not.toHaveBeenCalled()
   })
+
+  const legacyState: BundledProgramState = {
+    id: version.programId,
+    ...PROJETO66_CATALOG.previous.identity,
+    published: { ...version, ...normalizeVersionDefinition(PROJETO66_CATALOG.previous.version, true) },
+    draft: null,
+  }
+
+  it('publishes 77 as a new version, keeping the old definition intact', async () => {
+    const { useCase, create, createVersion, replaceDraft, publish, updateProgram } = setup(legacyState)
+    await expect(useCase.execute(context, PROJETO66_CATALOG)).resolves.toMatchObject({ action: 'UPGRADED_AND_PUBLISHED' })
+    expect(create).not.toHaveBeenCalled()
+    expect(createVersion).toHaveBeenCalledWith(expect.objectContaining({ programId: version.programId }))
+    expect(replaceDraft.mock.calls[0]?.[0].definition.durationDays).toBe(77)
+    expect(publish).toHaveBeenCalledTimes(1)
+    expect(updateProgram).toHaveBeenCalledWith(expect.objectContaining({ identity: PROJETO66_CATALOG.identity }))
+    expect(legacyState.published?.durationDays).toBe(66)
+  })
+
+  it('resumes an interrupted upgrade using the matching draft', async () => {
+    const { useCase, createVersion, replaceDraft, publish } = setup({ ...legacyState, draft: { ...version, status: 'DRAFT' } })
+    await useCase.execute(context, PROJETO66_CATALOG)
+    expect(createVersion).not.toHaveBeenCalled()
+    expect(replaceDraft).not.toHaveBeenCalled()
+    expect(publish).toHaveBeenCalledTimes(1)
+  })
+
+  it('finishes the identity update if publication already succeeded', async () => {
+    const { useCase, createVersion, publish, updateProgram } = setup({ ...legacyState, published: version })
+    await useCase.execute(context, PROJETO66_CATALOG)
+    expect(createVersion).not.toHaveBeenCalled()
+    expect(publish).not.toHaveBeenCalled()
+    expect(updateProgram).toHaveBeenCalledTimes(1)
+  })
+
+  it('preserves an unrelated draft and refuses customized predecessors', async () => {
+    for (const state of [
+      { ...legacyState, draft: { ...version, status: 'DRAFT' as const, title: 'Customizado' } },
+      { ...legacyState, published: { ...legacyState.published!, durationDays: 65 } },
+      { ...legacyState, name: 'Customizado' },
+    ]) {
+      const { useCase, createVersion, replaceDraft, publish, updateProgram } = setup(state)
+      await expect(useCase.execute(context, PROJETO66_CATALOG)).rejects.toBeInstanceOf(BundledProgramConflictError)
+      for (const mutation of [createVersion, replaceDraft, publish, updateProgram]) expect(mutation).not.toHaveBeenCalled()
+    }
+  })
+
 })

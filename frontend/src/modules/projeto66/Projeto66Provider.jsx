@@ -25,7 +25,7 @@ export function Projeto66Provider({ children }) {
     try {
       const enrollments = await repository.listEnrollments()
       const enrollment = enrollments.find(({ program }) => program.slug === PROJETO66_PROGRAM_SLUG)
-      if (!enrollment) throw new Error('Projeto 66 não está habilitado para esta organização')
+      if (!enrollment) throw new Error('Projeto 77 não está habilitado para esta organização')
       const cycle = await repository.loadCycle(enrollment.id)
       scopeRef.current.commit(scope, () => setState({ status: 'ready', cycle, error: null }))
       return cycle
@@ -41,7 +41,7 @@ export function Projeto66Provider({ children }) {
     repository.listEnrollments()
       .then((enrollments) => {
         const enrollment = enrollments.find(({ program }) => program.slug === PROJETO66_PROGRAM_SLUG)
-        if (!enrollment) throw new Error('Projeto 66 não está habilitado para esta organização')
+        if (!enrollment) throw new Error('Projeto 77 não está habilitado para esta organização')
         return repository.loadCycle(enrollment.id)
       })
         .then((cycle) => { if (active) scopeRef.current.commit(scope, () => setState({ status: 'ready', cycle, error: null })) })
