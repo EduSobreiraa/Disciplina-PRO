@@ -58,3 +58,11 @@ A primeira execução autenticada teve 5/6 aprovados e um erro local `ENOENT` ao
 O workflow CI `34177547367`, do commit `2c148ca`, terminou com falha exclusivamente no Quality Gate Sonar. Os cinco relatórios LCOV foram importados; passaram 216 testes unitários backend, 24 E2E backend, 124 de integração e 46 de componentes frontend. A condição reprovada foi `new_coverage`: **26%**, mínimo **80%**. Confiabilidade, segurança, manutenção, duplicação e revisão de hotspots passaram. Não há evidência de relatório LCOV ausente nessa execução.
 
 Os workflows de documentação de `2c148ca` e `b20e6c8` passaram. A publicação e os smokes permanecem comprovados, mas o gate de CI está aberto até tratar a cobertura insuficiente. Não declarar aprovação final de todos os gates nem reduzir o limiar para encobrir essa falha.
+
+## Correção da cobertura
+
+O commit `7eca1ce` adicionou testes dos avisos de carregamento acessíveis (exibição, atributos `aria-live`/`aria-atomic` e remoção ao mudar de estado) e dos avisos de entrega de convite. A suíte de componentes passou 59/59, com lint aprovado. No CI `34234847352`, o Sonar confirmou **86% de cobertura de código novo**, acima do limite inalterado de 80%, e aprovou todos os critérios do Quality Gate e a verificação de issues abertas.
+
+A etapa de navegador dessa execução revelou um seletor desatualizado no cenário de carregamento do tracker: esperava `role=status`, enquanto o contrato vigente usa uma região viva explícita. Foram 103 cenários aprovados, 2 falhas (desktop/mobile desse cenário) e 1 ignorado. O commit `d738c60` atualiza o teste para exigir texto visível, `aria-live=polite` e `aria-atomic=true`, preservando a verificação de ausência de projeções vazias, estabilidade visual e axe. Nenhuma lógica de produção nem regra de cobertura foi alterada.
+
+**Fechamento:** CI `34236206824`, commit `d738c60`, concluído com `success`. Todos os passos do job quality foram concluídos, incluindo testes de navegador, compatibilidade Firefox/WebKit, build e auditoria de dependências. Sonar reconfirmado em `OK`, com 86% de cobertura de código novo e todos os critérios aprovados. O bloqueio de cobertura e o teste de acessibilidade desatualizado estão resolvidos. Os limites do DAST e a distinção entre beta controlada e produção plena permanecem os documentados acima.

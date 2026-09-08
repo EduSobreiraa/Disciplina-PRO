@@ -55,7 +55,7 @@ O runner de migrations não precisa ocupar capacidade no cotidiano: ele é recri
 
 ## Validação e aceite
 
-**Bloqueio confirmado em 08/09/2026:** CI `34177547367` reprovado no Quality Gate Sonar por cobertura de código novo de 26% (mínimo 80%). Relatórios LCOV importados e suítes aprovadas; critérios de segurança/confiabilidade/manutenção aprovados. Correção DAST já publicada e smokes aprovados. Falta resolver a cobertura antes de declarar todos os gates concluídos.
+**Bloqueio de CI resolvido em 08/09/2026:** a cobertura de código novo passou de 26% para 86%, acima do mínimo inalterado de 80%. CI `34236206824`, commit `d738c60`, concluído com `success`, incluindo Sonar, testes de navegador, Firefox/WebKit, build e auditoria. Correção DAST publicada e smokes aprovados. Esta evidência encerra o bloqueio de cobertura; não declara concluídos os demais itens de produção plena deste checklist.
 
 - [ ] Repetir origem, CORS, CSRF, cookies, rate limit, roles e isolamento tenant; confirmar Swagger fechado conforme configuração aprovada.
 - [ ] Executar smoke público e autenticado seguindo [Smoke externo](OPERACAO_SMOKE_TEST_EXTERNO.md), com contas fictícias dedicadas e sem reset/escrita de negócio.
