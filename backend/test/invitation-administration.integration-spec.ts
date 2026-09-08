@@ -153,6 +153,20 @@ describe('Invitation administration integration', () => {
       .expect(({ body }) => expect(body).toMatchObject({ code: 'RESOURCE_SCOPE_DENIED' }))
   })
 
+  it.each(['tenantId', 'not-a-uuid', "'", '00000000-0000-0000-0000-invalid'])('rejects malformed platform tenant ID %s without persistence', async (invalidId) => {
+    const email = `invalid-id-${suffix}@disciplina.test`
+    for (const trailingSlash of ['', '/']) {
+      const response = await request(app.getHttpServer() as Parameters<typeof request>[0])
+        .post(`/api/platform/tenants/${encodeURIComponent(invalidId)}/invitations/ceo${trailingSlash}`)
+        .set('Authorization', `Bearer ${platformToken}`)
+        .send({ email }).expect(400)
+      expect(response.body).toMatchObject({ statusCode: 400 })
+      expect(response.body).not.toHaveProperty('stack')
+      expect(JSON.stringify(response.body)).not.toMatch(/Prisma|SELECT |INSERT |Invalid.*invocation/)
+    }
+    expect(await prisma.invitation.count({ where: { email } })).toBe(0)
+  })
+
   it('creates only one first-CEO invitation for a pending tenant', async () => {
     const endpoint = `/api/platform/tenants/${pendingTenantId}/invitations/ceo`
     const created = await request(app.getHttpServer() as Parameters<typeof request>[0])

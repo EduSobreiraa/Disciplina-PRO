@@ -58,7 +58,7 @@ O runner de migrations não precisa ocupar capacidade no cotidiano: ele é recri
 - [ ] Repetir origem, CORS, CSRF, cookies, rate limit, roles e isolamento tenant; confirmar Swagger fechado conforme configuração aprovada.
 - [ ] Executar smoke público e autenticado seguindo [Smoke externo](OPERACAO_SMOKE_TEST_EXTERNO.md), com contas fictícias dedicadas e sem reset/escrita de negócio.
 - [ ] Repetir axe, Lighthouse e medições autenticadas no candidato implantado; executar a matriz de [Qualidade frontend](OPERACAO_QUALIDADE_FRONTEND.md) e a validação assistiva. Testes em aparelhos físicos não são gate de staging.
-- [ ] Definir escopo/janela de DAST e pentest com contas fictícias e registrar achados, correções e reteste.
+- [ ] Definir escopo/janela de DAST e pentest com contas fictícias e registrar achados, correções e reteste. Execução local autenticada realizada em 08/09/2026: regressões iniciais 10/10 e 7/7 aprovadas; scan CEO sem alertas não informativos. Erro 500 para ID inválido corrigido com validação UUID; regressões 18/18, build e lint aprovados. Reteste ZAP focado com SUPER_ADMIN: zero falhas/avisos, respostas 400 e alerta 90022 não reproduzido após correção, com relatórios preservados. Publicação da correção e smoke do candidato implantado pendentes; pentest independente não realizado. Ver [resultado DAST local](RESULTADO_DAST_LOCAL_20260908.md).
 - [ ] Conferir todos os PP aplicáveis e gates B10.0–B10.4; obter aprovação técnica e decisões empresariais/jurídicas exigidas antes de liberar dados reais.
 - [ ] Registrar aprovação de staging e depois a decisão separada de produção, com responsável, commit, evidências e plano de recuperação.
 

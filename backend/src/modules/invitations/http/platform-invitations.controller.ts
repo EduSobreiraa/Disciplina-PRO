@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common'
+import { Body, Controller, Param, ParseUUIDPipe, Post } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import type { CurrentPlatformContext } from '../../organizations/application/organization-context.repository.js'
 import { CurrentPlatform } from '../../organizations/http/current-organization-context.decorators.js'
@@ -15,7 +15,7 @@ export class PlatformInvitationsController {
 
   @Post('ceo')
   @ApiOperation({ summary: 'Convida o primeiro CEO de um tenant pendente' })
-  create(@CurrentPlatform() context: CurrentPlatformContext, @Param('tenantId') tenantId: string, @Body() input: CreateFirstCeoInvitationDto) {
+  create(@CurrentPlatform() context: CurrentPlatformContext, @Param('tenantId', ParseUUIDPipe) tenantId: string, @Body() input: CreateFirstCeoInvitationDto) {
     return mapInvitationErrors(() => this.createFirstCeo.execute(context, tenantId, input))
   }
 }
