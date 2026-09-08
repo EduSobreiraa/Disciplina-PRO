@@ -19,12 +19,12 @@ export function DashboardPage() {
       <section className="featured-program">
         <div>
           <span className="eyebrow">Programa Spark · Disponível</span>
-          <h2>Projeto <em>66</em></h2>
+          <h2>Projeto <em>77</em></h2>
           <p>Quebre padrões automáticos, construa uma nova forma de agir e consolide sua identidade por meio da execução diária.</p>
-          <div className="program-meta"><span>3 fases</span><span>66 dias</span><span>Jornada individual</span></div>
+          <div className="program-meta"><span>3 fases</span><span>77 dias</span><span>Jornada individual</span></div>
           <Link className="button" to="/app/programas/projeto-66">Acessar programa</Link>
         </div>
-        <div className="program-seal"><span>Projeto</span><strong>66</strong><small>O Incendiário</small></div>
+        <div className="program-seal"><span>Projeto</span><strong>77</strong><small>O Incendiário</small></div>
       </section>
       <section className="dashboard-lower"><article><span className="eyebrow">Atividade recente</span><h2>A sala ainda está em silêncio.</h2><p>Inicie um programa para registrar suas primeiras ações.</p></article><article><span className="eyebrow">Próxima conquista</span><div className="achievement-row"><b>🌱</b><div><h2>Primeira atividade</h2><p>Conclua uma atividade obrigatória.</p></div></div></article></section>
     </>

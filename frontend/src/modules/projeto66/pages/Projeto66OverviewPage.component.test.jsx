@@ -11,6 +11,7 @@ vi.mock('../hooks/useProjeto66Cycle', () => ({ useProjeto66Cycle: () => mocks.ex
 function createExecution(overrides = {}) {
   return {
     cycle: { status: 'AVAILABLE', completedDays: [] },
+    durationDays: 77,
     progress: 0,
     currentDay: 0,
     currentStreak: 0,
@@ -30,7 +31,7 @@ describe('Projeto66OverviewPage', () => {
     render(<Projeto66OverviewPage />)
 
     expect(screen.getByText('Acenda a chama')).not.toBeNull()
-    await user.click(screen.getByRole('button', { name: 'Iniciar meu ciclo de 66 dias' }))
+    await user.click(screen.getByRole('button', { name: 'Iniciar meu ciclo de 77 dias' }))
     expect(await screen.findByRole('alert')).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Tentar novamente' })).not.toBeNull()
 

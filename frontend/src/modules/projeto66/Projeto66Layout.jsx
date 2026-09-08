@@ -29,7 +29,7 @@ function Projeto66Shell() {
   return (
     <section className="p66-app">
       <header className="p66-header">
-        <div><NavLink className="p66-back" to="/app/programas">‹ Disciplina PRO</NavLink><span>O Incendiário × Spark</span><strong>Protocolo <em>66</em></strong></div>
+        <div><NavLink className="p66-back" to="/app/programas">‹ Disciplina PRO</NavLink><span>O Incendiário × Spark</span><strong>Protocolo <em>77</em></strong></div>
         <span className="p66-day-badge">{execution.cycle.status === 'ACTIVE' ? `Dia ${execution.cycle.currentDay}` : execution.cycle.status}</span>
       </header>
       <div className="p66-content">
@@ -40,7 +40,7 @@ function Projeto66Shell() {
       </div>
       <button className="p66-crisis-fab" type="button" aria-label="Abrir modo crise" onClick={() => setCrisisOpen(true)}>🆘</button>
       <CrisisSupportDialog open={crisisOpen} onClose={() => setCrisisOpen(false)} />
-      <nav className="p66-tabbar" aria-label="Navegação do Projeto 66">
+      <nav className="p66-tabbar" aria-label="Navegação do Projeto 77">
         {programLinks.map((link) => <NavLink key={link.to} to={link.to} end={link.end}><b>{link.icon}</b><span>{link.label}</span></NavLink>)}
       </nav>
     </section>

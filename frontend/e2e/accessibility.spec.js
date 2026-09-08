@@ -39,14 +39,14 @@ anonymousTest('keeps the public login accessible', async ({ page }) => {
 
 authenticatedTest('keeps the authenticated catalog accessible', async ({ page }) => {
   await page.goto('/app/programas')
-  await expect(page.getByRole('heading', { name: 'Projeto 66 — Ciclo fundador' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Projeto 77 — Ciclo fundador' })).toBeVisible()
   await expectAccessible(page)
   await expectTouchTargets(page)
 })
 
-authenticatedTest('keeps the Projeto 66 navigation accessible', async ({ page }) => {
+authenticatedTest('keeps the Projeto 77 navigation accessible', async ({ page }) => {
   await page.goto('/app/programas/projeto-66')
-  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 77' })).toBeVisible()
   await expectAccessible(page)
   await expectTouchTargets(page)
 })
@@ -102,7 +102,7 @@ for (const viewport of requiredViewports) {
   authenticatedTest(`avoids horizontal overflow at ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize(viewport)
     await page.goto('/app/programas/projeto-66')
-    await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 77' })).toBeVisible()
     await expectNoHorizontalOverflow(page)
     await expectTouchTargets(page)
   })

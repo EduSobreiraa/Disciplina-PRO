@@ -3,13 +3,13 @@ import { expect, test } from './authenticated-test.js'
 async function openProjeto66(page) {
   await page.goto('/app/programas')
   await page.getByRole('link', { name: /Entrar no programa/ }).click()
-  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
-  const start = page.getByRole('button', { name: 'Iniciar meu ciclo de 66 dias' })
+  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 77' })).toBeVisible()
+  const start = page.getByRole('button', { name: 'Iniciar meu ciclo de 77 dias' })
   if (await start.isVisible()) await start.click()
   await expect(page.getByRole('link', { name: 'Registrar o dia' })).toBeVisible()
 }
 
-test('Projeto 66 loads authenticated context, navigation and crisis dialog keyboard behavior', async ({ page }) => {
+test('Projeto 77 loads authenticated context, navigation and crisis dialog keyboard behavior', async ({ page }) => {
   await openProjeto66(page)
   await page.getByRole('link', { name: 'Checklist' }).click()
   await expect(page.getByRole('heading', { name: 'Checklist' })).toBeVisible()
@@ -44,7 +44,7 @@ test('Projeto 66 loads authenticated context, navigation and crisis dialog keybo
   await expect(opener).toBeFocused()
 })
 
-test('Projeto 66 remains usable without horizontal overflow in audited viewports', async ({ page }) => {
+test('Projeto 77 remains usable without horizontal overflow in audited viewports', async ({ page }) => {
   for (const viewport of [
     { width: 320, height: 568 },
     { width: 375, height: 812 },
@@ -53,7 +53,7 @@ test('Projeto 66 remains usable without horizontal overflow in audited viewports
   ]) {
     await page.setViewportSize(viewport)
     await openProjeto66(page)
-    await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 77' })).toBeVisible()
     expect(await page.evaluate(() => window.innerWidth)).toBe(viewport.width)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 
@@ -72,7 +72,7 @@ test('Projeto 66 remains usable without horizontal overflow in audited viewports
   }
 })
 
-test('Projeto 66 exposes loading while a real enrollment read is pending', async ({ page }) => {
+test('Projeto 77 exposes loading while a real enrollment read is pending', async ({ page }) => {
   let releaseEnrollmentRead
   const enrollmentRead = new Promise((resolve) => { releaseEnrollmentRead = resolve })
   let pendingEnrollmentReads = 0
@@ -89,10 +89,10 @@ test('Projeto 66 exposes loading while a real enrollment read is pending', async
   releaseEnrollmentRead()
   await navigation
   await page.unroute('**/*', holdEnrollmentRead)
-  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 77' })).toBeVisible()
 })
 
-test('Projeto 66 shows an initial read error and retries against the real API', async ({ page }) => {
+test('Projeto 77 shows an initial read error and retries against the real API', async ({ page }) => {
   let failedEnrollmentRead = 0
   const failInitialEnrollmentRead = (route) => {
     if (new URL(route.request().url()).pathname === '/api/enrollments') {
@@ -111,5 +111,5 @@ test('Projeto 66 shows an initial read error and retries against the real API', 
   expect(failedEnrollmentRead).toBeGreaterThan(0)
   await page.unroute('**/*', failInitialEnrollmentRead)
   await page.getByRole('button', { name: 'Tentar novamente' }).click()
-  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 66' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Navegação do Projeto 77' })).toBeVisible()
 })

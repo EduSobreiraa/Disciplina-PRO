@@ -40,7 +40,6 @@ export function AppLayout() {
       </header>
       <nav className="war-nav" aria-label="Navegação principal">
         <div>{links.map((link) => <NavLink key={link.to} to={link.to} end={link.end}>{link.label}</NavLink>)}</div>
-        <span><i /> Ambiente de desenvolvimento</span>
       </nav>
       <main className="page"><Outlet /></main>
     </div>

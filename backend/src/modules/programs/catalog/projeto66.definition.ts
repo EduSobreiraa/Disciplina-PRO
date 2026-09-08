@@ -49,16 +49,16 @@ export const PROJETO66_REQUIRED_ACTIVITY_KEYS = [
   'crisis-support',
 ] as const
 
-export const PROJETO66_CATALOG = {
+const currentCatalog = {
   identity: {
     slug: 'projeto-66',
-    name: 'Projeto 66',
-    summary: 'Ciclo de 66 dias para disciplina, identidade e execução consciente.',
+    name: 'Projeto 77',
+    summary: 'Ciclo de 77 dias para disciplina, identidade e execução consciente.',
   },
   version: {
-    title: 'Projeto 66 — Ciclo fundador',
-    description: 'Jornada estruturada em três fases de 22 dias, com fatos objetivos e reflexões privadas.',
-    durationDays: 66,
+    title: 'Projeto 77 — Ciclo fundador',
+    description: 'Jornada estruturada em três fases de 22, 22 e 33 dias, com fatos objetivos e reflexões privadas.',
+    durationDays: 77,
     executionConfiguration: {
       dailyRecord: {
         pillars: [
@@ -109,4 +109,23 @@ export const PROJETO66_CATALOG = {
       },
     ],
   } satisfies ProgramVersionDefinition,
+} as const
+
+// Only this exact bundled predecessor can be upgraded automatically.
+// Keep the slug and activity keys stable so existing enrollments retain their history.
+export const PROJETO66_CATALOG = {
+  ...currentCatalog,
+  previous: {
+    identity: {
+      slug: 'projeto-66',
+      name: 'Projeto 66',
+      summary: 'Ciclo de 66 dias para disciplina, identidade e execução consciente.',
+    },
+    version: {
+      ...currentCatalog.version,
+      title: 'Projeto 66 — Ciclo fundador',
+      description: 'Jornada estruturada em três fases de 22 dias, com fatos objetivos e reflexões privadas.',
+      durationDays: 66,
+    },
+  },
 } as const

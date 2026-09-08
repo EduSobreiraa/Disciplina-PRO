@@ -15,7 +15,7 @@ function recordButtonLabel({ saved, saving, saveError, existing }) {
 }
 
 export function Projeto66RecordPage() {
-  const { cycle, currentDay, saveDailyRecord, saveChecklist, loadPrivateResponse, savePrivateResponse } = useProjeto66Cycle()
+  const { durationDays, cycle, currentDay, saveDailyRecord, saveChecklist, loadPrivateResponse, savePrivateResponse } = useProjeto66Cycle()
   const day = currentDay || 1
   const existing = cycle.dailyRecords[day]
   const [pillars, setPillars] = useState(existing?.pillars ?? emptyPillars)
@@ -64,7 +64,7 @@ export function Projeto66RecordPage() {
 
   return (
     <form className="p66-record" onSubmit={submit}>
-      <header className="p66-page-title"><span>{active ? `Dia ${day} de 66` : 'Ciclo ainda não iniciado'}</span><h1>Registrar o dia</h1></header>
+      <header className="p66-page-title"><span>{active ? `Dia ${day} de ${durationDays}` : 'Ciclo ainda não iniciado'}</span><h1>Registrar o dia</h1></header>
       {!active && <section className="p66-callout"><b>🔥</b><p><strong>Inicie seu ciclo primeiro.</strong> Volte à tela Hoje para acender a chama.</p></section>}
       <section className="p66-record-section"><div className="p66-section-head"><div><span>Placar objetivo</span><h2>Seus seis pilares</h2></div><strong>{score}<small>/60</small></strong></div>{projeto66Pillars.map((pillar) => <label className="p66-slider" key={pillar.key} style={{ '--pillar': pillar.color }}><span>{pillar.emoji} {pillar.name}</span><b>{pillars[pillar.key]}</b><input disabled={!active || Boolean(existing)} type="range" min="0" max="10" value={pillars[pillar.key]} onChange={(event) => updatePillar(pillar.key, event.target.value)} /></label>)}</section>
       <section className="p66-record-section"><div className="p66-section-head"><div><span>Execução</span><h2>Missões do dia</h2></div></div>{projeto66Missions.map((mission) => <button disabled={!active || missions[mission.key]} className={`p66-mission ${missions[mission.key] ? 'done' : ''}`} type="button" key={mission.key} onClick={() => toggleMission(mission.key)}><b>{mission.emoji}</b><span><strong>{mission.name}</strong><small>{mission.description}</small></span><i>{missions[mission.key] ? '✓' : ''}</i></button>)}</section>

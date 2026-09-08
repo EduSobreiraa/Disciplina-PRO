@@ -1,11 +1,13 @@
-import { PROJETO66_ACTIVITY_KEYS } from './projeto66-contract'
+import { PROGRAM_LENGTH } from '../services/progress.js'
+import { PROJETO66_ACTIVITY_KEYS } from './projeto66-contract.js'
 
-export const projeto66Phases = [
+export function getProjeto66Phases(durationDays = PROGRAM_LENGTH) {
+  return [
   {
     id: 1, name: 'Quebra do Programa', range: 'Dias 1–22', color: '#ff6b00',
     description: 'Identificar e interromper os padrões automáticos do velho eu.',
     activities: [
-      { title: 'O Contrato com o Novo Eu', days: '01', tag: 'Fundação da transformação', focus: 'Escreva quem você é hoje e quem decide ser. Assine o compromisso dos 66 dias e leia em voz alta toda manhã.' },
+      { title: 'O Contrato com o Novo Eu', days: '01', tag: 'Fundação da transformação', focus: `Escreva quem você é hoje e quem decide ser. Assine o compromisso dos ${durationDays} dias e leia em voz alta toda manhã.` },
       { title: 'Mapeamento das Desculpas', days: '02', tag: 'Identificar o programa automático', focus: 'Liste suas desculpas frequentes e traduza cada uma para uma decisão de ação.' },
       { title: 'Primeira Meditação de Quebra', days: '03', tag: 'Observar sem se identificar', focus: 'Observe por dez minutos os pensamentos automáticos, sem julgamento.' },
       { title: 'Retomada do Controle', days: '4–7', tag: 'Vencer a preguiça inicial', focus: 'Acorde no primeiro toque, movimente o corpo e cumpra a versão mínima.' },
@@ -24,16 +26,19 @@ export const projeto66Phases = [
     ],
   },
   {
-    id: 3, name: 'Consolidação da Identidade', range: 'Dias 45–66', color: '#30d158',
+    id: 3, name: 'Consolidação da Identidade', range: `Dias 45–${durationDays}`, color: '#30d158',
     description: 'Transformar repetição consciente em identidade e execução consistente.',
     activities: [
       { title: 'Agir por Decisão', days: '45–51', tag: 'Independente da vontade', focus: 'Quando surgir “não quero”, comece uma ação em cinco segundos.' },
       { title: 'Consolidação', days: '52–58', tag: 'Auditoria do novo programa', focus: 'Identifique comportamentos automáticos e reforce os que ainda exigem esforço.' },
-      { title: 'Alta Performance', days: '59–65', tag: 'Provar com resultado', focus: 'Produza em alto nível e transforme a nova identidade em resultado.' },
-      { title: 'Ritual da Nova Identidade', days: '66', tag: 'Fechamento do ciclo', focus: 'Celebre, registre a declaração de identidade e defina o próximo ciclo.' },
+      { title: 'Alta Performance', days: `59–${durationDays - 1}`, tag: 'Provar com resultado', focus: 'Produza em alto nível e transforme a nova identidade em resultado.' },
+      { title: 'Ritual da Nova Identidade', days: String(durationDays), tag: 'Fechamento do ciclo', focus: 'Celebre, registre a declaração de identidade e defina o próximo ciclo.' },
     ],
   },
-]
+  ]
+}
+
+export const projeto66Phases = getProjeto66Phases()
 
 export const defaultChecklist = {
   morning: ['Acordei no primeiro toque', 'Arrumei a cama', 'Meditação e visualização', 'Movimentei o corpo', 'Defini as 3 missões'],

@@ -15,7 +15,7 @@ test('keeps a private reflection outside objective execution, audit, reporting a
   const cycleResponse = page.waitForResponse((response) => /\/api\/enrollments\/[0-9a-f-]+$/.test(response.url()) && response.request().method() === 'GET')
   await page.getByRole('link', { name: /Entrar no programa/ }).click()
   expect((await cycleResponse).status()).toBe(200)
-  const start = page.getByRole('button', { name: 'Iniciar meu ciclo de 66 dias' })
+  const start = page.getByRole('button', { name: 'Iniciar meu ciclo de 77 dias' })
   const recordLink = page.getByRole('link', { name: 'Registrar o dia' })
   await expect(start.or(recordLink)).toBeVisible()
   if (await start.isVisible()) {

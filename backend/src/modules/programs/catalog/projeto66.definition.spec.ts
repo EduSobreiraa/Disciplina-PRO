@@ -3,14 +3,14 @@ import { PROJETO66_CATALOG, PROJETO66_REQUIRED_ACTIVITY_KEYS } from './projeto66
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 
-describe('Projeto 66 catalog definition', () => {
+describe('Projeto 77 catalog definition', () => {
   it('is publishable and contains every frontend contract key exactly once', () => {
     const normalized = normalizeVersionDefinition(PROJETO66_CATALOG.version, true)
     const keys = normalized.phases.flatMap(({ activities }) => activities.map(({ key }) => key))
     expect(keys).toHaveLength(PROJETO66_REQUIRED_ACTIVITY_KEYS.length)
     expect(new Set(keys)).toEqual(new Set(PROJETO66_REQUIRED_ACTIVITY_KEYS))
     expect(normalized).toMatchObject({
-      durationDays: 66,
+      durationDays: 77,
       executionConfiguration: { dailyRecord: { requireAllPillars: true, pillars: expect.any(Array) as unknown[] } },
     })
   })
